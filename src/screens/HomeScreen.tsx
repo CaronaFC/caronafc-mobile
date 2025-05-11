@@ -1,7 +1,6 @@
 import React from "react";
 
-import { View } from "react-native";
-import { Text } from "react-native-paper";
+import { View, Text } from "react-native";
 import { RootStackParamList } from "../navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
@@ -9,24 +8,16 @@ type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
 export default function HomeScreen({ route }: Props) {
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <View
+      className="flex-1 items-center justify-center bg-gradient-to-br from-green-500 to-gray-900"
+    >
       <Text
-        style={{
-          color: "black",
-          fontSize: 28,
-          marginBottom: 10,
-          fontWeight: "bold",
-        }}
+        className="text-2xl font-bold mb-4 text-neutral-50"
       >
         Home CaronaFC
       </Text>
       <Text
-        style={{
-          color: "black",
-          fontSize: 28,
-          marginBottom: 10,
-          fontWeight: "bold",
-        }}
+        className="text-4xl font-bold mb-4 text-neutral-50"
       >
         Olá, {route.params.user.name}
       </Text>

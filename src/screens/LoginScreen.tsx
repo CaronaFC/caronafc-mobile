@@ -1,7 +1,6 @@
 import React from "react";
 
-import { View } from "react-native";
-import { Button, Text, TextInput } from "react-native-paper";
+import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 
@@ -11,39 +10,39 @@ export default function LoginScreen({ navigation }: Props) {
   const [userName, setUserName] = React.useState("");
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+    <View
+      className="flex-1 items-center justify-center bg-gradient-to-br from-green-500 to-gray-900"
+    >
       <Text
-        style={{
-          color: "black",
-          fontSize: 28,
-          marginBottom: 10,
-          fontWeight: "bold",
-        }}
+        className="text-2xl font-bold mb-4 text-neutral-50"
       >
         Login CaronaFC
       </Text>
       <TextInput
-        label="Nome"
+        className="border border-gray-300 rounded p-2 w-64 bg-neutral-50 "
         value={userName}
         onChange={(text) => setUserName(text.nativeEvent.text)}
         style={{ marginBottom: 20 }}
         placeholder="Digite seu nome"
       />
-      <Button
-        icon="arrow-right"
-        mode="contained"
-        contentStyle={{ flexDirection: "row-reverse" }}
-        buttonColor="lightgreen"
-        textColor="white"
+      <TouchableOpacity
+        className="bg-green-500 rounded p-2 w-64"
         onPress={
           () => {
             setUserName("");
-            return navigation.navigate("Home", { user: { name: userName || 'Desconhecido' } })
+            return navigation.navigate(
+              "Home",
+              {
+                user: {
+                  name: userName || 'Desconhecido',
+                },
+              },
+            )
           }
         }
       >
-        Acessar
-      </Button>
+        <Text className="text-white text-center">Entrar</Text>
+      </TouchableOpacity>
     </View>
   );
 }

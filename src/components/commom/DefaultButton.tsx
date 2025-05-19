@@ -7,6 +7,7 @@ type Props = {
   btnColor?: "dark" | "light";
   onPress?: () => void;
   style?: ViewStyle;
+  leftIcon?: ButtonProps["accessoryLeft"];
 };
 
 export default function DefaultButton({
@@ -14,6 +15,7 @@ export default function DefaultButton({
   btnColor = "dark",
   onPress,
   style,
+  leftIcon,
 }: Props) {
   const isDark = btnColor === "dark";
 
@@ -27,6 +29,7 @@ export default function DefaultButton({
       ]}
       appearance="filled"
       status={isDark ? "primary" : "basic"}
+      accessoryLeft={leftIcon}
     >
       {btnText}
     </Button>
@@ -36,6 +39,7 @@ export default function DefaultButton({
 const styles = StyleSheet.create({
   button: {
     borderWidth: 0,
+    borderRadius: 7,
   },
   darkButton: {
     backgroundColor: "#000000",

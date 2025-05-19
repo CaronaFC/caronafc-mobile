@@ -1,48 +1,66 @@
 import React from "react";
 
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, Image, Pressable } from "react-native";
+import HeroImage from "@/assets/images/hero-image.png";
+import TextInput from "src/components/commom/TextInput";
+import DefaultButton from "src/components/commom/DefaultButton";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../navigation";
+import { RootStackParamList } from "src/navigation";
+import { useNavigation } from "@react-navigation/native";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Login">;
-
-export default function LoginScreen({ navigation }: Props) {
-  const [userName, setUserName] = React.useState("");
+type LoginScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "Login"
+>;
+export default function LoginScreen() {
+  const [userNumberOrEmail, setUserNumberOrEmail] = React.useState("");
+  const [userPassword, setUserPassword] = React.useState("");
+  const navigation = useNavigation<LoginScreenNavigationProp>();
 
   return (
-    <View
-      className="flex-1 items-center justify-center bg-gradient-to-br from-green-500 to-gray-900"
-    >
-      <Text
-        className="text-2xl font-bold mb-4 text-neutral-50"
-      >
-        Login CaronaFC
-      </Text>
-      <TextInput
-        className="border border-gray-300 rounded p-2 w-64 bg-neutral-50 "
-        value={userName}
-        onChange={(text) => setUserName(text.nativeEvent.text)}
-        style={{ marginBottom: 20 }}
-        placeholder="Digite seu nome"
-      />
-      <TouchableOpacity
-        className="bg-green-500 rounded p-2 w-64"
-        onPress={
-          () => {
-            setUserName("");
-            return navigation.navigate(
-              "Home",
-              {
-                user: {
-                  name: userName || 'Desconhecido',
-                },
-              },
-            )
-          }
-        }
-      >
-        <Text className="text-white text-center">Entrar</Text>
-      </TouchableOpacity>
+    <View className="h-screen bg-primaryWhite">
+      <View className="relative">
+        <Image source={HeroImage} style={{ marginLeft: -20 }} />
+        <Text className="absolute font-bold text-3xl top-10 left-10 z-10 text-white">
+          CARONA FC
+        </Text>
+      </View>
+
+      <View className="p-4">
+        <View>
+          <label className="label-input mb-2">
+            Email ou número de telefone
+          </label>
+          <TextInput
+            value={userNumberOrEmail}
+            setValue={setUserNumberOrEmail}
+            placeholder="Email ou telefone"
+          />
+        </View>
+        <View className="mt-4">
+          <label className="label-input mb-2">Sua senha</label>
+          <TextInput
+            value={userPassword}
+            setValue={setUserPassword}
+            placeholder="Senha"
+            type="password"
+          />
+        </View>
+        <View className="gap-y-2 mt-4 justify-center">
+          <DefaultButton btnText="Login" />
+          <Text className="text-center">OR</Text>
+          <DefaultButton
+            btnText="Cadastrar-se"
+            onPress={() => navigation.navigate("Register")}
+          />
+          <Pressable>
+            <Text className="text-labelColor mt-4 text-center font-bold">
+              Recupere sua senha
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+      <View className="self-center w-36 h-2 bg-primaryBlack rounded-xl my-2" />
     </View>
   );
 }

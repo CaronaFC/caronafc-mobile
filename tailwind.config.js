@@ -11,6 +11,7 @@ module.exports = {
         labelColor: "#22215B",
         inputColor: "#F2F3F3",
         primaryBlack: "#000000",
+        primaryGray: "#D9D9D9",
       },
     },
   },

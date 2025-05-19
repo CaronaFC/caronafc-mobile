@@ -1,11 +1,12 @@
-import { Icon, Input } from "@ui-kitten/components";
+import { Input } from "@ui-kitten/components";
 import React, { useState } from "react";
 import { Feather } from "@expo/vector-icons";
-import { TouchableOpacity } from "react-native";
+import { StyleProp, TouchableOpacity, ViewStyle } from "react-native";
 
 type Props = {
   value: string;
   setValue: (text: string) => void;
+  styles?: StyleProp<ViewStyle>;
   placeholder?: string;
   type?: "text" | "password";
 };
@@ -13,6 +14,7 @@ type Props = {
 export default function TextInput({
   value,
   setValue,
+  styles,
   placeholder = "",
   type = "text",
 }: Props) {
@@ -30,9 +32,12 @@ export default function TextInput({
       value={value}
       onChangeText={setValue}
       className="text-input"
-      style={{
-        backgroundColor: "#F2F3F3",
-      }}
+      style={[
+        {
+          backgroundColor: "#F2F3F3",
+        },
+        styles,
+      ]}
       secureTextEntry={isPassword ? secure : false}
       accessoryRight={isPassword ? renderIcon : undefined}
     />

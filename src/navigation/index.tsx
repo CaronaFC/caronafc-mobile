@@ -4,19 +4,18 @@ import LoginScreen from "../screens/LoginScreen";
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import RegisterScreen from "src/screens/RegisterScreen";
+import HomeScreen from "src/screens/HomeScreen";
+import CreateTravelScreen from "src/screens/CreateTravelScreen";
+import MyTravelRequestsScreen from "src/screens/MyTravelRequestsScreen";
+import ProfileScreen from "src/screens/ProfileScreen";
 
 export type RootStackParamList = {
   Login: undefined;
-  Home: {
-    user: {
-      name: string;
-    };
-  };
-  Register: {
-    user: {
-      name: string;
-    };
-  };
+  Home: undefined;
+  Register: undefined;
+  CreateTravel: undefined;
+  MyTravelRequests: undefined;
+  Profile: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -24,7 +23,6 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function RootNavigator() {
   return (
     <Stack.Navigator initialRouteName="Login">
-      <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen
         name="Login"
         component={LoginScreen}
@@ -32,6 +30,14 @@ export default function RootNavigator() {
           headerShown: false,
         }}
       />
+      <Stack.Screen name="Register" component={RegisterScreen} />
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="CreateTravel" component={CreateTravelScreen} />
+      <Stack.Screen
+        name="MyTravelRequests"
+        component={MyTravelRequestsScreen}
+      />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
     </Stack.Navigator>
   );
 }

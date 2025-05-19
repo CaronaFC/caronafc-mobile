@@ -1,9 +1,11 @@
 import { Input } from "@ui-kitten/components";
+import { Text} from "react-native";
 import React, { useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import { StyleProp, TouchableOpacity, ViewStyle } from "react-native";
 
 type Props = {
+  label?: string;
   value: string;
   setValue: (text: string) => void;
   styles?: StyleProp<ViewStyle>;
@@ -12,6 +14,7 @@ type Props = {
 };
 
 export default function TextInput({
+  label,
   value,
   setValue,
   styles,
@@ -28,6 +31,11 @@ export default function TextInput({
   );
   return (
     <Input
+      label={() => (
+        <Text className="label-input mb-2">
+          {label}
+        </Text>
+      )}
       placeholder={placeholder}
       value={value}
       onChangeText={setValue}

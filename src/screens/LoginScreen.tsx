@@ -28,18 +28,16 @@ export default function LoginScreen() {
 
       <View className="p-4">
         <View>
-          <label className="label-input mb-2">
-            Email ou número de telefone
-          </label>
           <TextInput
+		  	    label="Email ou número de telefone"
             value={userNumberOrEmail}
             setValue={setUserNumberOrEmail}
             placeholder="Email ou telefone"
           />
         </View>
         <View className="mt-4">
-          <label className="label-input mb-2">Sua senha</label>
           <TextInput
+		  	    label="Sua senha"
             value={userPassword}
             setValue={setUserPassword}
             placeholder="Senha"

@@ -1,7 +1,13 @@
 import React from "react";
 
+import { View, Text } from "react-native";
+
 type Props = {};
 
 export default function ProfileScreen({}: Props) {
-  return <div>ProfileScreen</div>;
+  return (
+    <View>
+      <Text>ProfileScreen</Text>
+    </View>
+  )
 }

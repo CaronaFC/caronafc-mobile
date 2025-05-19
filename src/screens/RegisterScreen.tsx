@@ -58,36 +58,40 @@ export default function RegisterScreen({}: Props) {
       </View>
       <View style={{ gap: 10, flexDirection: "column" }} className="p-4">
         <View>
-          <label className="label-input mb-2">Nome completo</label>
           <TextInput
+		  	    label="Nome completo"
             value={userName}
             setValue={setUserName}
             placeholder="Nome completo"
           />
         </View>
         <View>
-          <label className="label-input mb-2">Email</label>
           <TextInput
+		  	    label="Email"
             value={userEmail}
             setValue={setUserEmail}
             placeholder="Email"
           />
         </View>
         <View>
-          <label className="label-input mb-2">CPF</label>
-          <TextInput value={userCPF} setValue={setUserCPF} placeholder="CPF" />
+          <TextInput 
+            label="CPF" 
+            value={userCPF} 
+            setValue={setUserCPF} 
+            placeholder="CPF" 
+          />
         </View>
         <View>
-          <Text className="label-input mb-2">Telefone</Text>
           <TextInput
+		  	    label="Telefone"
             value={userPhone}
             setValue={setUserPhone}
             placeholder="Telefone"
           />
         </View>
         <View>
-          <label className="label-input mb-2">Sua senha</label>
           <TextInput
+		  	    label="Sua senha"
             value={userPassword}
             setValue={setUserPassword}
             placeholder="Senha"

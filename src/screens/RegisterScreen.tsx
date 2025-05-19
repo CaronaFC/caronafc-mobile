@@ -1,11 +1,18 @@
 import { FontAwesome5 } from "@expo/vector-icons";
-import { Icon } from "@ui-kitten/components";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import DefaultButton from "src/components/commom/DefaultButton";
 import TextInput from "src/components/commom/TextInput";
+import { RootStackParamList } from "src/navigation";
 
 type Props = {};
+
+type RegisterScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "Register"
+>;
 
 export default function RegisterScreen({}: Props) {
   const [userName, setUserName] = React.useState("");
@@ -13,7 +20,8 @@ export default function RegisterScreen({}: Props) {
   const [userEmail, setUserEmail] = React.useState("");
   const [userCPF, setUserCPF] = React.useState("");
   const [userPhone, setUserPhone] = React.useState("");
-  const [userDDD, setUserDDD] = React.useState("");
+
+  const navigation = useNavigation<RegisterScreenNavigationProp>();
 
   const renderIcon = () => (
     <TouchableOpacity
@@ -86,7 +94,11 @@ export default function RegisterScreen({}: Props) {
             type="password"
           />
         </View>
-        <DefaultButton btnText="Registrar" style={{ marginTop: 5 }} />
+        <DefaultButton
+          btnText="Registrar"
+          style={{ marginTop: 5 }}
+          onPress={() => navigation.navigate("Home")}
+        />
         <DefaultButton
           leftIcon={renderGoogleIcon}
           btnText="Continue com o Google"

@@ -4,7 +4,7 @@ import { View, Text, Image, Pressable } from "react-native";
 import HeroImage from "@/assets/images/hero-image.png";
 import TextInput from "src/components/commom/TextInput";
 import DefaultButton from "src/components/commom/DefaultButton";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "src/navigation";
 import { useNavigation } from "@react-navigation/native";
 

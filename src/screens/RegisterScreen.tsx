@@ -109,7 +109,6 @@ export default function RegisterScreen({}: Props) {
           btnColor="light"
         />
       </View>
-      <View className="self-center w-36 h-2 bg-primaryBlack rounded-xl my-2" />
     </View>
   );
 }

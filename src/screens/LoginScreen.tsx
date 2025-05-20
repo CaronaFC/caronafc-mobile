@@ -7,6 +7,7 @@ import DefaultButton from "src/components/commom/DefaultButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "src/navigation";
 import { useNavigation } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -17,25 +18,31 @@ export default function LoginScreen() {
   const [userPassword, setUserPassword] = React.useState("");
   const navigation = useNavigation<LoginScreenNavigationProp>();
 
+  const insets = useSafeAreaInsets();
+
   return (
-    <View className="h-screen bg-primaryWhite">
+    <View className="h-screen bg-primaryWhite"
+      style={{ 
+        flex: 1, 
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom
+      }} 
+      >
       <View className="relative">
-        <Image source={HeroImage} style={{ marginLeft: -20 }} />
+        <Image source={HeroImage} style={{ width: "100%" }}/>
         <Text className="absolute font-bold text-3xl top-10 left-10 z-10 text-white">
           CARONA FC
         </Text>
       </View>
 
-      <View className="p-4">
-        <View>
+      <View className="flex-1 p-4">
+        <View className="gap-4">
           <TextInput
 		  	    label="Email ou número de telefone"
             value={userNumberOrEmail}
             setValue={setUserNumberOrEmail}
             placeholder="Email ou telefone"
           />
-        </View>
-        <View className="mt-4">
           <TextInput
 		  	    label="Sua senha"
             value={userPassword}
@@ -58,7 +65,6 @@ export default function LoginScreen() {
           </Pressable>
         </View>
       </View>
-      <View className="self-center w-36 h-2 bg-primaryBlack rounded-xl my-2" />
     </View>
   );
 }

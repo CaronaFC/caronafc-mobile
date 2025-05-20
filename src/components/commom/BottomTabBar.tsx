@@ -3,6 +3,7 @@ import React from "react";
 import { BottomNavigation, BottomNavigationTab } from "@ui-kitten/components";
 import { TouchableOpacity, View } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type BottomTabBarProps = {
   navigation: any;
@@ -31,7 +32,12 @@ const BottomTabBar = ({ navigation, state }: BottomTabBarProps) => {
     return null;
   }
 
+  const insets = useSafeAreaInsets();
+
   return (
+    <View style={{ 
+        paddingBottom: insets.bottom
+    }}>
     <BottomNavigation
       selectedIndex={tabRouteNames.indexOf(currentRoute)}
       indicatorStyle={{ backgroundColor: "#000000" }}
@@ -44,6 +50,7 @@ const BottomTabBar = ({ navigation, state }: BottomTabBarProps) => {
       <BottomNavigationTab icon={MyTravelRequestsIcon} />
       <BottomNavigationTab icon={ProfileIcon} />
     </BottomNavigation>
+    </View>
   );
 };
 export default BottomTabBar;

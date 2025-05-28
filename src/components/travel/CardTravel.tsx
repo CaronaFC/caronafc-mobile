@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { SecundaryButton } from "../commom/SecundaryButton";
+import DefaultButton from "../commom/DefaultButton";
 type Props = {};
 
 const CardTravel = (props: Props) => {
@@ -21,9 +21,9 @@ const CardTravel = (props: Props) => {
         <Text>7.2 km</Text>
         <Text>Brasileirão</Text>
         <Text>Motorista: Jair Bolsonaro</Text>
-        <View>
+        <View className="flex-row justify-between items-baseline">
           <Text>4 vagas disponiveis</Text>
-          <SecundaryButton btnText="Ver Detalhes" />
+          <DefaultButton btnText="Ver Detalhes" btnColor="light" />
         </View>
       </View>
     </View>

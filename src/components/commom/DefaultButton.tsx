@@ -1,13 +1,16 @@
 import React from "react";
 import { Button, Layout, ButtonProps } from "@ui-kitten/components";
-import { StyleSheet, ViewStyle } from "react-native";
+import { StyleSheet, TextStyle, ViewStyle } from "react-native";
+
+type StylePropType = ViewStyle | TextStyle;
 
 type Props = {
   btnText: string;
   btnColor?: "dark" | "light";
   onPress?: () => void;
-  style?: ViewStyle;
+  style?: StylePropType;
   leftIcon?: ButtonProps["accessoryLeft"];
+  className?: string;
 };
 
 export default function DefaultButton({
@@ -16,11 +19,13 @@ export default function DefaultButton({
   onPress,
   style,
   leftIcon,
+  className,
 }: Props) {
   const isDark = btnColor === "dark";
 
   return (
     <Button
+      className={className}
       onPress={onPress}
       style={[
         styles.button,

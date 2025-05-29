@@ -27,55 +27,13 @@ const renderLeftArrow = () => {
 const TabNavigator: React.FC = () => (
   <Tab.Navigator tabBar={(props: any) => <BottomTabBar {...props} />}>
     <Tab.Screen
-      name={"Login"}
-      component={LoginScreen}
-      options={{ headerShown: false }}
-    />
-    <Tab.Screen
-      options={{
-        title: "Registrar",
-        headerLeft: renderLeftArrow,
-        headerTitleStyle: { marginLeft: 10 },
-      }}
-      name={"Register"}
-      component={RegisterScreen}
-    />
-    <Tab.Screen
-      options={{
-        title: "Home",
-        headerLeft: renderLeftArrow,
-        headerTitleStyle: { marginLeft: 10 },
-      }}
+      options={{ title: "Viagens" }}
       name={"Home"}
       component={HomeScreen}
     />
-    <Tab.Screen
-      options={{
-        title: "Criar Viagem",
-        headerLeft: renderLeftArrow,
-        headerTitleStyle: { marginLeft: 10 },
-      }}
-      name={"CreateTravel"}
-      component={CreateTravelScreen}
-    />
-    <Tab.Screen
-      options={{
-        title: "Minhas Solicitações",
-        headerLeft: renderLeftArrow,
-        headerTitleStyle: { marginLeft: 10 },
-      }}
-      name={"MyTravelRequests"}
-      component={MyTravelRequestsScreen}
-    />
-    <Tab.Screen
-      options={{
-        title: "Meu Perfil",
-        headerLeft: renderLeftArrow,
-        headerTitleStyle: { marginLeft: 10 },
-      }}
-      name={"Profile"}
-      component={ProfileScreen}
-    />
+    <Tab.Screen name={"CreateTravel"} component={CreateTravelScreen} />
+    <Tab.Screen name={"MyTravelRequests"} component={MyTravelRequestsScreen} />
+    <Tab.Screen name={"Profile"} component={ProfileScreen} />
   </Tab.Navigator>
 );
 

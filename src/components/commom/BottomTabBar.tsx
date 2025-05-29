@@ -1,7 +1,7 @@
 // TabNavigator.tsx
 import React from "react";
 import { BottomNavigation, BottomNavigationTab } from "@ui-kitten/components";
-import { TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -35,22 +35,35 @@ const BottomTabBar = ({ navigation, state }: BottomTabBarProps) => {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={{ 
-        paddingBottom: insets.bottom
-    }}>
-    <BottomNavigation
-      selectedIndex={tabRouteNames.indexOf(currentRoute)}
-      indicatorStyle={{ backgroundColor: "#000000" }}
-      onSelect={(index) => navigation.navigate(tabRouteNames[index])}
+    <View
+      style={{
+        paddingBottom: insets.bottom,
+      }}
     >
-      {/*ATTENTION!: the tab names are in the same order as in the Tab.Navigator */}
-      {/* Respeitem a ordem */}
-      <BottomNavigationTab icon={HomeIcon} />
-      <BottomNavigationTab icon={CreateTravelIcon} />
-      <BottomNavigationTab icon={MyTravelRequestsIcon} />
-      <BottomNavigationTab icon={ProfileIcon} />
-    </BottomNavigation>
+      <BottomNavigation
+        selectedIndex={tabRouteNames.indexOf(currentRoute)}
+        indicatorStyle={{ backgroundColor: "#000000" }}
+        onSelect={(index) => navigation.navigate(tabRouteNames[index])}
+      >
+        <BottomNavigationTab
+          title={() => <Text className="text-sm">Home</Text>}
+          icon={HomeIcon}
+        />
+        <BottomNavigationTab
+          title={() => <Text className="text-sm">Criar Viagem</Text>}
+          icon={CreateTravelIcon}
+        />
+        <BottomNavigationTab
+          title={() => <Text className="text-sm ">Solicitações</Text>}
+          icon={MyTravelRequestsIcon}
+        />
+        <BottomNavigationTab
+          title={() => <Text className="text-sm">Meu Perfil</Text>}
+          icon={ProfileIcon}
+        />
+      </BottomNavigation>
     </View>
   );
 };
+
 export default BottomTabBar;

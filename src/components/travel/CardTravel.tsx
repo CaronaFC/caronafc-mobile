@@ -19,7 +19,7 @@ const CardTravel = (props: Props) => {
         </View>
         <Text className="text-lg text-black">R$ 22</Text>
       </View>
-      <View className=" gap-2 relative bg-[#F8F8F8] p-3">
+      <View className=" gap-2 relative bg-[#F8F8F8] p-3 ">
         <Text>25/04/2025</Text>
         <Text>Estádio Municipal</Text>
         <Text>7.2 km</Text>

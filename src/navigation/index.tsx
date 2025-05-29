@@ -8,6 +8,7 @@ import HomeScreen from "src/screens/HomeScreen";
 import CreateTravelScreen from "src/screens/CreateTravelScreen";
 import MyTravelRequestsScreen from "src/screens/MyTravelRequestsScreen";
 import ProfileScreen from "src/screens/ProfileScreen";
+import TabNavigator from "./TabNavigator";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -31,13 +32,11 @@ export default function RootNavigator() {
         }}
       />
       <Stack.Screen name="Register" component={RegisterScreen} />
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="CreateTravel" component={CreateTravelScreen} />
       <Stack.Screen
-        name="MyTravelRequests"
-        component={MyTravelRequestsScreen}
+        name="Home"
+        component={TabNavigator}
+        options={{ headerShown: false }}
       />
-      <Stack.Screen name="Profile" component={ProfileScreen} />
     </Stack.Navigator>
   );
 }

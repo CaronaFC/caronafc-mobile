@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Layout, ButtonProps } from "@ui-kitten/components";
+import { Button, ButtonProps } from "@ui-kitten/components";
 import { StyleSheet, TextStyle, ViewStyle } from "react-native";
 
 type StylePropType = ViewStyle | TextStyle;

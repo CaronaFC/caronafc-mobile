@@ -5,6 +5,7 @@ import LoginScreen from "../screens/LoginScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import RegisterScreen from "../screens/RegisterScreen";
 import TabNavigator from "./TabNavigator";
+import VehicleCreationScreen from "../screens/VehicleCreationScreen";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -13,6 +14,7 @@ export type RootStackParamList = {
   CreateTravel: undefined;
   MyTravelRequests: undefined;
   Profile: undefined;
+  VehicleCreation: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -32,6 +34,14 @@ export default function RootNavigator() {
         name="Home"
         component={TabNavigator}
         options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="VehicleCreation"
+        component={VehicleCreationScreen}
+        options={{
+          title: "Cadastro de Veículo",
+        }}
       />
     </Stack.Navigator>
   );

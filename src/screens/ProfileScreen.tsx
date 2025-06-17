@@ -34,7 +34,10 @@ export default function ProfileScreen() {
       </View>
 
       <View className="border-t border-b border-gray-300">
-        <MenuItem icon={<FontAwesome5 name="motorcycle" size={20} />} label="Cadastrar Veículo" />
+        <MenuItem
+          icon={<FontAwesome5 name="motorcycle" size={20} />}
+          label="Cadastrar Veículo"
+          onPress={() => navigation.navigate("VehicleCreation")} />
         <MenuItem icon={<Ionicons name="time" size={20} />} label="Histórico de Caronas" />
         <MenuItem icon={<Feather name="credit-card" size={20} />} label="Carteira" />
       </View>

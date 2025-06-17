@@ -3,11 +3,7 @@ import React from "react";
 import LoginScreen from "../screens/LoginScreen";
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import RegisterScreen from "src/screens/RegisterScreen";
-import HomeScreen from "src/screens/HomeScreen";
-import CreateTravelScreen from "src/screens/CreateTravelScreen";
-import MyTravelRequestsScreen from "src/screens/MyTravelRequestsScreen";
-import ProfileScreen from "src/screens/ProfileScreen";
+import RegisterScreen from "../screens/RegisterScreen";
 import TabNavigator from "./TabNavigator";
 
 export type RootStackParamList = {

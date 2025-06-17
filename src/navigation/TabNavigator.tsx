@@ -1,15 +1,15 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from "react";
 import BottomTabBar from "../components/commom/BottomTabBar";
-import LoginScreen from "src/screens/LoginScreen";
-import RegisterScreen from "src/screens/RegisterScreen";
+import LoginScreen from "../screens/LoginScreen";
+import RegisterScreen from "../screens/RegisterScreen";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import HomeScreen from "src/screens/HomeScreen";
-import CreateTravelScreen from "src/screens/CreateTravelScreen";
-import MyTravelRequestsScreen from "src/screens/MyTravelRequestsScreen";
-import ProfileScreen from "src/screens/ProfileScreen";
+import HomeScreen from "../screens/HomeScreen";
+import CreateTravelScreen from "../screens/CreateTravelScreen";
+import MyTravelRequestsScreen from "../screens/MyTravelRequestsScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 
 const Tab = createBottomTabNavigator();
 

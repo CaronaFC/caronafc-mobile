@@ -2,8 +2,8 @@ import { Image, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { FontAwesome5 } from "@expo/vector-icons";
 import DefaultButton from "../commom/DefaultButton";
-import Flamengo from "@/assets/images/teams/flamengo.png";
-import Palmeiras from "@/assets/images/teams/palmeiras.png";
+import Flamengo from "../../../assets/images/teams/flamengo.png";
+import Palmeiras from "../../../assets/images/teams/palmeiras.png";
 type Props = {};
 
 const CardTravel = (props: Props) => {

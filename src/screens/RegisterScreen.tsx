@@ -3,9 +3,9 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import DefaultButton from "src/components/commom/DefaultButton";
-import TextInput from "src/components/commom/TextInput";
-import { RootStackParamList } from "src/navigation";
+import DefaultButton from "../components/commom/DefaultButton";
+import TextInput from "../components/commom/TextInput";
+import { RootStackParamList } from "../navigation";
 
 type Props = {};
 
@@ -14,7 +14,7 @@ type RegisterScreenNavigationProp = NativeStackNavigationProp<
   "Register"
 >;
 
-export default function RegisterScreen({}: Props) {
+export default function RegisterScreen({ }: Props) {
   const [userName, setUserName] = React.useState("");
   const [userPassword, setUserPassword] = React.useState("");
   const [userEmail, setUserEmail] = React.useState("");
@@ -59,7 +59,7 @@ export default function RegisterScreen({}: Props) {
       <View style={{ gap: 10, flexDirection: "column" }} className="p-4">
         <View>
           <TextInput
-		  	    label="Nome completo"
+            label="Nome completo"
             value={userName}
             setValue={setUserName}
             placeholder="Nome completo"
@@ -67,23 +67,23 @@ export default function RegisterScreen({}: Props) {
         </View>
         <View>
           <TextInput
-		  	    label="Email"
+            label="Email"
             value={userEmail}
             setValue={setUserEmail}
             placeholder="Email"
           />
         </View>
         <View>
-          <TextInput 
-            label="CPF" 
-            value={userCPF} 
-            setValue={setUserCPF} 
-            placeholder="CPF" 
+          <TextInput
+            label="CPF"
+            value={userCPF}
+            setValue={setUserCPF}
+            placeholder="CPF"
           />
         </View>
         <View>
           <TextInput
-		  	    label="Telefone"
+            label="Telefone"
             value={userPhone}
             setValue={setUserPhone}
             placeholder="Telefone"
@@ -91,7 +91,7 @@ export default function RegisterScreen({}: Props) {
         </View>
         <View>
           <TextInput
-		  	    label="Sua senha"
+            label="Sua senha"
             value={userPassword}
             setValue={setUserPassword}
             placeholder="Senha"

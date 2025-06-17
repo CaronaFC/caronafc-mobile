@@ -1,11 +1,11 @@
 import React from "react";
 
 import { View, Text, Image, Pressable } from "react-native";
-import HeroImage from "@/assets/images/hero-image.png";
-import TextInput from "src/components/commom/TextInput";
-import DefaultButton from "src/components/commom/DefaultButton";
+import HeroImage from "../../assets/images/hero-image.png"
+import TextInput from "../components/commom/TextInput";
+import DefaultButton from "../components/commom/DefaultButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "src/navigation";
+import { RootStackParamList } from "../navigation";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -22,14 +22,14 @@ export default function LoginScreen() {
 
   return (
     <View className="h-screen bg-primaryWhite"
-      style={{ 
-        flex: 1, 
+      style={{
+        flex: 1,
         paddingTop: insets.top,
         paddingBottom: insets.bottom
-      }} 
-      >
+      }}
+    >
       <View className="relative">
-        <Image source={HeroImage} style={{ width: "100%" }}/>
+        <Image source={HeroImage} style={{ width: "100%" }} />
         <Text className="absolute font-bold text-3xl top-10 left-10 z-10 text-white">
           CARONA FC
         </Text>
@@ -38,13 +38,13 @@ export default function LoginScreen() {
       <View className="flex-1 p-4">
         <View className="gap-4">
           <TextInput
-		  	    label="Email ou número de telefone"
+            label="Email ou número de telefone"
             value={userNumberOrEmail}
             setValue={setUserNumberOrEmail}
             placeholder="Email ou telefone"
           />
           <TextInput
-		  	    label="Sua senha"
+            label="Sua senha"
             value={userPassword}
             setValue={setUserPassword}
             placeholder="Senha"

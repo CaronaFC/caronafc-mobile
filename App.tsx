@@ -8,7 +8,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { ApplicationProvider } from "@ui-kitten/components";
 import * as eva from "@eva-design/eva";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import RootNavigator from "src/navigation";
+import RootNavigator from "./src/navigation";
 
 export default function App() {
 	return (

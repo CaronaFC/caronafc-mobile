@@ -18,7 +18,7 @@ const renderLeftArrow = () => {
   return (
     <TouchableOpacity
       onPress={() => navigation.goBack()}
-      style={{ marginLeft: 16 }}
+      style={{ marginLeft: 16, paddingRight: 8 }}
     >
       <FontAwesome5 name="arrow-left" size={20} />
     </TouchableOpacity>
@@ -31,7 +31,10 @@ const TabNavigator: React.FC = () => (
       name={"Home"}
       component={HomeScreen}
     />
-    <Tab.Screen name={"CreateTravel"} component={CreateTravelScreen} />
+    <Tab.Screen
+      name={"CreateTravel"}
+      component={CreateTravelScreen}
+      options={{ title: "Criar Viagem", headerLeft: renderLeftArrow }} />
     <Tab.Screen name={"MyTravelRequests"} component={MyTravelRequestsScreen} />
     <Tab.Screen name={"Profile"} component={ProfileScreen} />
   </Tab.Navigator>

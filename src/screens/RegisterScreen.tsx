@@ -2,10 +2,12 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, ToastAndroid, TouchableOpacity, View } from "react-native";
 import DefaultButton from "../components/commom/DefaultButton";
 import TextInput from "../components/commom/TextInput";
 import { RootStackParamList } from "../navigation";
+import { PrimaryModal } from "../components/commom/LoaderSpinner";
+import { registerUser } from "../services/authService";
 
 type Props = {};
 
@@ -20,7 +22,8 @@ export default function RegisterScreen({ }: Props) {
   const [userEmail, setUserEmail] = React.useState("");
   const [userCPF, setUserCPF] = React.useState("");
   const [userPhone, setUserPhone] = React.useState("");
-
+  const [showErrors, setShowErros] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
   const navigation = useNavigation<RegisterScreenNavigationProp>();
 
   const renderIcon = () => (
@@ -39,6 +42,39 @@ export default function RegisterScreen({ }: Props) {
       <FontAwesome5 name="user-alt" size={20} color="#333" />
     </TouchableOpacity>
   );
+
+  const handleSubmit = async () => {
+
+    try {
+      setIsLoading(true)
+
+      if (!userName || !userPassword) {
+        setShowErros(true)
+        return;
+      }
+
+      const data = await registerUser({
+        cpf: userCPF,
+        email: userEmail,
+        nome_completo: userName,
+        senha: userPassword,
+        numero: userPhone,
+      })
+      if (!data) {
+        ToastAndroid.show("Erro ao realizar cadastro.", ToastAndroid.SHORT)
+        return;
+      }
+
+      console.log("response:", data)
+      ToastAndroid.show("Usuário cadastrado com sucesso", ToastAndroid.LONG)
+      navigation.navigate("Login")
+    } catch (error) {
+      setIsLoading(false)
+    } finally {
+      setIsLoading(false)
+    }
+
+  }
 
   const renderGoogleIcon = () => (
     <TouchableOpacity>
@@ -59,10 +95,21 @@ export default function RegisterScreen({ }: Props) {
       <View style={{ gap: 10, flexDirection: "column" }} className="p-4">
         <View>
           <TextInput
-            label="Nome completo"
+            label="Nome completo*"
             value={userName}
             setValue={setUserName}
             placeholder="Nome completo"
+            showError={showErrors && !userName}
+          />
+        </View>
+        <View>
+          <TextInput
+            label="Sua senha*"
+            value={userPassword}
+            setValue={setUserPassword}
+            placeholder="Senha"
+            type="password"
+            showError={showErrors && !userPassword}
           />
         </View>
         <View>
@@ -89,19 +136,11 @@ export default function RegisterScreen({ }: Props) {
             placeholder="Telefone"
           />
         </View>
-        <View>
-          <TextInput
-            label="Sua senha"
-            value={userPassword}
-            setValue={setUserPassword}
-            placeholder="Senha"
-            type="password"
-          />
-        </View>
+
         <DefaultButton
           btnText="Registrar"
           style={{ marginTop: 5 }}
-          onPress={() => navigation.navigate("Home")}
+          onPress={handleSubmit}
         />
         <DefaultButton
           leftIcon={renderGoogleIcon}
@@ -109,6 +148,8 @@ export default function RegisterScreen({ }: Props) {
           btnColor="light"
         />
       </View>
+
+      {isLoading && <PrimaryModal />}
     </View>
   );
 }

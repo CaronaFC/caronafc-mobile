@@ -2,13 +2,13 @@ import React, { useState } from "react";
 
 import { View, Text, TouchableOpacity } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
-import DefaultButton from "src/components/commom/DefaultButton";
-import CardTravel from "src/components/travel/CardTravel";
-import FiltersModal, { FilterData } from "src/components/travel/FiltersModal";
+import DefaultButton from "../components/commom/DefaultButton";
+import CardTravel from "../components/travel/CardTravel";
+import FiltersModal, { FilterData } from "../components/travel/FiltersModal";
 
 type Props = {};
 
-export default function HomeScreen({}: Props) {
+export default function HomeScreen({ }: Props) {
   const [showFiltersModal, setShowFiltersModal] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<FilterData>({
     team: "",

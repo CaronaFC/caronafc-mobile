@@ -1,7 +1,8 @@
 import { Input } from "@ui-kitten/components";
-import { Text} from "react-native";
+import { Text } from "react-native";
 import React, { useState } from "react";
 import { Feather } from "@expo/vector-icons";
+
 import { StyleProp, TouchableOpacity, ViewStyle } from "react-native";
 
 type Props = {
@@ -11,6 +12,8 @@ type Props = {
   styles?: StyleProp<ViewStyle>;
   placeholder?: string;
   type?: "text" | "password";
+  keyboardType?: "default" | "email-address" | "numeric" | "decimal-pad";
+  showError?: true | false;
 };
 
 export default function TextInput({
@@ -18,8 +21,10 @@ export default function TextInput({
   value,
   setValue,
   styles,
+  showError,
   placeholder = "",
   type = "text",
+  keyboardType = "default",
 }: Props) {
   const isPassword = type === "password";
   const [secure, setSecure] = useState(isPassword);
@@ -29,6 +34,7 @@ export default function TextInput({
       <Feather name={secure ? "eye-off" : "eye"} size={20} color="#8F9BB3" />
     </TouchableOpacity>
   );
+
   return (
     <Input
       label={() => (
@@ -39,6 +45,8 @@ export default function TextInput({
       placeholder={placeholder}
       value={value}
       onChangeText={setValue}
+      keyboardType={keyboardType}
+      inputMode={keyboardType === "decimal-pad" ? "numeric" : "text"}
       className="text-input"
       style={[
         {
@@ -48,6 +56,8 @@ export default function TextInput({
       ]}
       secureTextEntry={isPassword ? secure : false}
       accessoryRight={isPassword ? renderIcon : undefined}
+      caption={showError ? "Campo obrigatório" : ""}
+      status={showError ? "danger" : "default"}
     />
   );
 }

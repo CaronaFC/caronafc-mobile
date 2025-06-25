@@ -48,7 +48,7 @@ export default function RegisterScreen({ }: Props) {
     try {
       setIsLoading(true)
 
-      if (!userName || !userPassword) {
+      if (!userName || !userPassword || !userCPF || !userEmail) {
         setShowErros(true)
         return;
       }
@@ -114,18 +114,22 @@ export default function RegisterScreen({ }: Props) {
         </View>
         <View>
           <TextInput
-            label="Email"
+            label="Email*"
             value={userEmail}
             setValue={setUserEmail}
             placeholder="Email"
+            showError={showErrors && !userName}
+
           />
         </View>
         <View>
           <TextInput
-            label="CPF"
+            label="CPF*"
             value={userCPF}
             setValue={setUserCPF}
             placeholder="CPF"
+            showError={showErrors && !userName}
+
           />
         </View>
         <View>

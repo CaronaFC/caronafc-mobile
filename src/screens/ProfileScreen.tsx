@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator } from "react-native";
 import { Ionicons, FontAwesome5, Feather } from "@expo/vector-icons";
 
 import { useAuth } from "../context/AuthContext"
@@ -18,17 +18,20 @@ type ProfileScreenNavigationProp = NativeStackNavigationProp<
 export default function ProfileScreen() {
   const navigation = useNavigation<ProfileScreenNavigationProp>();
 
-  const { user, logout } = useAuth();
+  const { userData, userToken, logout } = useAuth();
+
+  console.log("userData", userData)
+  console.log("userToken", userToken)
 
   return (
     <ScrollView className="flex-1 bg-white px-4">
       <View className="items-center my-4">
         <Ionicons name="person-circle" size={80} color="#aaa" />
         <Text className="text-lg font-semibold mt-2">
-          {user?.name ?? "Usuário Desconhecido"}
+          {userData?.data.nome_completo ?? "Usuário Desconhecido"}
         </Text>
         <View className="flex-row items-center bg-gray-200 px-2 py-1 rounded-full mt-1">
-          <Text className="text-xs font-bold mr-1">{user?.rating ?? "N/A"}</Text>
+          <Text className="text-xs font-bold mr-1">0</Text>
           <Ionicons name="star" size={12} color="black" />
         </View>
       </View>
@@ -49,7 +52,6 @@ export default function ProfileScreen() {
           label="Sair"
           onPress={() => {
             logout()
-            navigation.navigate("Login")
           }
           }
         />

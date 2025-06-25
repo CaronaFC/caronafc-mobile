@@ -1,11 +1,13 @@
 import React from "react";
 
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, Text } from "react-native";
 import SelectInput from "../components/commom/SelectInput";
 import DefaultButton from "../components/commom/DefaultButton";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import TimePickerInput from "../components/commom/TimePickerInput";
 import TextInput from "../components/commom/TextInput";
+import { CheckBox, Radio } from "@ui-kitten/components";
+import CustomCheckbox from "../components/commom/CustomCheckBox";
 
 type Props = {};
 
@@ -18,6 +20,7 @@ export default function CreateTravelScreen({ }: Props) {
   const [game, setGame] = React.useState("");
   const [time, setTime] = React.useState(new Date());
   const [space, setSpace] = React.useState("");
+  const [checked, setChecked] = React.useState(false)
   const [valuePerPerson, setValuePerPerson] = React.useState("");
 
   const origins = [
@@ -79,35 +82,42 @@ export default function CreateTravelScreen({ }: Props) {
           options={spaces}
         />
 
-        <View className="flex-row items-center justify-between">
-          <View style={{ flex: 1, marginRight: 8 }}>
-            <TimePickerInput
-              label="Horário da partida"
-              value={time}
-              onChange={setTime}
-              accessoryLeft={renderTimerPicker}
-              styles={{ height: 50 }}
-            />
-          </View>
-          <View style={{ flex: 1, marginLeft: 8 }}>
+        <View className="flex-row justify-between items-center">
+          <View>
+
             <TextInput
               value={valuePerPerson}
               setValue={setValuePerPerson}
               label="Valor por pessoa"
               placeholder="0.00"
               keyboardType="numeric"
-              styles={{ height: 50 }}
             />
           </View>
+          <View className="my-auto mt-10">
+            <CustomCheckbox text="A viagem terá retorno?" />
+          </View>
         </View>
+        <View className="flex-row items-center ">
+          <View className="flex-row ">
+            <TimePickerInput
+              label="Horário da partida"
+              value={time}
+              onChange={setTime}
+              accessoryLeft={renderTimerPicker}
+              styles={{ height: 55, width: "100%" }}
+            />
+          </View>
+
+        </View>
+
+        <DefaultButton
+          btnText="Cadastrar Viagem"
+          className='mt-10'
+          onPress={handleSubmit}
+        />
       </View>
 
 
-      <DefaultButton
-        btnText="Cadastrar Viagem"
-        className='mt-5'
-        onPress={handleSubmit}
-      />
     </View>
   )
 }

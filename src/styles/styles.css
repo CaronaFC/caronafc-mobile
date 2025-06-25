@@ -3,5 +3,5 @@
 }
 
 .text-input {
-  @apply bg-inputColor focus:border-transparent h-8 text-primaryBlack text-sm active:outline-none;
+  @apply bg-inputColor h-8 text-primaryBlack text-sm;
 }

@@ -10,3 +10,14 @@ export type RegisterResponseType = {
     message: string,
     userId?: string,
 }
+
+export type LoginUserType = {
+    identificador: string, // pode ser o email ou o número
+    senha: string,
+}
+
+
+export type LoginResponseType = {
+    id: Number,
+    token: string,
+}

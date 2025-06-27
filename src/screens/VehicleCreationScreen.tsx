@@ -1,49 +1,86 @@
 import { View, Text } from 'react-native'
-import React from 'react'
+import { useState, useEffect } from 'react'
 import TextInput from '../components/commom/TextInput'
 import DefaultButton from '../components/commom/DefaultButton'
-import SelectInput from '../components/commom/SelectInput'
+import SelectInput, { Option } from '../components/commom/SelectInput'
+import { getVehiclesTypes } from "../services/userService"
+import { getFipeBrands, getFipeModels } from '../services/fipeService'
+import { useAuth } from "../context/AuthContext"
+
+import FipeSelect from "../components/fipe/FipeSelect"
 
 type Props = {}
 
+const fipePathMap: Record<string, string> = {
+  Carro: 'carros',
+  Moto: 'motos',
+  Caminhão: 'caminhoes',
+};
+
 const VehicleCreationScreen = (props: Props) => {
-    const [vehicleBrand, setVehicleBrand] = React.useState('')
-    const [vehicleModel, setVehicleModel] = React.useState('')
-    const [vehicleRenavam, setVehicleRenavam] = React.useState('')
-    const [vehiclePlate, setVehiclePlate] = React.useState('')
-    const [vehicleColor, setVehicleColor] = React.useState('')
+    const [apiTypes, setApiTypes] = useState<any[]>([])
+
+    const [vehicleTypes, setVehicleTypes] = useState<Option[]>([])
+    
+    const [selectedType, setSelectedTipoVeiculo] = useState("")
+    const [selectedBrand, setSelectedBrand] = useState('')
+    const [selectedModel, setSelectedModel] = useState('')
+    const [selectedRenavam, setSelectedRenavam] = useState('')
+    const [selectedPlate, setSelectedPlate] = useState('')
+    const [selectedColor, setSelectedColor] = useState('')
+
+    const { userData } = useAuth();
 
     const fields = [
-        { label: "Modelo", value: vehicleModel, setValue: setVehicleModel, placeholder: "Modelo" },
-        { label: "RENAVAM", value: vehicleRenavam, setValue: setVehicleRenavam, placeholder: "RENAVAM" },
-        { label: "Placa", value: vehiclePlate, setValue: setVehiclePlate, placeholder: "Placa" },
-        { label: "Cor", value: vehicleColor, setValue: setVehicleColor, placeholder: "Cor" },
+        { label: "RENAVAM", value: selectedRenavam, setValue: setSelectedRenavam, placeholder: "RENAVAM" },
+        { label: "Placa", value: selectedPlate, setValue: setSelectedPlate, placeholder: "Placa" },
+        { label: "Cor", value: selectedColor, setValue: setSelectedColor, placeholder: "Cor" },
     ];
-    const vehicleBrands = [
-        { label: "Selecione uma marca", value: "" },
-        { label: "Chevrolet", value: "Chevrolet" },
-        { label: "Fiat", value: "Fiat" },
-        { label: "Ford", value: "Ford" },
-        { label: "Honda", value: "Honda" },
-        { label: "Hyundai", value: "Hyundai" },
-        { label: "Jeep", value: "Jeep" },
-        { label: "Renault", value: "Renault" },
-        { label: "Toyota", value: "Toyota" },
-        { label: "Volkswagen", value: "Volkswagen" },
-    ];
-
 
     const handleSubmit = () => {
-        console.log("Submitting vehicle data:", {
-            vehicleBrand,
-            vehicleModel,
-            vehicleRenavam,
-            vehiclePlate,
-            vehicleColor,
+         const selectedTypeId = apiTypes.find(
+            tipo => tipo.descricao === selectedType
+        );
+
+        console.log("Submitting vehicle:", {
+            tipoVeiculoId: selectedTypeId.id,
+            marca: selectedBrand,             
+            modelo: selectedModel,          
+            renavam: selectedRenavam,        
+            placa: selectedPlate,             
+            cor: selectedColor,
+            usuarioId: userData?.data.id           
         });
-        if (!vehicleBrand || !vehicleModel || !vehiclePlate) {
-            return;
+    };
+
+    async function loadTypes() {
+        try {
+            const types = await getVehiclesTypes();
+
+            const typesOption: Option[] = types.map((tipo: any) => ({
+                label: tipo.descricao, 
+                value: tipo.descricao, 
+            }));
+            setApiTypes(types);
+            setVehicleTypes([{ label: 'Selecione uma opção', value: '' }, ...typesOption]);
+        } catch (error) {
+            console.log('Erro ao carregar tipos de veículos:', error);
         }
+    }
+
+    useEffect(() => {
+        loadTypes();
+    }, []);
+
+    useEffect(() => {
+        setSelectedBrand('');
+        setSelectedModel('');
+    }, [selectedType]);
+
+    const handleTipoChange = (newType: string) => {
+        setSelectedBrand('');
+        setSelectedModel('');
+        setSelectedTipoVeiculo(newType);
     };
 
     return (
@@ -53,11 +90,24 @@ const VehicleCreationScreen = (props: Props) => {
                 className="p-4 gap-y-4 my-14"
             >
                 <SelectInput
-                    label="Marca"
-                    selectedValue={vehicleBrand}
-                    onValueChange={setVehicleBrand}
-                    options={vehicleBrands}
+                    label="Tipo de Veículo"
+                    selectedValue={selectedType}
+                    onValueChange={handleTipoChange}  
+                    options={vehicleTypes}
                 />
+                <FipeSelect
+                    type="brand"
+                    dependency={selectedType}       
+                    selectedValue={selectedBrand}
+                    onValueChange={setSelectedBrand}
+                />
+                <FipeSelect
+                    type="model"
+                    dependency={selectedBrand}      
+                    vehicleType={selectedType}        
+                    selectedValue={selectedModel}
+                    onValueChange={setSelectedModel}
+                />                              
                 {fields.map((field, index) => (
                     <View key={index}>
                         <TextInput
@@ -67,7 +117,7 @@ const VehicleCreationScreen = (props: Props) => {
                             placeholder={field.placeholder}
                         />
                     </View>
-                ))}
+                ))}                               
                 <DefaultButton
                     btnText="Cadastrar Veículo"
                     className='mt-5'

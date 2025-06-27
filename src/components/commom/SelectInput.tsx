@@ -2,7 +2,7 @@ import { View, Text, ViewStyle, TextStyle } from 'react-native'
 import React from 'react'
 import { Picker } from '@react-native-picker/picker';
 
-type Option = {
+export type Option = {
     label: string;
     value: string;
 };

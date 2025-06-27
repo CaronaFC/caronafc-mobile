@@ -19,3 +19,12 @@ export async function getUserById(userId: Number, token: string): Promise<any> {
         }
     }
 }
+
+export async function getVehiclesTypes(): Promise<any> {
+    try {
+        const response = await api.get('/tipoveiculo');
+        return response.data;
+    } catch (error) {
+        throw new Error("Erro inesperado ao buscar tipos de veículos.");
+    }
+}

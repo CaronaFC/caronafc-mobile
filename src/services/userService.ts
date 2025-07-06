@@ -28,3 +28,20 @@ export async function getVehiclesTypes(): Promise<any> {
         throw new Error("Erro inesperado ao buscar tipos de veículos.");
     }
 }
+
+export async function createVehicle(vehicleData: {
+  placa: string;
+  renavam: string;
+  marca: string;
+  modelo: string;
+  cor: string;
+  tipoVeiculoId: number;
+  usuarioId: number;
+}): Promise<any> {
+  try {
+    const response = await api.post('/veiculo', vehicleData);
+    return response.data;
+  } catch (error) {
+    throw new Error("Erro inesperado ao criar veículo.");
+  }
+}

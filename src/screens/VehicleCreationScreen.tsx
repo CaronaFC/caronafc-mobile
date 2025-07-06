@@ -4,9 +4,8 @@ import { useNavigation } from "@react-navigation/native";
 import TextInput from '../components/commom/TextInput'
 import DefaultButton from '../components/commom/DefaultButton'
 import SelectInput, { Option } from '../components/commom/SelectInput'
-import { getVehiclesTypes } from "../services/userService"
 import { useAuth } from "../context/AuthContext"
-import { createVehicle } from '../services/userService'
+import { getVehiclesTypes ,createVehicle } from '../services/vehicleService'
 
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";

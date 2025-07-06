@@ -1,11 +1,14 @@
 import { View, Text } from 'react-native'
 import { useState, useEffect } from 'react'
+import { useNavigation } from "@react-navigation/native";
 import TextInput from '../components/commom/TextInput'
 import DefaultButton from '../components/commom/DefaultButton'
 import SelectInput, { Option } from '../components/commom/SelectInput'
-import { getVehiclesTypes } from "../services/userService"
-import { getFipeBrands, getFipeModels } from '../services/fipeService'
 import { useAuth } from "../context/AuthContext"
+import { getVehiclesTypes ,createVehicle } from '../services/vehicleService'
+
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../navigation";
 
 import FipeSelect from "../components/fipe/FipeSelect"
 
@@ -16,6 +19,11 @@ const fipePathMap: Record<string, string> = {
   Moto: 'motos',
   Caminhão: 'caminhoes',
 };
+
+type LoginScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "Login"
+>;
 
 const VehicleCreationScreen = (props: Props) => {
     const [apiTypes, setApiTypes] = useState<any[]>([])
@@ -29,6 +37,7 @@ const VehicleCreationScreen = (props: Props) => {
     const [selectedPlate, setSelectedPlate] = useState('')
     const [selectedColor, setSelectedColor] = useState('')
 
+    const navigation = useNavigation<LoginScreenNavigationProp>();
     const { userData } = useAuth();
 
     const fields = [
@@ -37,7 +46,7 @@ const VehicleCreationScreen = (props: Props) => {
         { label: "Cor", value: selectedColor, setValue: setSelectedColor, placeholder: "Cor" },
     ];
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
          const selectedTypeId = apiTypes.find(
             tipo => tipo.descricao === selectedType
         );
@@ -51,7 +60,24 @@ const VehicleCreationScreen = (props: Props) => {
             cor: selectedColor,
             usuarioId: userData?.data.id           
         });
-    };
+
+        try {
+            const response = await createVehicle({
+                tipoVeiculoId: selectedTypeId.id,
+                marca: selectedBrand,
+                modelo: selectedModel,
+                renavam: selectedRenavam,
+                placa: selectedPlate,
+                cor: selectedColor,
+                usuarioId: userData?.data.id ?? 0
+            });
+            console.log("Vehicle created successfully:", response);
+            navigation.navigate("Home");
+        } catch (error) {
+            console.error("Error creating vehicle:", error);
+        }
+    }
+
 
     async function loadTypes() {
         try {

@@ -6,7 +6,7 @@ import { Text, ToastAndroid, TouchableOpacity, View } from "react-native";
 import DefaultButton from "../components/commom/DefaultButton";
 import TextInput from "../components/commom/TextInput";
 import { RootStackParamList } from "../navigation";
-import { PrimaryModal } from "../components/commom/LoaderSpinner";
+import { LoaderSpinner } from "../components/commom/LoaderSpinner";
 import { registerUser } from "../services/authService";
 import FormScreenWrapper from "../components/commom/FormScreenWrapper";
 
@@ -155,7 +155,7 @@ export default function RegisterScreen({ }: Props) {
           />
         </View>
 
-        {isLoading && <PrimaryModal />}
+        {isLoading && <LoaderSpinner />}
       </View>
     </FormScreenWrapper>
   );

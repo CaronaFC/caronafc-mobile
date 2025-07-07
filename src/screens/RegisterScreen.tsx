@@ -8,6 +8,7 @@ import TextInput from "../components/commom/TextInput";
 import { RootStackParamList } from "../navigation";
 import { PrimaryModal } from "../components/commom/LoaderSpinner";
 import { registerUser } from "../services/authService";
+import FormScreenWrapper from "../components/commom/FormScreenWrapper";
 
 type Props = {};
 
@@ -83,77 +84,79 @@ export default function RegisterScreen({ }: Props) {
   );
 
   return (
-    <View className="h-screen bg-primaryWhite">
-      <View>
-        <View style={{ marginBlock: 15 }} className="items-center ">
-          {renderIcon()}
+    <FormScreenWrapper>
+      <View className="h-screen bg-primaryWhite">
+        <View>
+          <View style={{ marginBlock: 15 }} className="items-center ">
+            {renderIcon()}
+          </View>
+          <Text className="text-primaryBlack text-md font-bold text-center ">
+            Enviar Foto
+          </Text>
         </View>
-        <Text className="text-primaryBlack text-md font-bold text-center ">
-          Enviar Foto
-        </Text>
+        <View style={{ gap: 10, flexDirection: "column" }} className="p-4">
+          <View>
+            <TextInput
+              label="Nome completo*"
+              value={userName}
+              setValue={setUserName}
+              placeholder="Nome completo"
+              showError={showErrors && !userName}
+            />
+          </View>
+          <View>
+            <TextInput
+              label="Sua senha*"
+              value={userPassword}
+              setValue={setUserPassword}
+              placeholder="Senha"
+              type="password"
+              showError={showErrors && !userPassword}
+            />
+          </View>
+          <View>
+            <TextInput
+              label="Email*"
+              value={userEmail}
+              setValue={setUserEmail}
+              placeholder="Email"
+              showError={showErrors && !userName}
+
+            />
+          </View>
+          <View>
+            <TextInput
+              label="CPF*"
+              value={userCPF}
+              setValue={setUserCPF}
+              placeholder="CPF"
+              showError={showErrors && !userName}
+
+            />
+          </View>
+          <View>
+            <TextInput
+              label="Telefone"
+              value={userPhone}
+              setValue={setUserPhone}
+              placeholder="Telefone"
+            />
+          </View>
+
+          <DefaultButton
+            btnText="Registrar"
+            style={{ marginTop: 5 }}
+            onPress={handleSubmit}
+          />
+          <DefaultButton
+            leftIcon={renderGoogleIcon}
+            btnText="Continue com o Google"
+            btnColor="light"
+          />
+        </View>
+
+        {isLoading && <PrimaryModal />}
       </View>
-      <View style={{ gap: 10, flexDirection: "column" }} className="p-4">
-        <View>
-          <TextInput
-            label="Nome completo*"
-            value={userName}
-            setValue={setUserName}
-            placeholder="Nome completo"
-            showError={showErrors && !userName}
-          />
-        </View>
-        <View>
-          <TextInput
-            label="Sua senha*"
-            value={userPassword}
-            setValue={setUserPassword}
-            placeholder="Senha"
-            type="password"
-            showError={showErrors && !userPassword}
-          />
-        </View>
-        <View>
-          <TextInput
-            label="Email*"
-            value={userEmail}
-            setValue={setUserEmail}
-            placeholder="Email"
-            showError={showErrors && !userName}
-
-          />
-        </View>
-        <View>
-          <TextInput
-            label="CPF*"
-            value={userCPF}
-            setValue={setUserCPF}
-            placeholder="CPF"
-            showError={showErrors && !userName}
-
-          />
-        </View>
-        <View>
-          <TextInput
-            label="Telefone"
-            value={userPhone}
-            setValue={setUserPhone}
-            placeholder="Telefone"
-          />
-        </View>
-
-        <DefaultButton
-          btnText="Registrar"
-          style={{ marginTop: 5 }}
-          onPress={handleSubmit}
-        />
-        <DefaultButton
-          leftIcon={renderGoogleIcon}
-          btnText="Continue com o Google"
-          btnColor="light"
-        />
-      </View>
-
-      {isLoading && <PrimaryModal />}
-    </View>
+    </FormScreenWrapper>
   );
 }

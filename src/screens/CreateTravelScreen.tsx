@@ -8,6 +8,7 @@ import TimePickerInput from "../components/commom/TimePickerInput";
 import TextInput from "../components/commom/TextInput";
 import { CheckBox, Radio } from "@ui-kitten/components";
 import CustomCheckbox from "../components/commom/CustomCheckBox";
+import FormScreenWrapper from "../components/commom/FormScreenWrapper";
 
 type Props = {};
 
@@ -57,67 +58,69 @@ export default function CreateTravelScreen({ }: Props) {
   );
 
   return (
-    <View className="h-screen bg-primaryWhite">
-      <View
-        style={{ gap: 10, flexDirection: "column" }}
-        className="p-4 gap-y-4 my-14"
-      >
-        <SelectInput
-          label="Origem"
-          selectedValue={origin}
-          onValueChange={setOrigin}
-          options={origins}
-        />
+    <FormScreenWrapper>
+      <View className="h-screen bg-primaryWhite">
+        <View
+          style={{ gap: 10, flexDirection: "column" }}
+          className="p-4 gap-y-4 my-14"
+        >
+          <SelectInput
+            label="Origem"
+            selectedValue={origin}
+            onValueChange={setOrigin}
+            options={origins}
+          />
 
-        <SelectInput
-          label="Jogo"
-          selectedValue={game}
-          onValueChange={setGame}
-          options={games}
-        />
-        <SelectInput
-          label="Vagas"
-          selectedValue={space}
-          onValueChange={setSpace}
-          options={spaces}
-        />
+          <SelectInput
+            label="Jogo"
+            selectedValue={game}
+            onValueChange={setGame}
+            options={games}
+          />
+          <SelectInput
+            label="Vagas"
+            selectedValue={space}
+            onValueChange={setSpace}
+            options={spaces}
+          />
 
-        <View className="flex-row justify-between items-center">
-          <View>
+          <View className="flex-row justify-between items-center">
+            <View>
 
-            <TextInput
-              value={valuePerPerson}
-              setValue={setValuePerPerson}
-              label="Valor por pessoa"
-              placeholder="0.00"
-              keyboardType="numeric"
-            />
+              <TextInput
+                value={valuePerPerson}
+                setValue={setValuePerPerson}
+                label="Valor por pessoa"
+                placeholder="0.00"
+                keyboardType="numeric"
+              />
+            </View>
+            <View className="my-auto mt-10">
+              <CustomCheckbox text="A viagem terá retorno?" />
+            </View>
           </View>
-          <View className="my-auto mt-10">
-            <CustomCheckbox text="A viagem terá retorno?" />
+          <View className="flex-row items-center ">
+            <View className="flex-row ">
+              <TimePickerInput
+                label="Horário da partida"
+                value={time}
+                onChange={setTime}
+                accessoryLeft={renderTimerPicker}
+                styles={{ height: 55, width: "100%" }}
+              />
+            </View>
+
           </View>
+
+          <DefaultButton
+            btnText="Cadastrar Viagem"
+            className='mt-10'
+            onPress={handleSubmit}
+          />
         </View>
-        <View className="flex-row items-center ">
-          <View className="flex-row ">
-            <TimePickerInput
-              label="Horário da partida"
-              value={time}
-              onChange={setTime}
-              accessoryLeft={renderTimerPicker}
-              styles={{ height: 55, width: "100%" }}
-            />
-          </View>
 
-        </View>
 
-        <DefaultButton
-          btnText="Cadastrar Viagem"
-          className='mt-10'
-          onPress={handleSubmit}
-        />
       </View>
-
-
-    </View>
+    </FormScreenWrapper>
   )
 }

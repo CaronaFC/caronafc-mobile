@@ -10,9 +10,9 @@ import CustomCheckbox from "../components/commom/CustomCheckBox";
 import FormScreenWrapper from "../components/commom/FormScreenWrapper";
 import { LocationObjectCoords } from "expo-location";
 import MapCreateTravel from "../components/travel/MapCreateTravel";
-import BottomSheet from '@gorhom/bottom-sheet';
 import BottomSheetWrapper from "../components/commom/BottomSheetWrapper";
 import { Modalize } from "react-native-modalize";
+import { CoordsAddress, CoordsPoint } from "../types/coords";
 type Props = {};
 
 export default function CreateTravelScreen({ }: Props) {
@@ -26,12 +26,8 @@ export default function CreateTravelScreen({ }: Props) {
   const [checked, setChecked] = React.useState(false)
   const [valuePerPerson, setValuePerPerson] = React.useState("");
   const [location, setLocation] = React.useState<LocationObjectCoords | null>(null);
-  const [starterPoint, setStarterPoint] = React.useState<{ latitude: number; longitude: number } | null>(null);
-  const [isMapOpen, setIsMapOpen] = React.useState(false);
-
+  const [starterPoint, setStarterPoint] = React.useState<CoordsAddress | null>(null);
   const bottomSheetRef = React.useRef<Modalize>(null);
-
-  const snapPoints = useMemo(() => ['50%', '90%'], []);
 
   const games = [
     { label: "Selecione um jogo", value: "" },
@@ -72,13 +68,13 @@ export default function CreateTravelScreen({ }: Props) {
               value={""}
               setValue={() => { }}
               label="Origem"
-              placeholder="Abra o mapa para selecionar a origem"
-
+              placeholder={starterPoint ? starterPoint.address : "Selecione seu ponto de partida"}
+              disabled={true}
             />
 
             <DefaultButton
               btnText="Abrir Mapa"
-              className='w-1/2'
+              className='w-full'
               onPress={() => bottomSheetRef.current?.open()}
             />
           </View>
@@ -136,7 +132,7 @@ export default function CreateTravelScreen({ }: Props) {
       <BottomSheetWrapper
         ref={bottomSheetRef}
         snapPoint={300}
-        modalHeight={600}
+        modalHeight={650}
       >
         <MapCreateTravel
           location={location}

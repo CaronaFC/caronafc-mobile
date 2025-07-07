@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import { View, TouchableOpacity, Text } from "react-native";
 import SelectInput from "../components/commom/SelectInput";
@@ -6,16 +6,18 @@ import DefaultButton from "../components/commom/DefaultButton";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import TimePickerInput from "../components/commom/TimePickerInput";
 import TextInput from "../components/commom/TextInput";
-import { CheckBox, Radio } from "@ui-kitten/components";
 import CustomCheckbox from "../components/commom/CustomCheckBox";
 import FormScreenWrapper from "../components/commom/FormScreenWrapper";
-
+import { LocationObjectCoords } from "expo-location";
+import MapCreateTravel from "../components/travel/MapCreateTravel";
+import BottomSheet from '@gorhom/bottom-sheet';
+import BottomSheetWrapper from "../components/commom/BottomSheetWrapper";
+import { Modalize } from "react-native-modalize";
 type Props = {};
 
 export default function CreateTravelScreen({ }: Props) {
 
 
-  const handleSubmit = () => { }
 
   const [origin, setOrigin] = React.useState("");
   const [game, setGame] = React.useState("");
@@ -23,15 +25,13 @@ export default function CreateTravelScreen({ }: Props) {
   const [space, setSpace] = React.useState("");
   const [checked, setChecked] = React.useState(false)
   const [valuePerPerson, setValuePerPerson] = React.useState("");
+  const [location, setLocation] = React.useState<LocationObjectCoords | null>(null);
+  const [starterPoint, setStarterPoint] = React.useState<{ latitude: number; longitude: number } | null>(null);
+  const [isMapOpen, setIsMapOpen] = React.useState(false);
 
-  const origins = [
-    { label: "Selecione uma origem", value: "" },
-    { label: "São Paulo", value: "São Paulo" },
-    { label: "Rio de Janeiro", value: "Rio de Janeiro" },
-    { label: "Belo Horizonte", value: "Belo Horizonte" },
-    { label: "Curitiba", value: "Curitiba" },
-    { label: "Salvador", value: "Salvador" },
-  ]
+  const bottomSheetRef = React.useRef<Modalize>(null);
+
+  const snapPoints = useMemo(() => ['50%', '90%'], []);
 
   const games = [
     { label: "Selecione um jogo", value: "" },
@@ -57,19 +57,31 @@ export default function CreateTravelScreen({ }: Props) {
     </TouchableOpacity>
   );
 
+  const handleSubmit = () => { }
+
   return (
     <FormScreenWrapper>
-      <View className="h-screen bg-primaryWhite">
+      <View style={{ flex: 1, backgroundColor: '#FFF' }}>
         <View
           style={{ gap: 10, flexDirection: "column" }}
           className="p-4 gap-y-4 my-14"
         >
-          <SelectInput
-            label="Origem"
-            selectedValue={origin}
-            onValueChange={setOrigin}
-            options={origins}
-          />
+          <View className=" justify-between items-center gap-y-2">
+
+            <TextInput
+              value={""}
+              setValue={() => { }}
+              label="Origem"
+              placeholder="Abra o mapa para selecionar a origem"
+
+            />
+
+            <DefaultButton
+              btnText="Abrir Mapa"
+              className='w-1/2'
+              onPress={() => bottomSheetRef.current?.open()}
+            />
+          </View>
 
           <SelectInput
             label="Jogo"
@@ -121,6 +133,19 @@ export default function CreateTravelScreen({ }: Props) {
 
 
       </View>
-    </FormScreenWrapper>
+      <BottomSheetWrapper
+        ref={bottomSheetRef}
+        snapPoint={300}
+        modalHeight={600}
+      >
+        <MapCreateTravel
+          location={location}
+          setLocation={setLocation}
+          starterPoint={starterPoint}
+          setStarterPoint={setStarterPoint}
+        />
+      </BottomSheetWrapper>
+
+    </FormScreenWrapper >
   )
 }

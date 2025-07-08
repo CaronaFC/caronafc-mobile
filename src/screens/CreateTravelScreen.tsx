@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import { View, TouchableOpacity, Text } from "react-native";
 import SelectInput from "../components/commom/SelectInput";
@@ -13,30 +13,85 @@ import MapCreateTravel from "../components/travel/MapCreateTravel";
 import BottomSheetWrapper from "../components/commom/BottomSheetWrapper";
 import { Modalize } from "react-native-modalize";
 import { CoordsAddress, CoordsPoint } from "../types/coords";
+import { fetchAllMatches, fetchMatchById } from "../services/matchService";
+import { geocodeAddress } from "../lib/location";
 type Props = {};
 
 export default function CreateTravelScreen({ }: Props) {
 
 
 
-  const [origin, setOrigin] = React.useState("");
+  const [matches, setMatches] = React.useState<any[]>([])
   const [game, setGame] = React.useState("");
   const [time, setTime] = React.useState(new Date());
+  const [stadiumName, setStadiumName] = React.useState<string | null>(null);
+  const [stadiumCoords, setStadiumCoords] = React.useState<CoordsPoint | null>(null);
   const [space, setSpace] = React.useState("");
-  const [checked, setChecked] = React.useState(false)
   const [valuePerPerson, setValuePerPerson] = React.useState("");
   const [location, setLocation] = React.useState<LocationObjectCoords | null>(null);
   const [starterPoint, setStarterPoint] = React.useState<CoordsAddress | null>(null);
   const bottomSheetRef = React.useRef<Modalize>(null);
 
-  const games = [
-    { label: "Selecione um jogo", value: "" },
-    { label: "Jogo 1", value: "Jogo 1" },
-    { label: "Jogo 2", value: "Jogo 2" },
-    { label: "Jogo 3", value: "Jogo 3" },
-    { label: "Jogo 4", value: "Jogo 4" },
-    { label: "Jogo 5", value: "Jogo 5" },
-  ];
+  useEffect(() => {
+    async function fetchJogos() {
+      try {
+        const jogos = await fetchAllMatches();
+        setMatches(jogos);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchJogos();
+  }, []);
+
+  useEffect(() => {
+
+    async function fetchGameDetails() {
+      if (game) {
+        try {
+          const match = await fetchMatchById(game);
+          console.log("Detalhes do jogo:", match);
+          if (match?.stadium?.name) {
+            setStadiumName(match.stadium.name);
+            const coords: CoordsPoint | null = await geocodeAddress(match.stadium.name);
+            setStadiumCoords(coords);
+            if (coords) {
+              console.log("Coordenadas do estádio:", coords);
+            }
+          } else {
+            setStadiumName("Estádio não informado");
+          }
+
+        } catch (error) {
+          console.error("Erro ao buscar detalhes do jogo:", error);
+        }
+      } else {
+        setStadiumName(null);
+        setStadiumCoords(null);
+      }
+    }
+    fetchGameDetails();
+  }, [game]);
+
+
+  const gamesOptions = React.useMemo(() => {
+
+    function getTimestamp(jogo: any) {
+      const [day, month, year] = jogo.date.split('/').map(Number);
+      const [hour, minute] = jogo.time.split(':').map(Number);
+      return new Date(year, month - 1, day, hour, minute).getTime();
+    }
+
+    const sorted = [...matches].sort((a, b) => getTimestamp(a) - getTimestamp(b));
+    const options = [
+      { label: "Selecione um jogo", value: "" },
+      ...sorted.map(jogo => ({
+        label: `${jogo.teams.home.name} x ${jogo.teams.away.name} - ${jogo.date}`,
+        value: String(jogo.id),
+      })),
+    ];
+    return options;
+  }, [matches]);
 
   const spaces = [
     { label: "Quantidade de Vagas", value: "" },
@@ -60,17 +115,25 @@ export default function CreateTravelScreen({ }: Props) {
       <View style={{ flex: 1, backgroundColor: '#FFF' }}>
         <View
           style={{ gap: 10, flexDirection: "column" }}
-          className="p-4 gap-y-4 my-14"
+          className="p-4 gap-y-4 "
         >
           <View className=" justify-between items-center gap-y-2">
-
             <TextInput
               value={""}
               setValue={() => { }}
               label="Origem"
-              placeholder={starterPoint ? starterPoint.address : "Selecione seu ponto de partida"}
+              placeholder={starterPoint ? starterPoint.address : "Selecione seu ponto de partida no mapa"}
               disabled={true}
             />
+            {stadiumName && (
+              <TextInput
+                value={stadiumName}
+                setValue={setStadiumName}
+                label="Destino (Estádio)"
+                placeholder="Selecione o estádio"
+                disabled={true}
+              />
+            )}
 
             <DefaultButton
               btnText="Abrir Mapa"
@@ -83,7 +146,7 @@ export default function CreateTravelScreen({ }: Props) {
             label="Jogo"
             selectedValue={game}
             onValueChange={setGame}
-            options={games}
+            options={gamesOptions}
           />
           <SelectInput
             label="Vagas"
@@ -139,6 +202,7 @@ export default function CreateTravelScreen({ }: Props) {
           setLocation={setLocation}
           starterPoint={starterPoint}
           setStarterPoint={setStarterPoint}
+          destinationCoords={stadiumCoords || null} // Passando as coordenadas do estádio
         />
       </BottomSheetWrapper>
 

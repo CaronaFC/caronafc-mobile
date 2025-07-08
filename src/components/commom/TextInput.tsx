@@ -8,6 +8,8 @@ import { StyleProp, TouchableOpacity, ViewStyle } from "react-native";
 type Props = {
   label?: string;
   value: string;
+  disabled?: boolean;
+  iconLeft?: React.ReactElement;
   setValue: (text: string) => void;
   styles?: StyleProp<ViewStyle>;
   placeholder?: string;
@@ -25,6 +27,8 @@ export default function TextInput({
   placeholder = "",
   type = "text",
   keyboardType = "default",
+  disabled = false,
+  iconLeft,
 }: Props) {
   const isPassword = type === "password";
   const [secure, setSecure] = useState(isPassword);
@@ -43,6 +47,8 @@ export default function TextInput({
         </Text>
       )}
       placeholder={placeholder}
+      accessoryLeft={iconLeft ? () => iconLeft : undefined}
+      disabled={disabled}
       value={value}
       onChangeText={setValue}
       keyboardType={keyboardType}

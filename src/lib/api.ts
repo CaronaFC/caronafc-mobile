@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAccessToken } from "./token";
 
-const API_URL = "http://192.168.0.4:3000";
+const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://192.168.1.13:3000";
 
 export const api = axios.create({
   baseURL: API_URL,

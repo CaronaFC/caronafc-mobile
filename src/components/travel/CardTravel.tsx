@@ -24,7 +24,10 @@ const CardTravel = (props: Props) => {
         <Text>Estádio Municipal</Text>
         <Text>7.2 km</Text>
         <Text>Brasileirão</Text>
-        <Text>Motorista: Jair Bolsonaro</Text>
+        <View className="flex-row justify-between items-baseline mb-2">
+          <Text>Motorista: Jair Bolsonaro</Text>
+          <DefaultButton btnText="Pedir Carona" btnColor="dark" />
+        </View>
         <View className="flex-row justify-between items-baseline">
           <Text>4 vagas disponiveis</Text>
           <DefaultButton btnText="Ver Detalhes" btnColor="light" />

@@ -1,8 +1,12 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { Button, Card, Layout, Modal, Spinner, } from '@ui-kitten/components';
+import { View } from 'react-native';
+type Props = {
+    message?: string;
+};
 
-export const PrimaryModal = (): React.ReactElement => {
+export const LoaderSpinner = ({ message }: Props): React.ReactElement => {
 
     const [visible, setVisible] = React.useState(true);
 
@@ -14,7 +18,13 @@ export const PrimaryModal = (): React.ReactElement => {
             <Modal visible={visible} backdropStyle={styles.backdrop}
             >
                 <Card disabled={true}>
-                    <Spinner size='giant' />
+                    <View className='items-center justify-center gap-y-4'>
+
+                        <Spinner size='giant' />
+                        {message && (
+                            <Text>{message}</Text>
+                        )}
+                    </View>
                 </Card>
             </Modal>
         </Layout>

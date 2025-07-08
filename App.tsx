@@ -1,3 +1,4 @@
+import 'react-native-reanimated';
 import "react-native-gesture-handler";
 import "./src/styles/global.css";
 

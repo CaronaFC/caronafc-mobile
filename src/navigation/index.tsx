@@ -4,6 +4,7 @@ import LoginScreen from "../screens/LoginScreen";
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import RegisterScreen from "../screens/RegisterScreen";
+import ForgotPassword from "../screens/ForgotPassword";
 import TabNavigator from "./TabNavigator";
 import VehicleCreationScreen from "../screens/VehicleCreationScreen";
 import { useAuth } from "../context/AuthContext";
@@ -17,6 +18,7 @@ export type RootStackParamList = {
   MyTravelRequests: undefined;
   Profile: undefined;
   VehicleCreation: undefined;
+  ForgotPassword: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -38,6 +40,7 @@ export default function RootNavigator() {
         <>
           <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         </>
       ) : (
         <>

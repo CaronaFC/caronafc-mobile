@@ -62,55 +62,61 @@ export default function LoginScreen() {
 
   return (
     <FormScreenWrapper>
-      <View className="h-screen bg-primaryWhite"
-        style={{
-          flex: 1,
-          paddingTop: insets.top,
-          paddingBottom: insets.bottom
-        }}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1 }}
       >
-        <View className="relative">
-          <Image source={HeroImage} style={{ width: "100%" }} />
-          <Text className="absolute font-bold text-3xl top-10 left-10 z-10 text-white">
-            CARONA FC
-          </Text>
-        </View>
-
-        <View className="flex-1 p-4">
-          <View className="gap-4">
-            <TextInput
-              label="Email ou número de telefone"
-              value={userNumberOrEmail}
-              setValue={setUserNumberOrEmail}
-              placeholder="Email ou telefone"
-              showError={showErrors && !userNumberOrEmail}
-
-            />
-            <TextInput
-              label="Sua senha"
-              value={userPassword}
-              setValue={setUserPassword}
-              placeholder="Senha"
-              type="password"
-              showError={showErrors && !userPassword}
-
-            />
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom,
+            backgroundColor: "white",
+          }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View className="relative">
+            <Image source={HeroImage} style={{ width: "100%" }} />
+            <Text className="absolute font-bold text-3xl top-10 left-10 z-10 text-white">
+              CARONA FC
+            </Text>
           </View>
-          <View className="gap-y-2 mt-4 justify-center">
-            <DefaultButton btnText="Login" onPress={handleSubmit} />
-            <Text className="text-center">OR</Text>
-            <DefaultButton
-              btnText="Cadastrar-se"
-              onPress={() => navigation.navigate("Register")}
-            />
-            <Pressable>
-              <Text className="text-labelColor mt-4 text-center font-bold">
-                Recupere sua senha
-              </Text>
-            </Pressable>
+
+          <View className="flex-1 p-4">
+            <View className="gap-4">
+              <TextInput
+                label="Email ou número de telefone"
+                value={userNumberOrEmail}
+                setValue={setUserNumberOrEmail}
+                placeholder="Email ou telefone"
+                showError={showErrors && !userNumberOrEmail}
+              />
+              <TextInput
+                label="Sua senha"
+                value={userPassword}
+                setValue={setUserPassword}
+                placeholder="Senha"
+                type="password"
+                showError={showErrors && !userPassword}
+              />
+            </View>
+
+            <View className="gap-y-2 mt-4 justify-center">
+              <DefaultButton btnText="Login" onPress={handleSubmit} />
+              <Text className="text-center">OR</Text>
+              <DefaultButton
+                btnText="Cadastrar-se"
+                onPress={() => navigation.navigate("Register")}
+              />
+              <Pressable onPress={() => navigation.navigate("ForgotPassword")}>
+                <Text className="text-labelColor mt-4 text-center font-bold">
+                  Recupere sua senha
+                </Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
-      </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </FormScreenWrapper>
   );
 }

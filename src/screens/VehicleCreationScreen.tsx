@@ -17,7 +17,7 @@ type Props = {}
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
-    "Login"
+    "VehicleCreation"
 >;
 
 const VehicleCreationScreen = (props: Props) => {
@@ -84,7 +84,7 @@ const VehicleCreationScreen = (props: Props) => {
                 usuarioId: userData?.data.id ?? 0
             });
             console.log("Vehicle created successfully:", response);
-            navigation.navigate("Home");
+            navigation.goBack()
         } catch (error) {
             console.error("Error creating vehicle:", error);
         }

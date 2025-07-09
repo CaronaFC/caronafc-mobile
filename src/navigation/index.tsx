@@ -6,8 +6,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import RegisterScreen from "../screens/RegisterScreen";
 import TabNavigator from "./TabNavigator";
 import VehicleCreationScreen from "../screens/VehicleCreationScreen";
+import VehicleScreen from "../screens/VehicleScreen";
 import { useAuth } from "../context/AuthContext";
 import { ActivityIndicator, View } from "react-native";
+import { TouchableOpacity, Text } from 'react-native';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -17,6 +19,7 @@ export type RootStackParamList = {
   MyTravelRequests: undefined;
   Profile: undefined;
   VehicleCreation: undefined;
+  Vehicle: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -46,6 +49,14 @@ export default function RootNavigator() {
             name="VehicleCreation"
             component={VehicleCreationScreen}
             options={{ title: "Cadastro de Veículo", headerShown: true }}
+          />
+          <Stack.Screen
+            name="Vehicle"
+            component={VehicleScreen}
+            options={({ navigation }) => ({
+              title: "Meus Veículos",
+              headerShown: true,                      
+            })}
           />
         </>
       )}

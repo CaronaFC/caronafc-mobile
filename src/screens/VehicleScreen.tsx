@@ -3,7 +3,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 import { useNavigation } from "@react-navigation/native";
 
-import { ScrollView, View, Text, Pressable } from "react-native";
+import { ScrollView, View, Text, Pressable, RefreshControl } from "react-native";
 import DefaultButton from "../components/commom/DefaultButton";
 
 import { getUserById } from "../services/userService"
@@ -31,10 +31,19 @@ type LoginScreenNavigationProp = NativeStackNavigationProp<
 export default function VehicleScreen() {
     const [selectedType, setSelectedType] = useState<"Carro" | "Moto">("Carro");
 		const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+		const [refreshing, setRefreshing] = useState(false);
 
     const navigation = useNavigation<LoginScreenNavigationProp>();
 
     const { userData, userToken } = useAuth();
+
+		const onRefresh = async () => {
+			setRefreshing(true);
+			
+			await fetchUser();
+
+			setRefreshing(false);
+		};
 
     const filteredVehicles = vehicles.filter(
         (v) => v.tipoVeiculo.descricao === selectedType
@@ -50,18 +59,20 @@ export default function VehicleScreen() {
 			}
 		}
 
-		useEffect(() => {
-			async function fetchUser() {
+		async function fetchUser() {
 				const response = await getUserById(Number(userData?.data.id), String(userToken));	
 				console.log(response?.data.data.veiculos);
 				setVehicles(response?.data.data.veiculos);		
-			}
+		}
 
+		useEffect(() => {
 			fetchUser();
 		}, [])
 
     return (
-        <ScrollView className="flex-1 bg-white px-4 pt-6">
+        <ScrollView className="flex-1 bg-white px-4 pt-6"  refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
             <DefaultButton
                 btnText={"Adicionar Veículo +"}
                 btnColor="dark"

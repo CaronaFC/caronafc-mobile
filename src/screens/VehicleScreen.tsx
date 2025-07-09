@@ -32,7 +32,7 @@ type Vehicle = {
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
-    "Login"
+    "Vehicle"
 >;
 
 export default function VehicleScreen() {

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
+import { useNavigation } from "@react-navigation/native";
+
 import { ScrollView, View, Text, Pressable } from "react-native";
 import DefaultButton from "../components/commom/DefaultButton";
-import { useNavigation } from "@react-navigation/native";
 
 import { getUserById } from "../services/userService"
 import { deleteVehicleId} from "../services/vehicleService";
-
 import { useAuth } from "../context/AuthContext";
 
 type Vehicle = {

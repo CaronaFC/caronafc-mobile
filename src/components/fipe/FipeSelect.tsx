@@ -36,8 +36,6 @@ function FipeSelect({
           label: b.nome,
           value: b.codigo,          
         }));
-        const getNameSelect = brands.find((b: any) => b.codigo === selectedValue);
-        console.log("getNameSelect", getNameSelect);
         setOptions([{ label: "Selecione uma marca", value: "" }, ...formatted]);
       }
 

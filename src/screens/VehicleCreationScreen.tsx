@@ -15,12 +15,6 @@ import FormScreenWrapper from '../components/commom/FormScreenWrapper';
 
 type Props = {}
 
-const fipePathMap: Record<string, string> = {
-    Carro: 'carros',
-    Moto: 'motos',
-    Caminhão: 'caminhoes',
-};
-
 type LoginScreenNavigationProp = NativeStackNavigationProp<
     RootStackParamList,
     "Login"
@@ -34,6 +28,8 @@ const VehicleCreationScreen = (props: Props) => {
     const [selectedType, setSelectedTipoVeiculo] = useState("")
     const [selectedBrand, setSelectedBrand] = useState('')
     const [selectedModel, setSelectedModel] = useState('')
+    const [selectedBrandName, setSelectedBrandName] = useState('');
+    const [selectedModelName, setSelectedModelName] = useState('');
     const [selectedRenavam, setSelectedRenavam] = useState('')
     const [selectedPlate, setSelectedPlate] = useState('')
     const [selectedColor, setSelectedColor] = useState('')
@@ -43,9 +39,24 @@ const VehicleCreationScreen = (props: Props) => {
 
     const fields = [
         { label: "RENAVAM", value: selectedRenavam, setValue: setSelectedRenavam, placeholder: "RENAVAM" },
-        { label: "Placa", value: selectedPlate, setValue: setSelectedPlate, placeholder: "Placa" },
-        { label: "Cor", value: selectedColor, setValue: setSelectedColor, placeholder: "Cor" },
+        { label: "Placa", value: selectedPlate, setValue: setSelectedPlate, placeholder: "Placa" },       
     ];
+
+    const colors = [
+        { label: 'Selecione uma cor', value: '' },
+        { label: 'Preto', value: 'Preto' },
+        { label: 'Branco', value: 'Branco' },
+        { label: 'Prata', value: 'Prata' },
+        { label: 'Cinza', value: 'Cinza' },
+        { label: 'Vermelho', value: 'Vermelho' },
+        { label: 'Azul', value: 'Azul' },
+        { label: 'Verde', value: 'Verde' },
+        { label: 'Amarelo', value: 'Amarelo' },
+        { label: 'Marrom', value: 'Marrom' },
+        { label: 'Rosa', value: 'Rosa' },
+        { label: 'Laranja', value: 'Laranja' },
+        { label: 'Bege', value: 'Bege' },
+    ]
 
     const handleSubmit = async () => {
         const selectedTypeId = apiTypes.find(
@@ -65,8 +76,8 @@ const VehicleCreationScreen = (props: Props) => {
         try {
             const response = await createVehicle({
                 tipoVeiculoId: selectedTypeId.id,
-                marca: selectedBrand,
-                modelo: selectedModel,
+                marca: selectedBrandName,
+                modelo: selectedModelName,
                 renavam: selectedRenavam,
                 placa: selectedPlate,
                 cor: selectedColor,
@@ -128,6 +139,8 @@ const VehicleCreationScreen = (props: Props) => {
                         dependency={selectedType}
                         selectedValue={selectedBrand}
                         onValueChange={setSelectedBrand}
+                        textSelect={setSelectedBrandName}
+
                     />
                     <FipeSelect
                         type="model"
@@ -135,6 +148,7 @@ const VehicleCreationScreen = (props: Props) => {
                         vehicleType={selectedType}
                         selectedValue={selectedModel}
                         onValueChange={setSelectedModel}
+                        textSelect={setSelectedModelName}
                     />
                     {fields.map((field, index) => (
                         <View key={index}>
@@ -146,6 +160,12 @@ const VehicleCreationScreen = (props: Props) => {
                             />
                         </View>
                     ))}
+                    <SelectInput
+                        label="Cor"
+                        selectedValue={selectedBrand}
+                        onValueChange={setSelectedColor}
+                        options={colors}
+                    />
                     <DefaultButton
                         btnText="Cadastrar Veículo"
                         className='mt-5'

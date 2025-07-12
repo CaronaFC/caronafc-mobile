@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { api } from "../lib/api"
-import { LoginResponseType, LoginUserType, RegisterResponseType, RegisterUserType } from "../types/auth";
+import { LoginResponseType, LoginUserType, RegisterResponseType, RegisterUserType,ForgotPasswordUserResponseType,ForgotPasswordUserType } from "../types/auth";
 
 
 export async function registerUser(userData: RegisterUserType): Promise<RegisterResponseType> {
@@ -33,6 +33,19 @@ export async function loginUser(userData: LoginUserType): Promise<AxiosResponse<
             }
             const message = error.response?.data?.message || "Erro na requisição"
             throw new Error(`Erro ${status ?? "desconhecido"}: ${message}`);
+        } else {
+            throw new Error("Erro inesperado ao registrar usuário.");
+        }
+    }
+}
+export async function forgotPasswordUser(userData: ForgotPasswordUserType): Promise<AxiosResponse<ForgotPasswordUserResponseType>> {
+    try {
+        const response = await api.post("/auth/forgot-password", userData)
+        return response
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const message = error.response?.data?.message || "Erro na requisição"
+            throw new Error(`Erro ${error ?? "desconhecido"}: ${message}`);
         } else {
             throw new Error("Erro inesperado ao registrar usuário.");
         }

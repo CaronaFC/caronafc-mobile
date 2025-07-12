@@ -11,48 +11,36 @@ import DefaultButton from "../components/commom/DefaultButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 import { useNavigation } from "@react-navigation/native";
-import { forgotPasswordUser } from "../services/authService";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
 import FormScreenWrapper from "../components/commom/FormScreenWrapper";
-import { useAuth } from "../context/AuthContext";
 
-type ForgotPasswordNavigationProp = NativeStackNavigationProp<
+type ResetPasswordNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
-  "ForgotPassword"
+  "ResetPassword"
 >;
 
-export default function ForgotPassword() {
-  const navigation = useNavigation<ForgotPasswordNavigationProp>();
+export default function ResetPassword() {
+  const navigation = useNavigation<ResetPasswordNavigationProp>();
   const insets = useSafeAreaInsets();
-  const [isLoading, setIsLoading] = React.useState(false);
 
-  const [email, setEmail] = React.useState("");
+  const [userNewPassword, setUserNewPassword] = React.useState("");
+  const [userNewConfirmPassword, setUserNewConfirmPassword] = React.useState("");
   const [showErrors, setShowErrors] = React.useState(false);
 
-  const handleSubmit = async () => {
-    try {
-      setIsLoading(true);
-
-      if (!email) {
-        setShowErrors(true);
-        ToastAndroid.show("Informe seu email.", ToastAndroid.SHORT);
-        return;
-      }
-
-      const response = await forgotPasswordUser({
-        email: email,
-      });
-      ToastAndroid.show("Link enviado para seu email.", ToastAndroid.SHORT);
-      navigation.navigate("Login");
-    } catch (error: any) {
-      ToastAndroid.show(
-        error.message || "Erro desconhecido",
-        ToastAndroid.SHORT
-      );
-    } finally {
-      setIsLoading(false);
+  const handleSubmit = () => {
+    if (!userNewPassword || !userNewConfirmPassword) {
+      setShowErrors(true);
+      ToastAndroid.show("preencha os campos sua senha.", ToastAndroid.SHORT);
+      return;
     }
+    if (userNewPassword !== userNewConfirmPassword) {
+      setShowErrors(true);
+      ToastAndroid.show("As senhas não coincidem, preencha os campos igualmente", ToastAndroid.SHORT);
+      return;
+    }
+
+    ToastAndroid.show("Link enviado para seu email.", ToastAndroid.SHORT);
   };
 
   return (
@@ -82,13 +70,23 @@ export default function ForgotPassword() {
                 Recuperar Senha
               </Text>
 
-              <TextInput
-                label="Email"
-                value={email}
-                setValue={setEmail}
-                placeholder="Digite seu email da conta que quer recuperar"
-                showError={showErrors && !email}
-              />
+              <View className="gap-4">
+                <TextInput
+                  label="Senha nova"
+                  value={userNewPassword}
+                  setValue={setUserNewPassword}
+                  placeholder="Email ou telefone"
+                  showError={showErrors && !userNewPassword}
+                />
+                <TextInput
+                  label="Repita sua  senha"
+                  value={userNewPassword}
+                  setValue={setUserNewConfirmPassword}
+                  placeholder="Senha"
+                  type="password"
+                  showError={showErrors && !userNewConfirmPassword}
+                />
+              </View>
 
               <DefaultButton btnText="Enviar" onPress={handleSubmit} />
             </View>

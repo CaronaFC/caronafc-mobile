@@ -11,6 +11,7 @@ type Props = {
   style?: StylePropType;
   leftIcon?: ButtonProps["accessoryLeft"];
   className?: string;
+  disabled?: boolean;
 };
 
 export default function DefaultButton({
@@ -20,6 +21,7 @@ export default function DefaultButton({
   style,
   leftIcon,
   className,
+  disabled = false,
 }: Props) {
   const isDark = btnColor === "dark";
 
@@ -35,6 +37,7 @@ export default function DefaultButton({
       appearance="filled"
       status={isDark ? "primary" : "basic"}
       accessoryLeft={leftIcon}
+      disabled={disabled}
     >
       {btnText}
     </Button>

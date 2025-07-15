@@ -5,6 +5,7 @@ import {
   ToastAndroid,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import TextInput from "../components/commom/TextInput";
 import DefaultButton from "../components/commom/DefaultButton";
@@ -15,7 +16,6 @@ import { forgotPasswordUser } from "../services/authService";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
 import FormScreenWrapper from "../components/commom/FormScreenWrapper";
-import { useAuth } from "../context/AuthContext";
 
 type ForgotPasswordNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -36,20 +36,17 @@ export default function ForgotPassword() {
 
       if (!email) {
         setShowErrors(true);
-        ToastAndroid.show("Informe seu email.", ToastAndroid.SHORT);
+        Alert.alert("Informe seu email.");
         return;
       }
 
       const response = await forgotPasswordUser({
         email: email,
       });
-      ToastAndroid.show("Link enviado para seu email.", ToastAndroid.SHORT);
+      Alert.alert("Link enviado para seu email.");
       navigation.navigate("Login");
     } catch (error: any) {
-      ToastAndroid.show(
-        error.message || "Erro desconhecido",
-        ToastAndroid.SHORT
-      );
+      Alert.alert(error.message || "Erro desconhecido");
     } finally {
       setIsLoading(false);
     }

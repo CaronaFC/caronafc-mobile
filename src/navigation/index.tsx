@@ -43,7 +43,7 @@ export default function RootNavigator() {
           <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Register" component={RegisterScreen} />
           <Stack.Screen name="ForgotPassword" component={ForgotPassword}/>
-          <Stack.Screen name="ResetPassword" component={ResetPassword} />
+          <Stack.Screen name="ResetPassword" component={ResetPassword} options={{ title: "Resetar senha", headerShown: true }}/>
         </>
       ) : (
         <>

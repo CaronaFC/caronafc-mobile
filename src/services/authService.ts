@@ -44,8 +44,14 @@ export async function forgotPasswordUser(userData: ForgotPasswordUserType): Prom
         return response
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            const message = error.response?.data?.message || "Erro na requisição"
-            throw new Error(`Erro ${error ?? "desconhecido"}: ${message}`);
+           const message =
+        typeof error.response?.data?.message === "string"
+          ? error.response.data.message
+          : Array.isArray(error.response?.data?.message)
+          ? error.response.data.message.join("\n")
+          : "Erro na requisição";
+
+      throw new Error(message);
         } else {
             throw new Error("Erro inesperado ao registrar usuário.");
         }

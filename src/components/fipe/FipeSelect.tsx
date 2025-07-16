@@ -14,6 +14,7 @@ type Props = {
   selectedValue: string;
   onValueChange: (value: string) => void;
   vehicleType?: string;
+  textSelect: (value: string) => void;
 };
 
 function FipeSelect({
@@ -22,6 +23,7 @@ function FipeSelect({
   selectedValue,
   onValueChange,
   vehicleType,
+  textSelect,
 }: Props) {
   const [options, setOptions] = useState<Option[]>([]);
 
@@ -32,7 +34,7 @@ function FipeSelect({
         const brands = await getFipeBrands(fipePath);
         const formatted = brands.map((b: any) => ({
           label: b.nome,
-          value: b.codigo,
+          value: b.codigo,          
         }));
         setOptions([{ label: "Selecione uma marca", value: "" }, ...formatted]);
       }
@@ -73,7 +75,13 @@ function FipeSelect({
     <SelectInput
       label={type === "brand" ? "Marca do Veículo" : "Modelo do Veículo"}
       selectedValue={selectedValue}
-      onValueChange={onValueChange}
+      onValueChange={(value) => {
+        onValueChange(value);
+        const selectedOption = options.find(opt => opt.value === value);
+        if (selectedOption) {
+          textSelect(selectedOption.label);
+        }
+      }}
       options={options}
     />
   );

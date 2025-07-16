@@ -18,3 +18,12 @@ export async function createVehicle(vehicleData: CreateVehicleType): Promise<any
     throw new Error("Erro inesperado ao criar veículo.");
   }
 }
+
+export async function deleteVehicleId(vehicleId: number): Promise<any> {
+  try {
+    const response = await api.delete(`/veiculo/${vehicleId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error("Erro inesperado ao deletar veículo.");
+  }
+}

@@ -5,6 +5,8 @@ import {
   ToastAndroid,
   KeyboardAvoidingView,
   Platform,
+  Alert,
+  Keyboard,
 } from "react-native";
 import TextInput from "../components/commom/TextInput";
 import DefaultButton from "../components/commom/DefaultButton";
@@ -14,6 +16,9 @@ import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
 import FormScreenWrapper from "../components/commom/FormScreenWrapper";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { resetPasswordUser } from "../services/authService";
+
 
 type ResetPasswordNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -23,24 +28,36 @@ type ResetPasswordNavigationProp = NativeStackNavigationProp<
 export default function ResetPassword() {
   const navigation = useNavigation<ResetPasswordNavigationProp>();
   const insets = useSafeAreaInsets();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const [userNewPassword, setUserNewPassword] = React.useState("");
   const [userNewConfirmPassword, setUserNewConfirmPassword] = React.useState("");
+  const [userCode, setUserCode] = React.useState("");
   const [showErrors, setShowErrors] = React.useState(false);
+  type ResetPasswordRouteProp = RouteProp<RootStackParamList, "ResetPassword">;
+  const route = useRoute<ResetPasswordRouteProp>();
+  const email = route.params?.email;
 
-  const handleSubmit = () => {
-    if (!userNewPassword || !userNewConfirmPassword) {
-      setShowErrors(true);
-      ToastAndroid.show("preencha os campos sua senha.", ToastAndroid.SHORT);
-      return;
-    }
-    if (userNewPassword !== userNewConfirmPassword) {
-      setShowErrors(true);
-      ToastAndroid.show("As senhas não coincidem, preencha os campos igualmente", ToastAndroid.SHORT);
-      return;
-    }
+  const handleSubmit = async () => {
+    try {
+      setIsLoading(true);
+      if (!email) {
+        Alert.alert("Email não informado. Retorne e tente novamente.");
+        return;
+      }
 
-    ToastAndroid.show("Link enviado para seu email.", ToastAndroid.SHORT);
+      const msg = await resetPasswordUser({
+        email: email,
+        code: userCode,
+        newPassword: userNewPassword,
+      });
+      Alert.alert("Senha alterada com sucesso.");
+      navigation.navigate("Login");
+    } catch (error: any) {
+      Alert.alert(error.message || "Erro desconhecido");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -72,23 +89,33 @@ export default function ResetPassword() {
 
               <View className="gap-4">
                 <TextInput
+                  label="Token"
+                  value={userCode}
+                  keyboardType="number-pad"
+                  setValue={setUserCode}
+                  placeholder="digite o token enviado para seu email"
+                  type="text"
+                  showError={showErrors && !userNewConfirmPassword}
+                />
+                <TextInput
                   label="Senha nova"
                   value={userNewPassword}
                   setValue={setUserNewPassword}
-                  placeholder="Email ou telefone"
+                  placeholder="Senha"
+                  type="password"
                   showError={showErrors && !userNewPassword}
                 />
                 <TextInput
                   label="Repita sua  senha"
-                  value={userNewPassword}
+                  value={userNewConfirmPassword}
                   setValue={setUserNewConfirmPassword}
-                  placeholder="Senha"
+                  placeholder="Repita sua senha"
                   type="password"
                   showError={showErrors && !userNewConfirmPassword}
                 />
               </View>
 
-              <DefaultButton btnText="Enviar" onPress={handleSubmit} />
+              <DefaultButton btnText={isLoading ? "Enviando..." : "Enviar"} onPress={handleSubmit} />
             </View>
           </ScrollView>
         </View>

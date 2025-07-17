@@ -1,5 +1,5 @@
 import { Input } from "@ui-kitten/components";
-import { Text } from "react-native";
+import { Text, TextInputProps } from "react-native";
 import React, { useState } from "react";
 import { Feather } from "@expo/vector-icons";
 
@@ -14,8 +14,9 @@ type Props = {
   styles?: StyleProp<ViewStyle>;
   placeholder?: string;
   type?: "text" | "password";
-  keyboardType?: "default" | "email-address" | "numeric" | "decimal-pad";
+  keyboardType?: "default" | "email-address" | "numeric" | "decimal-pad"|"number-pad" | "phone-pad";
   showError?: true | false;
+  autoCapitalize?: TextInputProps['autoCapitalize'];
 };
 
 export default function TextInput({
@@ -28,6 +29,7 @@ export default function TextInput({
   type = "text",
   keyboardType = "default",
   disabled = false,
+  autoCapitalize = "sentences",
   iconLeft,
 }: Props) {
   const isPassword = type === "password";
@@ -52,7 +54,7 @@ export default function TextInput({
       value={value}
       onChangeText={setValue}
       keyboardType={keyboardType}
-      inputMode={keyboardType === "decimal-pad" ? "numeric" : "text"}
+      autoCapitalize={autoCapitalize}
       className="text-input"
       style={[
         {

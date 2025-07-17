@@ -39,11 +39,11 @@ export default function ForgotPassword() {
         return;
       }
 
-      const response = await forgotPasswordUser({
+      const msg = await forgotPasswordUser({
         email: email,
       });
-      Alert.alert("Link enviado para seu email.");
-      navigation.navigate("Login");
+      Alert.alert("Código enviado para seu email.");
+      navigation.navigate("ResetPassword",{email});
     } catch (error: any) {
       Alert.alert(error.message || "Erro desconhecido");
     } finally {
@@ -81,12 +81,14 @@ export default function ForgotPassword() {
               <TextInput
                 label="Email"
                 value={email}
-                setValue={setEmail}
+                setValue={(text) => setEmail(text.toLowerCase())}
+                keyboardType="email-address"
+                autoCapitalize="none"
                 placeholder="Digite seu email da conta que quer recuperar"
                 showError={showErrors && !email}
               />
 
-              <DefaultButton btnText="Enviar" onPress={handleSubmit} />
+              <DefaultButton btnText={isLoading ? "Enviando..." : "Enviar"} onPress={handleSubmit} />
             </View>
           </ScrollView>
         </View>

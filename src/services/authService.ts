@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { api } from "../lib/api"
-import { LoginResponseType, LoginUserType, RegisterResponseType, RegisterUserType,ForgotPasswordUserResponseType,ForgotPasswordUserType } from "../types/auth";
+import { LoginResponseType, LoginUserType, RegisterResponseType, RegisterUserType,ForgotPasswordUserType,ResetPasswordUserType } from "../types/auth";
 
 
 export async function registerUser(userData: RegisterUserType): Promise<RegisterResponseType> {
@@ -38,32 +38,45 @@ export async function loginUser(userData: LoginUserType): Promise<AxiosResponse<
         }
     }
 }
-export async function forgotPasswordUser(userData: ForgotPasswordUserType): Promise<AxiosResponse<ForgotPasswordUserResponseType>> {
-    try {
-        const response = await api.post("/auth/forgot-password", userData);
+export async function forgotPasswordUser(userData: ForgotPasswordUserType): Promise<string> {
+  try {
+    const response = await api.post("/auth/forgot-password", userData);
+    return response.data?.message ?? "Solicitação enviada com sucesso.";
+  } catch (error: any) {
+    console.error("Erro inesperado:", error);
 
-        if (response?.data?.message) {
-        return response.data.message;
-        }
-        return response.data;
-    } catch (error:any) {
-        console.error("Erro inesperado:", error);
-        console.error("AxiosError?", axios.isAxiosError(error));
-        console.error("Error.response:", error?.response);
-        if (axios.isAxiosError(error)) {
-            const status = error.response?.status
-            if (status == 401) {
-                console.log("Credenciais inválidas")
-                throw new Error(`Credenciais inválidas`);
-            }
-            if (status == 200) {
-                console.log("ok")
-                throw new Error(`ok`);
-            }
-            const message = error.response?.data?.message
-            throw new Error(`Erro ${status ?? "desconhecido"}: ${message}`);
-        } else {
-            throw new Error("Erro inesperado ao registrar usuário.");
-        }
+    if (axios.isAxiosError(error)) {
+      const msg = error.response?.data?.message;
+
+      if (typeof msg === "string") return Promise.reject(new Error(msg));
+      if (Array.isArray(msg)) return Promise.reject(new Error(msg.join("\n")));
+      if (typeof msg === "object" && msg !== null)
+        return Promise.reject(new Error(Object.values(msg).join("\n")));
+
+      return Promise.reject(new Error(`Erro ${error.response?.status ?? "desconhecido"}`));
     }
+
+    return Promise.reject(new Error("Erro inesperado ao enviar requisição."));
+  }
+}
+export async function resetPasswordUser(userData: ResetPasswordUserType): Promise<string> {
+  try {
+    const response = await api.post("/auth/reset-password", userData);
+    return response.data?.message ?? "Solicitação de reset enviada com sucesso.";
+  } catch (error: any) {
+    console.error("Erro inesperado:", error);
+
+    if (axios.isAxiosError(error)) {
+      const msg = error.response?.data?.message;
+
+      if (typeof msg === "string") return Promise.reject(new Error(msg));
+      if (Array.isArray(msg)) return Promise.reject(new Error(msg.join("\n")));
+      if (typeof msg === "object" && msg !== null)
+        return Promise.reject(new Error(Object.values(msg).join("\n")));
+
+      return Promise.reject(new Error(`Erro ${error.response?.status ?? "desconhecido"}`));
+    }
+
+    return Promise.reject(new Error("Erro inesperado ao alterar a senha."));
+  }
 }

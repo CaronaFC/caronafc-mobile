@@ -24,7 +24,7 @@ export type RootStackParamList = {
     VehicleCreation: undefined;
     Vehicle: undefined;
     ForgotPassword: undefined;
-    ResetPassword:undefined;
+    ResetPassword:{email: string} | undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

@@ -24,7 +24,13 @@ export type LoginResponseType = {
 export type ForgotPasswordUserType = {
     email: string, // pode ser o email ou o número
 }
+export type ResetPasswordUserType = {
+    email: string, // pode ser o email ou o número
+    code: string,
+    newPassword: string,
+}
 
 export type ForgotPasswordUserResponseType = {
     id: Number,
+    message: string,
 }

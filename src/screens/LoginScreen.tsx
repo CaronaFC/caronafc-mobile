@@ -1,6 +1,6 @@
 import React from "react";
 
-import { View, Text, Image, Pressable, ToastAndroid, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, Image, Pressable, ToastAndroid, KeyboardAvoidingView, Platform, Alert } from "react-native";
 import HeroImage from "../../assets/images/hero-image.png"
 import TextInput from "../components/commom/TextInput";
 import DefaultButton from "../components/commom/DefaultButton";
@@ -45,7 +45,7 @@ export default function LoginScreen() {
       })
 
       if (!response.data?.token) {
-        ToastAndroid.show("Erro ao realizar autenticação do usuário.", ToastAndroid.SHORT);
+        Alert.alert("Erro ao realizar autenticação do usuário.");
         return;
       }
 
@@ -53,7 +53,7 @@ export default function LoginScreen() {
       ToastAndroid.show("Login realizado com sucesso", ToastAndroid.SHORT);
     } catch (error: any) {
       setIsLoading(false)
-      ToastAndroid.show(error.message || "Erro desconhecido", ToastAndroid.SHORT);
+      Alert.alert(error.message || "Erro desconhecido");
     } finally {
       setIsLoading(false)
     }
@@ -87,7 +87,8 @@ export default function LoginScreen() {
               <TextInput
                 label="Email ou número de telefone"
                 value={userNumberOrEmail}
-                setValue={setUserNumberOrEmail}
+                setValue={(text) => setUserNumberOrEmail(text.toLowerCase())}
+                autoCapitalize="none"
                 placeholder="Email ou telefone"
                 showError={showErrors && !userNumberOrEmail}
               />
@@ -105,7 +106,7 @@ export default function LoginScreen() {
               <DefaultButton btnText="Login" onPress={handleSubmit} />
               <Text className="text-center">OR</Text>
               <DefaultButton
-                btnText="Cadastrar-se"
+                btnText={isLoading ? "Acessando..." : "Acessar"}
                 onPress={() => navigation.navigate("Register")}
               />
               <Pressable onPress={() => navigation.navigate("ForgotPassword")}>

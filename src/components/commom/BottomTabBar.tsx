@@ -24,10 +24,14 @@ const MyTravelRequestsIcon = () => (
   <FontAwesome5 name="clipboard-list" fill="#000000" size={20} />
 );
 
+const MyTravelsIcon = () => (
+  <FontAwesome5 name="car" fill="#000000" size={20} />
+);
+
 const BottomTabBar = ({ navigation, state }: BottomTabBarProps) => {
   const hiddenRoutes = ["Login", "Register"];
   const currentRoute = state.routeNames[state.index];
-  const tabRouteNames = ["Home", "CreateTravel", "MyTravelRequests", "Profile"];
+  const tabRouteNames = ["Home", "CreateTravel", "MyTravelRequests", "MyTravels", "Profile"];
   if (hiddenRoutes.includes(currentRoute)) {
     return null;
   }
@@ -56,6 +60,10 @@ const BottomTabBar = ({ navigation, state }: BottomTabBarProps) => {
         <BottomNavigationTab
           title={() => <Text className="text-sm ">Solicitações</Text>}
           icon={MyTravelRequestsIcon}
+        />
+        <BottomNavigationTab
+          title={() => <Text className="text-sm">Viagens</Text>}
+          icon={MyTravelsIcon}
         />
         <BottomNavigationTab
           title={() => <Text className="text-sm">Meu Perfil</Text>}

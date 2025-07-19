@@ -1,26 +1,5 @@
 import { View, Text } from "react-native";
-
-interface Jogo {
-  nomeEstadio?: string;
-  dataJogo?: string;
-}
-
-interface Usuario {
-  nome_completo?: string;
-}
-
-interface Viagem {
-  jogo?: Jogo;
-  valorPorPessoa?: string;
-}
-
-interface Solicitacao {
-  id: number;
-  status: string;
-  usuario?: Usuario;
-  viagem?: Viagem;
-  dataSolicitacao: string;
-}
+import { Solicitacao } from "../../types/request";
 
 export function SolicitationItem({ item }: { item: Solicitacao }) {
   const jogo = item.viagem?.jogo ?? {};

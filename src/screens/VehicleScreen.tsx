@@ -99,16 +99,7 @@ export default function VehicleScreen() {
     };
 
     return (
-        <View className="flex-1 bg-white relative">
-            {menuOpen && (
-                <TouchableOpacity
-                    className="absolute inset-0 z-10"
-                    onPress={() => {
-                        open(false);
-                        setOpenMenuForId(null);
-                    }}
-                />
-            )}
+        <View className="flex-1 bg-white relative">          
             <ScrollView
                 className="px-4"
                 refreshControl={

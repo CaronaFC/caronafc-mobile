@@ -19,6 +19,14 @@ import { fetchAllMatches, fetchMatchById } from "../services/matchService";
 import { geocodeAddress } from "../lib/location";
 import { createTravel } from "../services/travelService";
 import { CreateTravelType } from "../types/travel";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../navigation";
+import { useNavigation } from "@react-navigation/native";
+
+type CreateTravelScreenProps = NativeStackNavigationProp<
+  RootStackParamList,
+  "Home"
+>;
 
 export default function CreateTravelScreen() {
   const { userData } = useAuth();
@@ -34,6 +42,9 @@ export default function CreateTravelScreen() {
   const [starterPoint, setStarterPoint] = useState<CoordsAddress | null>(null);
   const bottomSheetRef = React.useRef<Modalize>(null);
   const [loading, setLoading] = useState(false);
+
+  const navigation = useNavigation<CreateTravelScreenProps>();
+  
 
   useEffect(() => {
     async function fetchJogos() {
@@ -123,6 +134,8 @@ export default function CreateTravelScreen() {
       };
       await createTravel(dto);
       Alert.alert("Sucesso", "Viagem criada com sucesso!");
+      navigation.navigate("Home");
+
     } catch (error: any) {
       Alert.alert("Erro", 'message' in error ? error.message : "Erro ao criar viagem.");
     } finally {

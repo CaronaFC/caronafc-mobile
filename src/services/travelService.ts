@@ -21,3 +21,13 @@ export async function getTravels(filters?: { motoristaId?: number }): Promise<an
     throw new Error("Erro inesperado ao buscar viagens.");
   }
 }
+
+export async function getTravel(travelId: number): Promise<any> {
+  try {
+    const response = await api.get(`/viagem/${travelId}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Erro inesperado ao buscar detalhes da viagem.");
+  }
+}

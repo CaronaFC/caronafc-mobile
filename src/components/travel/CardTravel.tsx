@@ -1,9 +1,10 @@
 import { Image, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
 import DefaultButton from "../commom/DefaultButton";
 import Flamengo from "../../../assets/images/teams/flamengo.png";
 import Palmeiras from "../../../assets/images/teams/palmeiras.png";
+import { reverseGeocodeCoords } from "../../lib/location";
 
 type CardTravelProps = {
   id: number;
@@ -42,23 +43,40 @@ const CardTravel = ({
   jogo
 }: CardTravelProps) => {
   const renderIcon = () => <MaterialCommunityIcons name="stadium-variant" size={24} color="black" />;
+  const [origemName, setOrigemName] = useState("");
+
+  useEffect(()=>{
+    const getOrigemName = async () =>{
+      const origemName = await reverseGeocodeCoords({
+        latitude: origemLat,
+        longitude: origemLong,
+      });    
+
+      setOrigemName(origemName)
+    } 
+
+    getOrigemName()
+
+  }, [])
+
   return (
     <View className="bg-secondaryWhite border-2 border-[#BBF7D0] rounded-md">
       <View className="flex-row justify-between bg-[#F0FDF4] p-3">
-      <View>
-          <Text className="text-lg mb-2">{renderIcon()} {jogo.estadio}</Text>
+      <View className="w-full">
+          <View className="flex-row items-center">
+            <Text className="text-lg mb-2 flex-1">{renderIcon()} {jogo.estadio}</Text>
+            <Text className="text-lg text-black">R$ {valorPorPessoa}</Text>
+          </View>
           <Text className="text-base">{jogo.timeCasa} vs {jogo.timeFora}</Text>
+          {origemName && <Text className="text-base">Origem: {origemName}</Text> }
       </View>
-        <Text className="text-lg text-black">R$ {valorPorPessoa}</Text>
       </View>
       <View className=" gap-2 relative bg-[#F8F8F8] p-3 ">
         <Text>Data: {jogo.dataJogo}</Text>
         <Text>Horário: {new Date(horario).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-
-        {/* <Text>{destino}</Text> */}
-        {/* <Text>{campeonato}</Text> */}
         <Text>Motorista: {motorista.nome}</Text>
         <Text>Vagas: {qtdVagas}</Text>
+        <Text>{temRetorno? "Viagem com retorno" : "Viagem sem retorno."}</Text>
 
         <DefaultButton btnText="Ver Detalhes" btnColor="light" />
         <DefaultButton  btnText="Pedir Carona" btnColor="dark" />

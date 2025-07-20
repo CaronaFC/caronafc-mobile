@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { useAuth } from "../context/AuthContext";
 import { getTravels } from "../services/travelService";
 
@@ -68,12 +74,10 @@ export default function MyTravelsScreen({}: Props) {
           renderItem={({ item }) => (
             <View className="border-b border-gray-300 py-3">
               <Text className="font-semibold">
-                Jogo: {item.jogo}
+                Jogo: {item.jogo.nomeEstadio}
               </Text>
-              <Text>Data: -</Text>
-              <Text>
-                Horário: {item.horario}
-              </Text>
+              <Text>Data: </Text>
+              <Text>Horário: {item.horario}</Text>
               <Text>Vagas: {item.qtdVagas}</Text>
               <Text>Valor por pessoa: R$ {item.valorPorPessoa}</Text>
             </View>

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, View, TouchableOpacity, Text } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Modalize } from "react-native-modalize";
@@ -21,7 +21,8 @@ import { createTravel } from "../services/travelService";
 import { CreateTravelType } from "../types/travel";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { getUserVehicleCount } from "../services/userService";
 
 type CreateTravelScreenProps = NativeStackNavigationProp<
   RootStackParamList,
@@ -35,7 +36,9 @@ export default function CreateTravelScreen() {
   const [time, setTime] = useState(new Date());
   const [stadiumName, setStadiumName] = useState<string | null>(null);
   const [stadiumCoords, setStadiumCoords] = useState<CoordsPoint | null>(null);
+  const [gameTeams, setGameTeams] = useState<any>({});
   const [space, setSpace] = useState("");
+  const [vehicle, setVehcile] = useState("");
   const [valuePerPerson, setValuePerPerson] = useState("");
   const [hasReturn, setHasReturn] = useState(false);
   const [location, setLocation] = useState<LocationObjectCoords | null>(null);
@@ -44,7 +47,31 @@ export default function CreateTravelScreen() {
   const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation<CreateTravelScreenProps>();
+
+
+  useFocusEffect(
+    useCallback(() => {
+      const checkVehicles = async () => {
+        try {
+          const vehiclesCount = await getUserVehicleCount(userData!.data.id);
+          if (vehiclesCount === 1) {
+            Alert.alert(
+              "Atenção!",
+              "Para criar viagens você precisa ter algum veículo cadastrado.",
+              [
+                { text: "OK", onPress: () => navigation.goBack() },
+                { text: "Criar Veículo", onPress: () => navigation.navigate("VehicleCreation") }],
+              { cancelable: false }
+            );
+          }
+        } catch (err) {
+          console.error("Erro ao verificar veículos:", err);
+        }
+      };
   
+      checkVehicles();
+    }, [userData, navigation])
+  );
 
   useEffect(() => {
     async function fetchJogos() {
@@ -67,6 +94,11 @@ export default function CreateTravelScreen() {
             setStadiumName(match.stadium.name);
             const coords: CoordsPoint | null = await geocodeAddress(match.stadium.name);
             setStadiumCoords(coords);
+            setGameTeams({
+              timeCasa: match.teams.home.name,
+              timeFora: match.teams.away.name,
+              dataJogo: match.date,
+            })
           } else {
             setStadiumName("Estádio não informado");
           }
@@ -124,7 +156,13 @@ export default function CreateTravelScreen() {
     try {
       const dto: CreateTravelType = {
         motoristaId: userData.data.id,
-        jogo: { id: Number(game) },
+        jogo: { 
+            id: Number(game),
+            nomeEstadio: stadiumName,
+            timeCasa: gameTeams.timeCasa,
+            timeFora: gameTeams.timeFora,
+            dataJogo: gameTeams.dataJogo
+         },
         origem_lat: starterPoint.latitude,
         origem_long: starterPoint.longitude,
         horario: time.toISOString(),
@@ -134,8 +172,8 @@ export default function CreateTravelScreen() {
       };
       await createTravel(dto);
       Alert.alert("Sucesso", "Viagem criada com sucesso!");
+      resetForm()
       navigation.navigate("Home");
-
     } catch (error: any) {
       Alert.alert("Erro", 'message' in error ? error.message : "Erro ao criar viagem.");
     } finally {
@@ -143,6 +181,18 @@ export default function CreateTravelScreen() {
     }
   };
 
+  const resetForm = () => {
+    setGame("");
+    setTime(new Date());
+    setStadiumName(null);
+    setStadiumCoords(null);
+    setGameTeams({});
+    setSpace("");
+    setValuePerPerson("");
+    setHasReturn(false);
+    setLocation(null);
+    setStarterPoint(null);
+  };
   return (
     <FormScreenWrapper>
       <View style={{ flex: 1, backgroundColor: '#FFF' }}>
@@ -177,13 +227,13 @@ export default function CreateTravelScreen() {
             onValueChange={setGame}
             options={gamesOptions}
           />
+
           <SelectInput
             label="Vagas"
             selectedValue={space}
             onValueChange={setSpace}
             options={spaces}
           />
-
           <View className="flex-row justify-between items-center">
             <TextInput
               value={valuePerPerson}

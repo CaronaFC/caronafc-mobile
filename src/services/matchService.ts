@@ -16,7 +16,6 @@ export async function fetchAllMatches(): Promise<any> {
 export async function fetchMatchById(id: string): Promise<any> {
     try {
         const response = await footballApi.get(`/match/?match_id=${id}`);
-        console.log("Dados do jogo:", response.data);
         if (!response.data || Object.keys(response.data).length === 0) {
             throw new Error("Jogo não encontrado.");
         }

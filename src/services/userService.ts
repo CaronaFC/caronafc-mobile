@@ -19,3 +19,23 @@ export async function getUserById(userId: Number, token: string): Promise<any> {
         }
     }
 }
+
+
+export async function getUserVehicleCount(userId: number): Promise<number> {
+    try {
+      const response = await api.get(`/usuario/${userId}/veiculos/count`);
+      return response.data.data.count;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        if (status === 401) {
+          console.log("Credenciais inválidas");
+          throw new Error("Credenciais inválidas");
+        }
+        const message = error.response?.data?.message || "Erro na requisição";
+        throw new Error(`Erro ${status ?? "desconhecido"}: ${message}`);
+      } else {
+        throw new Error("Erro inesperado ao buscar contagem de veículos.");
+      }
+    }
+  }

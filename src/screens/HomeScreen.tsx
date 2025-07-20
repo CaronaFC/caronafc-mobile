@@ -8,10 +8,11 @@ import FiltersModal, { FilterData } from "../components/travel/FiltersModal";
 import { getTravels } from "../services/travelService";
 import { Alert } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import { mapTravelToCardProps } from "../mappers/mapTravelToCardProps";
 
 type Props = {};
 
-export default function HomeScreen({ }: Props) {
+export default function HomeScreen({}: Props) {
   const [showFiltersModal, setShowFiltersModal] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<FilterData>({
     team: "",
@@ -21,7 +22,7 @@ export default function HomeScreen({ }: Props) {
     time: "",
     nearby: false,
   });
-  const [travels, setTravels] = useState<any>([])
+  const [travels, setTravels] = useState<any>([]);
 
   useFocusEffect(
     useCallback(() => {
@@ -30,14 +31,13 @@ export default function HomeScreen({ }: Props) {
           const travels = await getTravels();
           setTravels(travels);
         } catch {
-          Alert.alert('Erro ao buscar viagens');
+          Alert.alert("Erro ao buscar viagens");
         }
       };
-  
+
       fetchTravels();
     }, [])
   );
-  
 
   const getActiveFiltersCount = (): number => {
     return Object.values(appliedFilters).filter(
@@ -97,42 +97,22 @@ export default function HomeScreen({ }: Props) {
         </View>
       </View>
 
-    {
-      travels.length === 0 ? (
-        <Text className="text-center my-auto text-xl">Nenhuma viagem disponível</Text>
+      {travels.length === 0 ? (
+        <Text className="text-center my-auto text-xl">
+          Nenhuma viagem disponível
+        </Text>
       ) : (
         <FlatList
           data={travels}
           className="mb-2"
           keyExtractor={(item: any) => item.id.toString()}
-          renderItem={({ item }: { item: any }) => (
-            <CardTravel
-              id={item.id}
-              horario={item.horario}
-              valorPorPessoa={item.valorPorPessoa}
-              origemLat={item.origem_lat}
-              origemLong={item.origem_long}
-              temRetorno={item.temRetorno}
-              qtdVagas={item.qtdVagas}
-              motorista={{
-                nome: item.motorista.nome_completo,
-                id: item.motorista.id
-              }}
-              jogo={{
-                id: item.jogo.id,
-                estadio: item.jogo.nomeEstadio,
-                timeCasa: item.jogo.timeCasa,
-                timeFora: item.jogo.timeFora,
-                dataJogo: item.jogo.dataJogo
-              }}
-          />
+          renderItem={({ item }) => (
+            <CardTravel {...mapTravelToCardProps(item)} />
           )}
           contentContainerStyle={{ gap: 16, paddingHorizontal: 16 }}
           showsVerticalScrollIndicator={false}
         />
-      )
-    }
-    
+      )}
 
       {/* Modal de Filtros */}
       <FiltersModal

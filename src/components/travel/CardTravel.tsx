@@ -5,81 +5,71 @@ import DefaultButton from "../commom/DefaultButton";
 import Flamengo from "../../../assets/images/teams/flamengo.png";
 import Palmeiras from "../../../assets/images/teams/palmeiras.png";
 import { reverseGeocodeCoords } from "../../lib/location";
-
-type CardTravelProps = {
-  id: number;
-  horario: string;
-  valorPorPessoa: string;
-  origemLat: number;
-  origemLong: number;
-  temRetorno: boolean;
-  qtdVagas: number;
-
-  motorista: {
-    nome: string;
-    id: number;
-  };
-
-  jogo: {
-    id: number;
-    estadio: string;
-    timeCasa: string;
-    timeFora: string;
-    campeonato?: string;
-    dataJogo: string;
-  };
-};
-
+import { CardTravelProps } from "../../types/travel";
 
 const CardTravel = ({
-  id,
   horario,
   valorPorPessoa,
+  veiculo,
   origemLat,
-  origemLong, 
-  temRetorno, 
-  qtdVagas, 
+  origemLong,
+  temRetorno,
+  qtdVagas,
   motorista,
-  jogo
+  jogo,
 }: CardTravelProps) => {
-  const renderIcon = () => <MaterialCommunityIcons name="stadium-variant" size={24} color="black" />;
+  const renderIcon = () => (
+    <MaterialCommunityIcons name="stadium-variant" size={24} color="black" />
+  );
   const [origemName, setOrigemName] = useState("");
 
-  useEffect(()=>{
-    const getOrigemName = async () =>{
+  useEffect(() => {
+    const getOrigemName = async () => {
       const origemName = await reverseGeocodeCoords({
         latitude: origemLat,
         longitude: origemLong,
-      });    
+      });
 
-      setOrigemName(origemName)
-    } 
+      setOrigemName(origemName);
+    };
 
-    getOrigemName()
-
-  }, [])
+    getOrigemName();
+  }, []);
 
   return (
     <View className="bg-secondaryWhite border-2 border-[#BBF7D0] rounded-md">
       <View className="flex-row justify-between bg-[#F0FDF4] p-3">
-      <View className="w-full">
+        <View className="w-full">
           <View className="flex-row items-center">
-            <Text className="text-lg mb-2 flex-1">{renderIcon()} {jogo.estadio}</Text>
+            <Text className="text-lg mb-2 flex-1">
+              {renderIcon()} {jogo.estadio}
+            </Text>
             <Text className="text-lg text-black">R$ {valorPorPessoa}</Text>
           </View>
-          <Text className="text-base">{jogo.timeCasa} vs {jogo.timeFora}</Text>
-          {origemName && <Text className="text-base">Origem: {origemName}</Text> }
-      </View>
+          <Text className="text-base">
+            {jogo.timeCasa} vs {jogo.timeFora}
+          </Text>
+          {origemName && (
+            <Text className="text-base">Origem: {origemName}</Text>
+          )}
+        </View>
       </View>
       <View className=" gap-2 relative bg-[#F8F8F8] p-3 ">
         <Text>Data: {jogo.dataJogo}</Text>
-        <Text>Horário: {new Date(horario).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+        <Text>
+          Horário:{" "}
+          {new Date(horario).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </Text>
         <Text>Motorista: {motorista.nome}</Text>
+        <Text>Veiculo: {veiculo.modelo}</Text>
         <Text>Vagas: {qtdVagas}</Text>
-        <Text>{temRetorno? "Viagem com retorno" : "Viagem sem retorno."}</Text>
+        <Text>{temRetorno ? "Viagem com retorno" : "Viagem sem retorno."}</Text>
 
         <DefaultButton btnText="Ver Detalhes" btnColor="light" />
-        <DefaultButton  btnText="Pedir Carona" btnColor="dark" />
+        <DefaultButton btnText="Pedir Carona" btnColor="dark" />
 
         {/* <View className="flex-row gap-2 absolute top-[-14] right-4">
           {times.map((time, index) => (

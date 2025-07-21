@@ -17,12 +17,12 @@ export async function openRequest(id: number): Promise<any> {
   }
 }
 
-export async function fetchSolicitationDrive(): Promise<any> {
+export async function fetchSolicitationsByTripId(id: number): Promise<any> {
   try {
-    const response = await api.get("/solicitacoes/motorista");
+    const response = await api.get(`/solicitacoes/viagem/${id}`);
     return response.data;
   } catch (error) {
-    throw new Error("Erro inesperado ao buscar solicitações.");
+    throw new Error("Erro inesperado ao buscar solicitações para a viagem.");
   }
 }
 
@@ -37,7 +37,7 @@ export async function fetchSolicitationPassenger(): Promise<any> {
 
 export async function updateSolicitationStatus(
   id: number,
-  status: "aceita" | "recusada"
+  status: string
 ): Promise<void> {
   await api.patch(`/solicitacoes/${id}/status/${status}`);
 }

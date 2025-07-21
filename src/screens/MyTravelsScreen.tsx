@@ -135,7 +135,7 @@ export default function MyTravelsScreen({}: Props) {
         </View>
       </View>
       <TouchableOpacity
-        onPress={() => navigation.navigate("TravelRequests", { id: item.id })}
+        onPress={() => navigation.navigate("TravelRequests", { id: item.id, travel: item.jogo?.estadio?.nome })}
         className="mt-3 bg-blue-600 rounded-md px-4 py-2"
         activeOpacity={0.8}
       >

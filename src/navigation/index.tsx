@@ -9,6 +9,7 @@ import ResetPassword from "../screens/ResetPassword";
 import TabNavigator from "./TabNavigator";
 import VehicleCreationScreen from "../screens/VehicleCreationScreen";
 import VehicleScreen from "../screens/VehicleScreen";
+import TravelRequestsScreen from "../screens/TravelRequests"
 import { useAuth } from "../context/AuthContext";
 import { ActivityIndicator, View } from "react-native";
 import { TouchableOpacity, Text } from "react-native";
@@ -20,11 +21,13 @@ export type RootStackParamList = {
   Register: undefined;
   CreateTravel: undefined;
   MyTravelRequests: undefined;
+  MyTravelsScreen: undefined;
   Profile: undefined;
   VehicleCreation: undefined;
   Vehicle: undefined;
   ForgotPassword: undefined;
   ResetPassword: { email: string } | undefined;
+  TravelRequests: { id: number, travel: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -92,6 +95,11 @@ export default function RootNavigator() {
                 </TouchableOpacity>
               ),
             })}
+          />
+          <Stack.Screen
+            name="TravelRequests"
+            component={TravelRequestsScreen}
+            options={{ title: "Solicitações de Viagem" }}
           />
         </>
       )}

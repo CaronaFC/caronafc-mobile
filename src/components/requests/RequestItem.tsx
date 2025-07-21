@@ -2,7 +2,7 @@ import { View, Text } from "react-native";
 import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import { Request } from "../../types/request";
 
-export function RequestItem({ item }: { item: Request }) {
+export function RequestItem({ item }: { item: Request  }) {
   const statusColors: { [key: string]: string } = {
     pendente: "text-yellow-600",
     aceita: "text-green-600",
@@ -67,7 +67,7 @@ export function RequestItem({ item }: { item: Request }) {
       <View className="flex-row items-center space-x-2">
         <FontAwesome name="drivers-license-o" size={16} color="#6366F1" />
         <Text className="text-gray-700 font-semibold ms-2">
-          Motorista: {item.viagem.motorista.nome_completo || "Indefinida"}
+          Motorista: {item.viagem.motorista.nome_completo ?? "Indefinida"}
         </Text>
       </View>
        <View className="flex-row items-center space-x-2 mb-1">

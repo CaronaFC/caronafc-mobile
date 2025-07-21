@@ -6,17 +6,28 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
 import { getTravels } from "../services/travelService";
 
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../navigation";
+
 type Props = {};
+
+type ProfileScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "MyTravelsScreen"
+>;
 
 export default function MyTravelsScreen({}: Props) {
   const { userData } = useAuth();
   const [travels, setTravels] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const navigation = useNavigation<ProfileScreenNavigationProp>();
 
   const fetchTravels = useCallback(async () => {
     if (!userData?.data?.id) {
@@ -123,6 +134,25 @@ export default function MyTravelsScreen({}: Props) {
           </Text>
         </View>
       </View>
+
+      {item.passageiros && item.passageiros.length > 0 ? (
+        item.passageiros.map((passageiro: any) => (
+          <View key={passageiro.id} className="flex-row items-center gap-2">
+            <Ionicons name="person-circle" size={18} color="#000" />
+            <Text className="font-semibold text-lg">{passageiro.nome_completo}</Text>
+          </View>
+        ))
+      ) : (
+        <Text className="py-2">Nenhum passageiro</Text>
+      )}
+
+      <TouchableOpacity
+        onPress={() => navigation.navigate("TravelRequests", { id: item.id, travel: item.jogo?.estadio?.nome })}
+        className="mt-3 bg-blue-600 rounded-md px-4 py-2"
+        activeOpacity={0.8}
+      >
+        <Text className="text-white font-semibold text-center">Ver solicitações</Text>
+      </TouchableOpacity>
     </View>
   );
 

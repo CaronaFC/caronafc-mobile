@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { createRef, createContext, useContext, useState, ReactNode, useEffect } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUserById } from "../services/userService";
 import { LoginResponseType } from "../types/auth";
@@ -16,6 +16,8 @@ type AuthContextType = {
 
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const logoutRef = createRef<() => void>();
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userData, setUserData] = useState<UserType | null>(null);
@@ -46,6 +48,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     setIsLoading(false)
   };
+
+  logoutRef.current = logout;
 
   const isLoggedIn = async () => {
     try {

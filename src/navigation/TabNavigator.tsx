@@ -41,9 +41,16 @@ const TabNavigator: React.FC = () => (
       component={MyTravelRequestsScreen}
       options={{ title: "Minhas solicitações" }}
     />
-    <Tab.Screen name={"MyTravels"} component={MyTravelsScreen} />
-
-    <Tab.Screen name={"Profile"} component={ProfileScreen} />
+    <Tab.Screen
+      name={"MyTravels"}
+      component={MyTravelsScreen}
+      options={{ title: "Viagens criadas", headerLeft: renderLeftArrow }}
+    />
+    <Tab.Screen
+      name={"Profile"}
+      component={ProfileScreen}
+      options={{ title: "Perfil", headerLeft: renderLeftArrow }}
+    />
   </Tab.Navigator>
 );
 

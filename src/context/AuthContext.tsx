@@ -7,11 +7,10 @@ import {
   useEffect,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getUserById } from "../services/userService";
+import { getUserById, getUserProfile } from "../services/userService";
 import { LoginResponseType } from "../types/auth";
 import { setAccessToken } from "../lib/token";
 import { UserType } from "../types/user";
-
 
 type AuthContextType = {
   userData: UserType | null;
@@ -19,9 +18,8 @@ type AuthContextType = {
   logout: () => void;
   isLoading: false | true;
   userToken: null | string;
-  refreshUserData: () => void;
+  refreshUserData: () => any;
 };
-
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -33,28 +31,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userToken, setUserToken] = useState<string | null>(null);
 
   const login = async (userPayload: LoginResponseType) => {
-
-    setIsLoading(true)
-    setUserToken(userPayload.token)
-
+    setIsLoading(true);
+    setUserToken(userPayload.token);
 
     setAccessToken(userPayload.token);
-    const response = await getUserById(userPayload.id, userPayload.token)
-    const user = await response.data
+    const response = await getUserById(userPayload.id);
+    const user = await response.data;
     AsyncStorage.setItem("userToken", userPayload.token);
     AsyncStorage.setItem("userInfo", JSON.stringify(user));
-    setUserData(user)
-    setIsLoading(false)
-
-  }
+    setUserData(user);
+    setIsLoading(false);
+  };
   const logout = () => {
-    setIsLoading(true)
-    setUserToken(null)
-    setUserData(null)
+    setIsLoading(true);
+    setUserToken(null);
+    setUserData(null);
     AsyncStorage.removeItem("userToken");
     AsyncStorage.removeItem("userInfo");
 
-    setIsLoading(false)
+    setIsLoading(false);
+  };
+
+  const refreshUserData = async () => {
+    setIsLoading(true);
+    const response = await getUserById(userData!.data.id);
+    const user = await response.data;
+    AsyncStorage.setItem("userInfo", JSON.stringify(user));
+    setUserData(user);
+    setIsLoading(false);
   };
 
   logoutRef.current = logout;
@@ -68,7 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (userInfoRaw) {
         const userInfo = JSON.parse(userInfoRaw) as UserType;
-        console.log("userINfo", userInfo)
+        console.log("userINfo", userInfo);
         setUserToken(userToken ?? "");
         setUserData(userInfo);
       }
@@ -81,10 +85,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     isLoggedIn();
-  }, [])
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ userData, login, logout, isLoading, userToken }}>
+    <AuthContext.Provider
+      value={{ userData, login, logout, isLoading, userToken, refreshUserData }}
+    >
       {children}
     </AuthContext.Provider>
   );

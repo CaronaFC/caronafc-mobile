@@ -80,7 +80,7 @@ export default function RootNavigator() {
             name="Vehicle"
             component={VehicleScreen}
             options={({ navigation }) => ({
-              title: "Meus Veículos",
+              title: "Veículos",
               headerTitleAlign: "left",
               headerRight: () => (
                 <TouchableOpacity

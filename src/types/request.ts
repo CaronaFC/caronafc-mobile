@@ -1,21 +1,10 @@
-interface Jogo {
-  nomeEstadio?: string;
-  dataJogo?: string;
-}
+import { TravelAPIResponseType } from "../types/travel"
+import { UserType } from "../types/user"
 
-interface Usuario {
-  nome_completo?: string;
-}
-
-interface Viagem {
-  jogo?: Jogo;
-  valorPorPessoa?: string;
-}
-
-export interface Solicitacao {
+export interface Request {
   id: number;
   status: string;
-  usuario?: Usuario;
-  viagem?: Viagem;
+  usuario: UserType;
+  viagem: TravelAPIResponseType;
   dataSolicitacao: string;
 }

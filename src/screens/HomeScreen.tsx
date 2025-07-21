@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import DefaultButton from "../components/commom/DefaultButton";
 import CardTravel from "../components/travel/CardTravel";
 import FiltersModal, { FilterData } from "../components/travel/FiltersModal";
 import { getTravels } from "../services/travelService";
-import { Alert } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { mapTravelToCardProps } from "../mappers/mapTravelToCardProps";
 import { fetchAllTeams } from "../services/teamsService";
@@ -14,6 +13,7 @@ import { TeamType } from "../types/teams";
 import { TravelAPIResponseType } from "../types/travel";
 import { filterTravels } from "../lib/filterTravels";
 import * as Location from "expo-location";
+import { openRequest } from "../services/requestsService"
 
 type Props = {};
 
@@ -107,6 +107,32 @@ export default function HomeScreen({}: Props) {
     setShowFiltersModal(false);
   };
 
+  const handleRequest = async (vehicleId: number) => {
+    Alert.alert(
+      "Confirmação",
+      "Tem certeza que deseja enviar um pedido?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Sim",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const data = await openRequest(vehicleId);
+
+              if (data.status === 201) {
+                Alert.alert("Pedido enviado com sucesso!")
+              }
+            } catch (error: any) {
+              Alert.alert(error.message);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
     <View className="flex-1 bg-primaryWhite">
       <View className="p-4">
@@ -142,9 +168,9 @@ export default function HomeScreen({}: Props) {
         <FlatList
           data={filteredTravels}
           className="mb-2"
-          keyExtractor={(item: any) => item.id.toString()}
+          keyExtractor={(item: any) => item.id}
           renderItem={({ item }) => (
-            <CardTravel {...mapTravelToCardProps(item)} />
+            <CardTravel {...mapTravelToCardProps(item)} id={item.id} handleRequest={handleRequest}/>
           )}
           contentContainerStyle={{ gap: 16, paddingHorizontal: 16 }}
           showsVerticalScrollIndicator={false}

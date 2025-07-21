@@ -28,6 +28,7 @@ export type CardTravelProps = {
   motorista: DriverType;
   jogo: Game;
   veiculo: VeiculoType;
+  handleRequest: (id: number) => void;
 };
 
 export type TravelAPIResponseType = {

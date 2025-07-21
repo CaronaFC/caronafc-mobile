@@ -1,41 +1,88 @@
 import { Image, StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { FontAwesome5 } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
+import { FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
 import DefaultButton from "../commom/DefaultButton";
 import Flamengo from "../../../assets/images/teams/flamengo.png";
 import Palmeiras from "../../../assets/images/teams/palmeiras.png";
-type Props = {};
+import { reverseGeocodeCoords } from "../../lib/location";
+import { CardTravelProps } from "../../types/travel";
 
-const CardTravel = (props: Props) => {
-  const renderIcon = () => <FontAwesome5 name="arrow-right" size={15} />;
+const CardTravel = ({
+  horario,
+  valorPorPessoa,
+  veiculo,
+  origemLat,
+  origemLong,
+  temRetorno,
+  qtdVagas,
+  motorista,
+  jogo,
+}: CardTravelProps) => {
+  const renderIcon = () => (
+    <MaterialCommunityIcons name="stadium-variant" size={24} color="black" />
+  );
+  const [origemName, setOrigemName] = useState("");
+
+  useEffect(() => {
+    const getOrigemName = async () => {
+      const origemName = await reverseGeocodeCoords({
+        latitude: origemLat,
+        longitude: origemLong,
+      });
+
+      setOrigemName(origemName);
+    };
+
+    getOrigemName();
+  }, []);
+
   return (
     <View className="bg-secondaryWhite border-2 border-[#BBF7D0] rounded-md">
       <View className="flex-row justify-between bg-[#F0FDF4] p-3">
-        <View>
-          <Text className="text-lg">
-            Centro {renderIcon()} Estádio Municipal{" "}
+        <View className="w-full">
+          <View className="flex-row items-center">
+            <Text className="text-lg mb-2 flex-1 font-bold">
+              {renderIcon()} {jogo.estadio?.nome || "Estádio Indefinido"}
+            </Text>
+            <Text className="text-lg text-black font-bold">R$ {valorPorPessoa}</Text>
+          </View>
+          <Text className="text-base font-semibold">
+            {jogo.liga?.nome || "Indefinido"}
           </Text>
-          <Text className="text-base">Flamengo vs Palmeiras</Text>
+          <Text className="text-base font-semibold">
+            {jogo.timeCasa?.nome || "Indefinido"} vs {jogo.timeFora?.nome || "Indefinido"}
+          </Text>
+          {origemName && (
+            <Text className="text-base">Origem: {origemName}</Text>
+          )}
         </View>
-        <Text className="text-lg text-black">R$ 22</Text>
       </View>
       <View className=" gap-2 relative bg-[#F8F8F8] p-3 ">
-        <Text>25/04/2025</Text>
-        <Text>Estádio Municipal</Text>
-        <Text>7.2 km</Text>
-        <Text>Brasileirão</Text>
-        <View className="flex-row justify-between items-baseline mb-2">
-          <Text>Motorista: Jair Bolsonaro</Text>
-          <DefaultButton btnText="Pedir Carona" btnColor="dark" />
-        </View>
-        <View className="flex-row justify-between items-baseline">
-          <Text>4 vagas disponiveis</Text>
-          <DefaultButton btnText="Ver Detalhes" btnColor="light" />
-        </View>
-        <View className="flex-row gap-2 absolute top-[-14] right-4 ">
-          <Image source={Flamengo} style={{ width: 42, height: 42 }} />
-          <Image source={Palmeiras} style={{ width: 42, height: 42 }} />
-        </View>
+        <Text>Data do jogo: {jogo.data || "Data indefinida"}</Text>
+        <Text>Data de saída: {new Date(horario).toLocaleString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}</Text>
+        <Text>Motorista: {motorista.nome}</Text>
+        <Text>Veiculo: {veiculo.modelo}</Text>
+        <Text>Vagas: {qtdVagas}</Text>
+        <Text>{temRetorno ? "Viagem com retorno" : "Viagem sem retorno."}</Text>
+
+        <DefaultButton btnText="Ver Detalhes" btnColor="light" />
+        <DefaultButton btnText="Pedir Carona" btnColor="dark" />
+
+        {/* <View className="flex-row gap-2 absolute top-[-14] right-4">
+          {times.map((time, index) => (
+            <Image
+              key={index}
+              source={time.escudo}
+              style={{ width: 42, height: 42 }}
+            />
+          ))}
+        </View> */}
       </View>
     </View>
   );

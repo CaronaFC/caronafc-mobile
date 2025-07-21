@@ -1,5 +1,13 @@
-import { createRef, createContext, useContext, useState, ReactNode, useEffect } from "react";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  createRef,
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+  createRef,
+} from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserById } from "../services/userService";
 import { LoginResponseType } from "../types/auth";
 import { setAccessToken } from "../lib/token";
@@ -12,6 +20,7 @@ type AuthContextType = {
   logout: () => void;
   isLoading: false | true;
   userToken: null | string;
+  refreshUserData: () => void;
 };
 
 
@@ -87,4 +96,3 @@ export const useAuth = () => {
   if (!context) throw new Error("useAuth must be used within AuthProvider");
   return context;
 };
-

@@ -1,14 +1,18 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import { View, Text, TouchableOpacity } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import DefaultButton from "../components/commom/DefaultButton";
 import CardTravel from "../components/travel/CardTravel";
 import FiltersModal, { FilterData } from "../components/travel/FiltersModal";
+import { getTravels } from "../services/travelService";
+import { Alert } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import { mapTravelToCardProps } from "../mappers/mapTravelToCardProps";
 
 type Props = {};
 
-export default function HomeScreen({ }: Props) {
+export default function HomeScreen({}: Props) {
   const [showFiltersModal, setShowFiltersModal] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<FilterData>({
     team: "",
@@ -18,6 +22,22 @@ export default function HomeScreen({ }: Props) {
     time: "",
     nearby: false,
   });
+  const [travels, setTravels] = useState<any>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchTravels = async () => {
+        try {
+          const travels = await getTravels();
+          setTravels(travels);
+        } catch {
+          Alert.alert("Erro ao buscar viagens");
+        }
+      };
+
+      fetchTravels();
+    }, [])
+  );
 
   const getActiveFiltersCount = (): number => {
     return Object.values(appliedFilters).filter(
@@ -50,7 +70,6 @@ export default function HomeScreen({ }: Props) {
     setShowFiltersModal(false);
   };
 
-  const data = [1, 2, 3, 4];
   return (
     <View className="flex-1 bg-primaryWhite">
       <View className="p-4">
@@ -78,14 +97,22 @@ export default function HomeScreen({ }: Props) {
         </View>
       </View>
 
-      {/* Lista de Caronas */}
-      <FlatList
-        data={data}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={() => <CardTravel />}
-        contentContainerStyle={{ gap: 16, paddingHorizontal: 16 }}
-        showsVerticalScrollIndicator={false}
-      />
+      {travels.length === 0 ? (
+        <Text className="text-center my-auto text-xl">
+          Nenhuma viagem disponível
+        </Text>
+      ) : (
+        <FlatList
+          data={travels}
+          className="mb-2"
+          keyExtractor={(item: any) => item.id.toString()}
+          renderItem={({ item }) => (
+            <CardTravel {...mapTravelToCardProps(item)} />
+          )}
+          contentContainerStyle={{ gap: 16, paddingHorizontal: 16 }}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
 
       {/* Modal de Filtros */}
       <FiltersModal

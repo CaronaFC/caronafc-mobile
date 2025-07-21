@@ -9,9 +9,10 @@ type Props = {
     onChange: (value: Date) => void;
     accessoryLeft?: () => React.ReactElement;
     styles?: StyleProp<ViewStyle>;
+    disabled?: boolean;
 
 };
-const TimePickerInput = ({ label, value, onChange, accessoryLeft, styles }: Props) => {
+const TimePickerInput = ({ label, value, onChange, accessoryLeft, styles, disabled }: Props) => {
 
     const [show, setShow] = useState(false);
 
@@ -30,6 +31,7 @@ const TimePickerInput = ({ label, value, onChange, accessoryLeft, styles }: Prop
                 style={{ borderWidth: 0, backgroundColor: "#F2F3F3" }}
                 accessoryLeft={accessoryLeft}
                 className="flex-row items-center justify-center"
+                disabled={disabled}
             >
                 <View className="flex-row items-center">
                     <Text style={{ color: "black" }}>
@@ -44,6 +46,7 @@ const TimePickerInput = ({ label, value, onChange, accessoryLeft, styles }: Prop
                     is24Hour={true}
                     display="default"
                     onChange={handleChange}
+                    
                 />
             )}
         </View>

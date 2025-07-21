@@ -138,6 +138,11 @@ const MapCreateTravel = (props: Props) => {
                 onRegionChangeComplete={setRegion}
                 showsUserLocation
                 showsMyLocationButton
+                loadingEnabled={true}
+                showsBuildings={true}
+                showsPointsOfInterest={true}    
+                zoomControlEnabled={true}
+                zoomEnabled={true}            
             >
 
                 {starterPoint && (

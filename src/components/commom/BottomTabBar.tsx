@@ -1,7 +1,6 @@
-// TabNavigator.tsx
 import React from "react";
 import { BottomNavigation, BottomNavigationTab } from "@ui-kitten/components";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, View } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -54,7 +53,7 @@ const BottomTabBar = ({ navigation, state }: BottomTabBarProps) => {
           icon={HomeIcon}
         />
         <BottomNavigationTab
-          title={() => <Text className="text-sm">Criar Viagem</Text>}
+          title={() => <Text className="text-sm">Criar</Text>}
           icon={CreateTravelIcon}
         />
         <BottomNavigationTab

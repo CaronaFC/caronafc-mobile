@@ -1,23 +1,66 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import DefaultButton from "../components/commom/DefaultButton";
 import CardTravel from "../components/travel/CardTravel";
 import FiltersModal, { FilterData } from "../components/travel/FiltersModal";
+import { getTravels } from "../services/travelService";
+import { useFocusEffect } from "@react-navigation/native";
+import { mapTravelToCardProps } from "../mappers/mapTravelToCardProps";
+import { fetchAllTeams } from "../services/teamsService";
+import { TeamType } from "../types/teams";
+import { TravelAPIResponseType } from "../types/travel";
+import { filterTravels } from "../lib/filterTravels";
+import * as Location from "expo-location";
+import { openRequest } from "../services/requestsService"
 
 type Props = {};
 
-export default function HomeScreen({ }: Props) {
+export default function HomeScreen({}: Props) {
   const [showFiltersModal, setShowFiltersModal] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<FilterData>({
     team: "",
-    stadium: "",
     championship: "",
-    date: "",
+    date: null,
     time: "",
     nearby: false,
   });
+  const [travels, setTravels] = useState<TravelAPIResponseType[]>([]);
+  const [teams, setTeams] = useState<TeamType[]>([]);
+  const [userLocation, setUserLocation] =
+    useState<Location.LocationObjectCoords | null>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchTravels = async () => {
+        try {
+          const travels = (await getTravels()).sort((a, b) =>
+            a.jogo.estadio.nome.localeCompare(b.jogo.estadio.nome)
+          );
+          if (travels.length === 0) return;
+
+          setTravels(travels);
+        } catch {
+          Alert.alert("Erro ao buscar viagens");
+        }
+      };
+
+      const fetchTeams = async () => {
+        try {
+          const teams = (await fetchAllTeams()).sort((a, b) =>
+            a.name.localeCompare(b.name)
+          );
+          setTeams(teams);
+        } catch {
+          Alert.alert("Erro ao buscar times");
+        }
+      };
+
+      fetchTravels();
+      fetchTeams();
+    }, [])
+  );
 
   const getActiveFiltersCount = (): number => {
     return Object.values(appliedFilters).filter(
@@ -25,17 +68,31 @@ export default function HomeScreen({ }: Props) {
     ).length;
   };
 
-  const handleApplyFilters = (newFilters: FilterData): void => {
+  const handleApplyFilters = async (newFilters: FilterData): Promise<void> => {
     setAppliedFilters(newFilters);
+    if (newFilters.nearby) {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permissão negada para acessar localização");
+        closeFiltersModal();
+      }
+      let loc = await Location.getCurrentPositionAsync({});
+      setUserLocation(loc.coords);
+    } else {
+      setUserLocation(null);
+    }
     console.log("Filtros aplicados:", newFilters);
   };
+
+  const filteredTravels = useMemo(() => {
+    return filterTravels(travels, appliedFilters, userLocation);
+  }, [travels, appliedFilters, userLocation]);
 
   const handleClearFilters = (): void => {
     setAppliedFilters({
       team: "",
-      stadium: "",
       championship: "",
-      date: "",
+      date: null,
       time: "",
       nearby: false,
     });
@@ -50,7 +107,32 @@ export default function HomeScreen({ }: Props) {
     setShowFiltersModal(false);
   };
 
-  const data = [1, 2, 3, 4];
+  const handleRequest = async (vehicleId: number) => {
+    Alert.alert(
+      "Confirmação",
+      "Tem certeza que deseja enviar um pedido?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Sim",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const data = await openRequest(vehicleId);
+
+              if (data.status === 201) {
+                Alert.alert("Pedido enviado com sucesso!")
+              }
+            } catch (error: any) {
+              Alert.alert(error.message);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
     <View className="flex-1 bg-primaryWhite">
       <View className="p-4">
@@ -78,14 +160,22 @@ export default function HomeScreen({ }: Props) {
         </View>
       </View>
 
-      {/* Lista de Caronas */}
-      <FlatList
-        data={data}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={() => <CardTravel />}
-        contentContainerStyle={{ gap: 16, paddingHorizontal: 16 }}
-        showsVerticalScrollIndicator={false}
-      />
+      {filteredTravels.length === 0 ? (
+        <Text className="text-center my-auto text-xl">
+          Nenhuma viagem disponível
+        </Text>
+      ) : (
+        <FlatList
+          data={filteredTravels}
+          className="mb-2"
+          keyExtractor={(item: any) => item.id}
+          renderItem={({ item }) => (
+            <CardTravel {...mapTravelToCardProps(item)} id={item.id} handleRequest={handleRequest}/>
+          )}
+          contentContainerStyle={{ gap: 16, paddingHorizontal: 16 }}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
 
       {/* Modal de Filtros */}
       <FiltersModal
@@ -94,6 +184,7 @@ export default function HomeScreen({ }: Props) {
         onApplyFilters={handleApplyFilters}
         onClearFilters={handleClearFilters}
         initialFilters={appliedFilters}
+        teams={teams}
       />
     </View>
   );

@@ -10,6 +10,7 @@ import { ApplicationProvider } from "@ui-kitten/components";
 import * as eva from "@eva-design/eva";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import RootNavigator from "./src/navigation";
+import { navigationRef } from './src/navigation/navigationService';
 
 export default function App() {
 	return (
@@ -17,7 +18,7 @@ export default function App() {
 			<SafeAreaProvider>
 				<AuthProvider>
 					<ApplicationProvider {...eva} theme={eva.light}>
-						<NavigationContainer>
+						<NavigationContainer ref={navigationRef}>
 							<RootNavigator />
 						</NavigationContainer>
 					</ApplicationProvider>

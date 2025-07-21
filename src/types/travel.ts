@@ -7,11 +7,14 @@ export type CreateTravelType = {
   jogo: object | string;
   origem_lat: number;
   origem_long: number;
+  destino_lat: number;
+  destino_long: number;
   horario: string;
   qtdVagas: number;
   temRetorno: boolean;
   valorPorPessoa: number;
   veiculoId: number;
+  status?: string;
 };
 
 export type CardTravelProps = {
@@ -22,7 +25,6 @@ export type CardTravelProps = {
   origemLong: number;
   temRetorno: boolean;
   qtdVagas: number;
-
   motorista: DriverType;
   jogo: GameType;
   veiculo: VeiculoType;

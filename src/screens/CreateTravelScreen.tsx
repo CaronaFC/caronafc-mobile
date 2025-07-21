@@ -32,7 +32,7 @@ type CreateTravelScreenProps = NativeStackNavigationProp<
 >;
 
 export default function CreateTravelScreen() {
-  const { userData, refreshUserData } = useAuth();
+  const { userData } = useAuth();
   const [matches, setMatches] = useState<any[]>([]);
   const [gameId, setGameId] = useState<number | null>(null);
   const [match, setMatch] = useState<Game | null>(null);
@@ -114,8 +114,8 @@ export default function CreateTravelScreen() {
           }
 
           if (fetchedMatch.date) {
-            const [day, month, year] = fetchedMatch.date.split('/').map(Number);
-            const [hour, minute] = fetchedMatch.time.split(':').map(Number);
+            const [day, month, year] = fetchedMatch.date.split("/").map(Number);
+            const [hour, minute] = fetchedMatch.time.split(":").map(Number);
             const gameDate = new Date(year, month - 1, day, hour, minute);
             setTime(gameDate);
           } else {

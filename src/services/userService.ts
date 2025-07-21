@@ -38,3 +38,22 @@ export async function getUserVehicle(userId: number): Promise<any[]> {
     }
   }
 }
+
+export async function getUserProfile(): Promise<any> {
+  try {
+    const response = await api.get(`/usuario/profile`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+      if (status == 401) {
+        console.log("Sem autorização");
+        throw new Error(`Sem autorização`);
+      }
+      const message = error.response?.data?.message || "Erro na requisição";
+      throw new Error(`Erro ${status ?? "desconhecido"}: ${message}`);
+    } else {
+      throw new Error("Erro inesperado ao requisitar informações do usuário.");
+    }
+  }
+}

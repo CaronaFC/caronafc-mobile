@@ -70,18 +70,25 @@ export default function MyTravelsScreen({}: Props) {
     <View className="border border-gray-300 rounded-lg p-4 mb-4 bg-white shadow-sm">
       <View className="flex-row items-center space-x-2 mb-1">
         <FontAwesome5 name="futbol" size={16} color="#2563EB" />
-        <Text className="text-gray-700 font-semibold ms-2">{item.jogo?.teams?.home?.name ?? "Indefinido"} x {item.jogo?.teams?.away?.name ?? "Indefinido"}</Text>
+        <Text className="text-gray-700 font-semibold ms-2">{item.jogo?.timeCasa?.nome ?? "Indefinido"} x {item.jogo?.timeFora?.nome ?? "Indefinido"}</Text>
       </View>
 
       <View className="flex-row items-center space-x-2 mb-1">
         <FontAwesome5 name="trophy" size={16} color="#EF4444" />
-        <Text className="text-gray-700 font-semibold ms-2">Liga: {item.jogo?.league?.name ?? "Indefinida"}</Text>
+        <Text className="text-gray-700 font-semibold ms-2">Liga: {item.jogo?.liga?.nome ?? "Indefinida"}</Text>
       </View>
 
       <View className="flex-row items-center space-x-2 mb-1">
         <FontAwesome5 name="landmark" size={16} color="#10B981" />
         <Text className="text-gray-700 font-semibold ms-2">
-          Estádio: {item.jogo?.stadium?.name || "Não informado"}
+          Estádio: {item.jogo?.estadio?.nome || "Não informado"}
+        </Text>
+      </View>
+
+      <View className="flex-row items-center space-x-2 mb-1">
+        <FontAwesome5 name="clock" size={16} color="#6366F1" />
+        <Text className="text-gray-700 font-semibold ms-2">
+          Data: {item.jogo?.data || "Indefinida"}
         </Text>
       </View>
 

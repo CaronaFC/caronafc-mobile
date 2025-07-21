@@ -1,10 +1,10 @@
-import { GameAPIType, GameType } from "./game";
+import { Game } from "./game";
 import { DriverType } from "./user";
 import { VeiculoType } from "./vehicle";
 
 export type CreateTravelType = {
   motoristaId: number;
-  jogo: object | string;
+  jogo: Game;
   origem_lat: number;
   origem_long: number;
   destino_lat: number;
@@ -26,7 +26,7 @@ export type CardTravelProps = {
   temRetorno: boolean;
   qtdVagas: number;
   motorista: DriverType;
-  jogo: GameType;
+  jogo: Game;
   veiculo: VeiculoType;
 };
 
@@ -40,5 +40,5 @@ export type TravelAPIResponseType = {
   qtdVagas: number;
   veiculo: VeiculoType;
   motorista: { id: number; nome_completo: string };
-  jogo: GameAPIType;
+  jogo: Game;
 };

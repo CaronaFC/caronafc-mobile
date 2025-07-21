@@ -41,13 +41,16 @@ const CardTravel = ({
       <View className="flex-row justify-between bg-[#F0FDF4] p-3">
         <View className="w-full">
           <View className="flex-row items-center">
-            <Text className="text-lg mb-2 flex-1">
-              {renderIcon()} {jogo.estadio}
+            <Text className="text-lg mb-2 flex-1 font-bold">
+              {renderIcon()} {jogo.estadio?.nome || "Estádio Indefinido"}
             </Text>
-            <Text className="text-lg text-black">R$ {valorPorPessoa}</Text>
+            <Text className="text-lg text-black font-bold">R$ {valorPorPessoa}</Text>
           </View>
-          <Text className="text-base">
-            {jogo.timeCasa} vs {jogo.timeFora}
+          <Text className="text-base font-semibold">
+            {jogo.liga?.nome || "Indefinido"}
+          </Text>
+          <Text className="text-base font-semibold">
+            {jogo.timeCasa?.nome || "Indefinido"} vs {jogo.timeFora?.nome || "Indefinido"}
           </Text>
           {origemName && (
             <Text className="text-base">Origem: {origemName}</Text>
@@ -55,14 +58,14 @@ const CardTravel = ({
         </View>
       </View>
       <View className=" gap-2 relative bg-[#F8F8F8] p-3 ">
-        <Text>Data: {jogo.dataJogo}</Text>
-        <Text>
-          Horário:{" "}
-          {new Date(horario).toLocaleTimeString([], {
+        <Text>Data do jogo: {jogo.data || "Data indefinida"}</Text>
+        <Text>Data de saída: {new Date(horario).toLocaleString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
             hour: "2-digit",
             minute: "2-digit",
-          })}
-        </Text>
+          })}</Text>
         <Text>Motorista: {motorista.nome}</Text>
         <Text>Veiculo: {veiculo.modelo}</Text>
         <Text>Vagas: {qtdVagas}</Text>

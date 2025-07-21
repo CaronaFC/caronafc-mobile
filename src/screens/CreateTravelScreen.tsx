@@ -23,6 +23,8 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { getUserVehicle } from "../services/userService";
+import { Game } from "../types/game";
+import { mapRawGameToGameProps } from "../mappers/mapTravelToCardProps";
 
 type CreateTravelScreenProps = NativeStackNavigationProp<
   RootStackParamList,
@@ -33,7 +35,7 @@ export default function CreateTravelScreen() {
   const { userData, refreshUserData } = useAuth();
   const [matches, setMatches] = useState<any[]>([]);
   const [gameId, setGameId] = useState<number | null>(null);
-  const [match, setMatch] = useState<any | null>(null);
+  const [match, setMatch] = useState<Game | null>(null);
   const [time, setTime] = useState<Date | null>(null);
   const [stadiumName, setStadiumName] = useState<string | null>(null);
   const [stadiumCoords, setStadiumCoords] = useState<CoordsPoint | null>(null);
@@ -52,7 +54,12 @@ export default function CreateTravelScreen() {
     useCallback(() => {
       const checkVehicles = async () => {
         try {
-          const vehicles = await getUserVehicle();
+          if (!userData?.data?.id) {
+            Alert.alert("Atenção!", "Usuário não autenticado.");
+            return;
+          }
+
+          const vehicles = await getUserVehicle(userData?.data?.id);
 
           if (!vehicles || vehicles.length === 0) {
             Alert.alert(
@@ -95,17 +102,12 @@ export default function CreateTravelScreen() {
       if (gameId) {
         try {
           const fetchedMatch = await fetchMatchById(gameId);
-          setMatch(fetchedMatch);
+          setMatch(mapRawGameToGameProps(fetchedMatch));
 
           if (fetchedMatch?.stadium?.name) {
             setStadiumName(fetchedMatch.stadium.name);
             const coords = await geocodeAddress(fetchedMatch.stadium.name);
             setStadiumCoords(coords);
-            setGameTeams({
-              timeCasa: match.teams.home.name,
-              timeFora: match.teams.away.name,
-              dataJogo: match.date,
-            });
           } else {
             setStadiumName("Estádio não informado");
             setStadiumCoords(null);
@@ -184,10 +186,11 @@ export default function CreateTravelScreen() {
       !userData ||
       !starterPoint ||
       !location ||
-      !game ||
+      !gameId ||
       !space ||
       !valuePerPerson ||
-      !vehicle
+      !vehicle ||
+      !time
     ) {
       Alert.alert("Atenção", "Preencha todos os campos obrigatórios.");
       return;
@@ -198,7 +201,7 @@ export default function CreateTravelScreen() {
     try {
       const dto: CreateTravelType = {
         motoristaId: userData.data.id,
-        jogo: match,
+        jogo: match!,
         origem_lat: starterPoint.latitude,
         origem_long: starterPoint.longitude,
         destino_lat: stadiumCoords?.latitude || 0,
@@ -226,11 +229,10 @@ export default function CreateTravelScreen() {
   };
 
   const resetForm = () => {
-    setGame("");
+    setGameId(null);
     setTime(new Date());
     setStadiumName(null);
     setStadiumCoords(null);
-    setGameTeams({});
     setSpace("");
     setValuePerPerson("");
     setHasReturn(false);

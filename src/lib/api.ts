@@ -4,7 +4,7 @@ import { Alert } from "react-native";
 import { navigate } from "../navigation/navigationService";
 import { logoutRef } from "../context/AuthContext";
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://192.168.1.13:3000";
+const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://192.168.0.103:3000";
 
 export const api = axios.create({
   baseURL: API_URL,

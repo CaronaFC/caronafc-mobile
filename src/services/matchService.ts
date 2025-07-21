@@ -13,7 +13,7 @@ export async function fetchAllMatches(): Promise<any> {
 }
 
 
-export async function fetchMatchById(id: string): Promise<any> {
+export async function fetchMatchById(id: string | number): Promise<any> {
     try {
         const response = await footballApi.get(`/match/?match_id=${id}`);
         if (!response.data || Object.keys(response.data).length === 0) {

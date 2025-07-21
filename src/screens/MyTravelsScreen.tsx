@@ -10,13 +10,24 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
 import { getTravels } from "../services/travelService";
 
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../navigation";
+
 type Props = {};
+
+type ProfileScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "MyTravelsScreen"
+>;
 
 export default function MyTravelsScreen({}: Props) {
   const { userData } = useAuth();
   const [travels, setTravels] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const navigation = useNavigation<ProfileScreenNavigationProp>();
 
   const fetchTravels = useCallback(async () => {
     if (!userData?.data?.id) {
@@ -123,6 +134,13 @@ export default function MyTravelsScreen({}: Props) {
           </Text>
         </View>
       </View>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("TravelRequests", { id: item.id })}
+        className="mt-3 bg-blue-600 rounded-md px-4 py-2"
+        activeOpacity={0.8}
+      >
+        <Text className="text-white font-semibold text-center">Ver solicitações</Text>
+      </TouchableOpacity>
     </View>
   );
 

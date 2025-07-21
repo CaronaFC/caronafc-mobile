@@ -1,9 +1,9 @@
 import { api } from "../lib/api";
-import { CreateTravelType } from "../types/travel";
+import { CreateTravelType, TravelAPIResponseType } from "../types/travel";
 
 export async function createTravel(travelData: CreateTravelType): Promise<any> {
   try {
-    const response = await api.post('/viagem', travelData);
+    const response = await api.post("/viagem", travelData);
     return response.data;
   } catch (error) {
     console.error(error);
@@ -11,10 +11,12 @@ export async function createTravel(travelData: CreateTravelType): Promise<any> {
   }
 }
 
-export async function getTravels(filters?: { motoristaId?: number }): Promise<any> {
+export async function getTravels(filters?: {
+  motoristaId?: number;
+}): Promise<TravelAPIResponseType[]> {
   try {
     const params = filters ? filters : {};
-    const response = await api.get('/viagem', { params });
+    const response = await api.get("/viagem", { params });
     return response.data;
   } catch (error) {
     console.error(error);

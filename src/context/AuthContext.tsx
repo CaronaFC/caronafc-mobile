@@ -5,7 +5,6 @@ import {
   useState,
   ReactNode,
   useEffect,
-  createRef,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserById } from "../services/userService";

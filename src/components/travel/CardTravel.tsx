@@ -8,6 +8,8 @@ import { reverseGeocodeCoords } from "../../lib/location";
 import { CardTravelProps } from "../../types/travel";
 
 const CardTravel = ({
+  id,
+  handleRequest,
   horario,
   valorPorPessoa,
   veiculo,
@@ -72,7 +74,7 @@ const CardTravel = ({
         <Text>{temRetorno ? "Viagem com retorno" : "Viagem sem retorno."}</Text>
 
         <DefaultButton btnText="Ver Detalhes" btnColor="light" />
-        <DefaultButton btnText="Pedir Carona" btnColor="dark" />
+        <DefaultButton onPress={() => handleRequest(id)} btnText="Pedir Carona" btnColor="dark" />
 
         {/* <View className="flex-row gap-2 absolute top-[-14] right-4">
           {times.map((time, index) => (

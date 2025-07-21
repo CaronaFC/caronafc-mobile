@@ -1,7 +1,16 @@
 import React from "react";
 
-import { View, Text, Image, Pressable, ToastAndroid, KeyboardAvoidingView, Platform, Alert } from "react-native";
-import HeroImage from "../../assets/images/hero-image.png"
+import {
+  View,
+  Text,
+  Image,
+  Pressable,
+  ToastAndroid,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+} from "react-native";
+import HeroImage from "../../assets/images/hero-image.png";
 import TextInput from "../components/commom/TextInput";
 import DefaultButton from "../components/commom/DefaultButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -18,7 +27,7 @@ type LoginScreenNavigationProp = NativeStackNavigationProp<
   "Login"
 >;
 export default function LoginScreen() {
-  const { login } = useAuth()
+  const { login } = useAuth();
   const [userNumberOrEmail, setUserNumberOrEmail] = React.useState("");
   const [userPassword, setUserPassword] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
@@ -29,20 +38,19 @@ export default function LoginScreen() {
   const insets = useSafeAreaInsets();
 
   const handleSubmit = async () => {
-
     try {
-      setIsLoading(true)
+      setIsLoading(true);
 
       if (!userNumberOrEmail || !userPassword) {
-        console.log("Campos mal preenchidos")
-        setShowErros(true)
+        console.log("Campos mal preenchidos");
+        setShowErros(true);
         return;
       }
 
       const response = await loginUser({
         identificador: userNumberOrEmail,
         senha: userPassword,
-      })
+      });
 
       if (!response.data?.token) {
         Alert.alert("Erro ao realizar autenticação do usuário.");
@@ -52,13 +60,12 @@ export default function LoginScreen() {
       await login(response.data);
       ToastAndroid.show("Login realizado com sucesso", ToastAndroid.SHORT);
     } catch (error: any) {
-      setIsLoading(false)
+      setIsLoading(false);
       Alert.alert(error.message || "Erro desconhecido");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-
-  }
+  };
 
   return (
     <FormScreenWrapper>
@@ -106,7 +113,7 @@ export default function LoginScreen() {
               <DefaultButton btnText="Login" onPress={handleSubmit} />
               <Text className="text-center">OR</Text>
               <DefaultButton
-                btnText={isLoading ? "Acessando..." : "Acessar"}
+                btnText={isLoading ? "Acessando..." : "Criar conta"}
                 onPress={() => navigation.navigate("Register")}
               />
               <Pressable onPress={() => navigation.navigate("ForgotPassword")}>

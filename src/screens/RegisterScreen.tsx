@@ -17,7 +17,7 @@ type RegisterScreenNavigationProp = NativeStackNavigationProp<
   "Register"
 >;
 
-export default function RegisterScreen({ }: Props) {
+export default function RegisterScreen({}: Props) {
   const [userName, setUserName] = React.useState("");
   const [userPassword, setUserPassword] = React.useState("");
   const [userEmail, setUserEmail] = React.useState("");
@@ -45,12 +45,11 @@ export default function RegisterScreen({ }: Props) {
   );
 
   const handleSubmit = async () => {
-
     try {
-      setIsLoading(true)
+      setIsLoading(true);
 
       if (!userName || !userPassword || !userCPF || !userEmail) {
-        setShowErros(true)
+        setShowErros(true);
         return;
       }
 
@@ -60,22 +59,21 @@ export default function RegisterScreen({ }: Props) {
         nome_completo: userName,
         senha: userPassword,
         numero: userPhone,
-      })
+      });
       if (!data) {
-        ToastAndroid.show("Erro ao realizar cadastro.", ToastAndroid.SHORT)
+        ToastAndroid.show("Erro ao realizar cadastro.", ToastAndroid.SHORT);
         return;
       }
 
-      console.log("response:", data)
-      ToastAndroid.show("Usuário cadastrado com sucesso", ToastAndroid.LONG)
-      navigation.navigate("Login")
+      console.log("response:", data);
+      ToastAndroid.show("Usuário cadastrado com sucesso", ToastAndroid.LONG);
+      navigation.navigate("Login");
     } catch (error) {
-      setIsLoading(false)
+      setIsLoading(false);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-
-  }
+  };
 
   const renderGoogleIcon = () => (
     <TouchableOpacity>
@@ -121,7 +119,6 @@ export default function RegisterScreen({ }: Props) {
               setValue={setUserEmail}
               placeholder="Email"
               showError={showErrors && !userName}
-
             />
           </View>
           <View>
@@ -131,7 +128,6 @@ export default function RegisterScreen({ }: Props) {
               setValue={setUserCPF}
               placeholder="CPF"
               showError={showErrors && !userName}
-
             />
           </View>
           <View>
@@ -147,11 +143,6 @@ export default function RegisterScreen({ }: Props) {
             btnText="Registrar"
             style={{ marginTop: 5 }}
             onPress={handleSubmit}
-          />
-          <DefaultButton
-            leftIcon={renderGoogleIcon}
-            btnText="Continue com o Google"
-            btnColor="light"
           />
         </View>
 

@@ -32,11 +32,11 @@ type CreateTravelScreenProps = NativeStackNavigationProp<
 export default function CreateTravelScreen() {
   const { userData, refreshUserData } = useAuth();
   const [matches, setMatches] = useState<any[]>([]);
-  const [game, setGame] = useState("");
-  const [time, setTime] = useState(new Date());
+  const [gameId, setGameId] = useState<number | null>(null);
+  const [match, setMatch] = useState<any | null>(null);
+  const [time, setTime] = useState<Date | null>(null);
   const [stadiumName, setStadiumName] = useState<string | null>(null);
   const [stadiumCoords, setStadiumCoords] = useState<CoordsPoint | null>(null);
-  const [gameTeams, setGameTeams] = useState<any>({});
   const [space, setSpace] = useState("");
   const [vehicle, setVehicle] = useState("");
   const [valuePerPerson, setValuePerPerson] = useState("");
@@ -92,14 +92,14 @@ export default function CreateTravelScreen() {
 
   useEffect(() => {
     async function fetchGameDetails() {
-      if (game) {
+      if (gameId) {
         try {
-          const match = await fetchMatchById(game);
-          if (match?.stadium?.name) {
-            setStadiumName(match.stadium.name);
-            const coords: CoordsPoint | null = await geocodeAddress(
-              match.stadium.name
-            );
+          const fetchedMatch = await fetchMatchById(gameId);
+          setMatch(fetchedMatch);
+
+          if (fetchedMatch?.stadium?.name) {
+            setStadiumName(fetchedMatch.stadium.name);
+            const coords = await geocodeAddress(fetchedMatch.stadium.name);
             setStadiumCoords(coords);
             setGameTeams({
               timeCasa: match.teams.home.name,
@@ -108,17 +108,29 @@ export default function CreateTravelScreen() {
             });
           } else {
             setStadiumName("Estádio não informado");
+            setStadiumCoords(null);
+          }
+
+          if (fetchedMatch.date) {
+            const [day, month, year] = fetchedMatch.date.split('/').map(Number);
+            const [hour, minute] = fetchedMatch.time.split(':').map(Number);
+            const gameDate = new Date(year, month - 1, day, hour, minute);
+            setTime(gameDate);
+          } else {
+            setTime(null);
           }
         } catch (error) {
           console.error(error);
         }
       } else {
+        setMatch(null);
         setStadiumName(null);
         setStadiumCoords(null);
+        setTime(null);
       }
     }
     fetchGameDetails();
-  }, [game]);
+  }, [gameId]);
 
   const gamesOptions = useMemo(() => {
     function getTimestamp(jogo: any) {
@@ -186,15 +198,11 @@ export default function CreateTravelScreen() {
     try {
       const dto: CreateTravelType = {
         motoristaId: userData.data.id,
-        jogo: {
-          id: Number(game),
-          nomeEstadio: stadiumName,
-          timeCasa: gameTeams.timeCasa,
-          timeFora: gameTeams.timeFora,
-          dataJogo: gameTeams.dataJogo,
-        },
+        jogo: match,
         origem_lat: starterPoint.latitude,
         origem_long: starterPoint.longitude,
+        destino_lat: stadiumCoords?.latitude || 0,
+        destino_long: stadiumCoords?.longitude || 0,
         horario: time.toISOString(),
         qtdVagas: Number(space),
         temRetorno: hasReturn,
@@ -262,8 +270,14 @@ export default function CreateTravelScreen() {
 
           <SelectInput
             label="Jogo"
-            selectedValue={game}
-            onValueChange={setGame}
+            selectedValue={gameId !== null ? gameId.toString() : ""}
+            onValueChange={(value) => {
+              if (value === "") {
+                setGameId(null);
+              } else {
+                setGameId(Number(value));
+              }
+            }}
             options={gamesOptions}
           />
 
@@ -304,10 +318,11 @@ export default function CreateTravelScreen() {
           <View className="flex-row items-center">
             <TimePickerInput
               label="Horário da partida"
-              value={time}
+              value={time ?? new Date()}
               onChange={setTime}
               accessoryLeft={renderTimerPicker}
               styles={{ height: 55, width: "100%" }}
+              disabled={!time}
             />
           </View>
 

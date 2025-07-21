@@ -10,13 +10,15 @@ import {
   Switch,
 } from "react-native";
 import PickerOption from "./PickerOption";
+import { TeamType } from "../../types/teams";
+import { Entypo } from "@expo/vector-icons";
+import TimePickerInput from "../commom/TimePickerInput";
 
 // Tipos
 export interface FilterData {
   team: string;
-  stadium: string;
   championship: string;
-  date: string;
+  date: Date | null;
   time: string;
   nearby: boolean;
 }
@@ -27,6 +29,7 @@ interface FiltersModalProps {
   onApplyFilters: (filters: FilterData) => void;
   onClearFilters: () => void;
   initialFilters?: Partial<FilterData>;
+  teams: TeamType[];
 }
 
 const FiltersModal: React.FC<FiltersModalProps> = ({
@@ -35,19 +38,17 @@ const FiltersModal: React.FC<FiltersModalProps> = ({
   onApplyFilters,
   onClearFilters,
   initialFilters = {},
+  teams,
 }) => {
   // Estados dos filtros
   const [selectedTeam, setSelectedTeam] = useState<string>(
     initialFilters.team || ""
   );
-  const [selectedStadium, setSelectedStadium] = useState<string>(
-    initialFilters.stadium || ""
-  );
   const [selectedChampionship, setSelectedChampionship] = useState<string>(
     initialFilters.championship || ""
   );
-  const [selectedDate, setSelectedDate] = useState<string>(
-    initialFilters.date || ""
+  const [selectedDate, setSelectedDate] = useState<Date | null>(
+    initialFilters.date ?? null
   );
   const [selectedTime, setSelectedTime] = useState<string>(
     initialFilters.time || ""
@@ -56,30 +57,7 @@ const FiltersModal: React.FC<FiltersModalProps> = ({
     initialFilters.nearby || false
   );
 
-  // Dados estáticos - podem vir de props se necessário
-  const teams: string[] = [
-    "Flamengo",
-    "Corinthians",
-    "Palmeiras",
-    "São Paulo",
-    "Santos",
-    "Vasco",
-  ];
-
-  const stadiums: string[] = [
-    "Maracanã",
-    "Arena Corinthians",
-    "Allianz Parque",
-    "Morumbi",
-    "Vila Belmiro",
-  ];
-
-  const championships: string[] = [
-    "Brasileirão",
-    "Copa do Brasil",
-    "Libertadores",
-    "Estadual",
-  ];
+  const championships: string[] = ["Copa do Brasil", "Serie B", "Serie A"];
 
   const timeOptions: string[] = ["Manhã", "Tarde", "Noite"];
 
@@ -87,7 +65,6 @@ const FiltersModal: React.FC<FiltersModalProps> = ({
   const handleApply = (): void => {
     const appliedFilters: FilterData = {
       team: selectedTeam,
-      stadium: selectedStadium,
       championship: selectedChampionship,
       date: selectedDate,
       time: selectedTime,
@@ -99,9 +76,8 @@ const FiltersModal: React.FC<FiltersModalProps> = ({
 
   const handleClear = (): void => {
     setSelectedTeam("");
-    setSelectedStadium("");
     setSelectedChampionship("");
-    setSelectedDate("");
+    setSelectedDate(null);
     setSelectedTime("");
     setNearbyOnly(false);
     onClearFilters();
@@ -110,6 +86,12 @@ const FiltersModal: React.FC<FiltersModalProps> = ({
   const handleTimeSelection = (period: string): void => {
     setSelectedTime(selectedTime === period ? "" : period);
   };
+
+  const renderTimerPicker = () => (
+    <TouchableOpacity>
+      <Entypo name="calendar" size={24} color="black" />
+    </TouchableOpacity>
+  );
 
   return (
     <Modal
@@ -135,18 +117,10 @@ const FiltersModal: React.FC<FiltersModalProps> = ({
         <ScrollView className="flex-1 p-4">
           <PickerOption
             label="Time"
-            options={teams}
+            options={teams.map((t) => t.name)}
             value={selectedTeam}
             onValueChange={setSelectedTeam}
             placeholder="Todos os times"
-          />
-
-          <PickerOption
-            label="Estádio"
-            options={stadiums}
-            value={selectedStadium}
-            onValueChange={setSelectedStadium}
-            placeholder="Todos os estádios"
           />
 
           <PickerOption
@@ -158,15 +132,17 @@ const FiltersModal: React.FC<FiltersModalProps> = ({
           />
 
           {/* Data */}
-          <View className="mb-4">
+          <View>
             <Text className="text-sm font-medium text-gray-700 mb-2">Data</Text>
-            <TextInput
-              value={selectedDate}
-              onChangeText={setSelectedDate}
-              placeholder="DD/MM/AAAA"
-              className="border border-gray-300 rounded-lg p-3 text-gray-700"
-              placeholderTextColor="#9CA3AF"
+            <TimePickerInput
+              value={selectedDate ?? new Date()}
+              onChange={setSelectedDate}
+              mode="date"
+              accessoryLeft={renderTimerPicker}
             />
+            <Text className="mt-2 text-gray-700">
+              {selectedDate ? null : "Nenhuma data selecionada"}
+            </Text>
           </View>
 
           {/* Horário */}
@@ -207,7 +183,7 @@ const FiltersModal: React.FC<FiltersModalProps> = ({
                   Mostrar apenas caronas próximas
                 </Text>
                 <Text className="text-xs text-gray-500 mt-1">
-                  Até 5km da sua localização
+                  Até 10km da sua localização
                 </Text>
               </View>
               <Switch

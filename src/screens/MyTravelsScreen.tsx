@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
 import { getTravels } from "../services/travelService";
 
@@ -64,7 +65,15 @@ export default function MyTravelsScreen({}: Props) {
 
   return (
     <View className="flex-1 p-4 bg-white">
-      <Text className="text-lg font-semibold mb-4">Minhas Viagens</Text>
+      <View className="mb-4">
+        <TouchableOpacity
+          onPress={fetchTravels}
+          className="flex-row items-center bg-black px-4 py-2 rounded"
+        >
+          <FontAwesome5 name="sync" size={16} color="#fff" />
+          <Text className="text-white ml-2">Atualizar</Text>
+        </TouchableOpacity>
+      </View>
       {travels.length === 0 ? (
         <Text>Você ainda não possui viagens cadastradas.</Text>
       ) : (

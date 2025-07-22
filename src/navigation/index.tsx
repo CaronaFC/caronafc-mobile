@@ -9,11 +9,12 @@ import ResetPassword from "../screens/ResetPassword";
 import TabNavigator from "./TabNavigator";
 import VehicleCreationScreen from "../screens/VehicleCreationScreen";
 import VehicleScreen from "../screens/VehicleScreen";
-import TravelRequestsScreen from "../screens/TravelRequests"
+import TravelRequestsScreen from "../screens/TravelRequests";
 import { useAuth } from "../context/AuthContext";
 import { ActivityIndicator, View } from "react-native";
 import { TouchableOpacity, Text } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import TravelDetailScreen from "../components/commom/TravelDetailScreen";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -27,7 +28,8 @@ export type RootStackParamList = {
   Vehicle: undefined;
   ForgotPassword: undefined;
   ResetPassword: { email: string } | undefined;
-  TravelRequests: { id: number, travel: string };
+  TravelRequests: { id: number; travel: string };
+  TravelDetail: { id: number };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -76,6 +78,14 @@ export default function RootNavigator() {
             component={VehicleCreationScreen}
             options={{
               title: "Cadastro de Veículo",
+              headerShown: true,
+            }}
+          />
+          <Stack.Screen
+            name="TravelDetail"
+            component={TravelDetailScreen}
+            options={{
+              title: "Viagem",
               headerShown: true,
             }}
           />

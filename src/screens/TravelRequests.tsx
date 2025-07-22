@@ -1,17 +1,30 @@
-import { Text, View, FlatList, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { useEffect, useState, useCallback } from "react";
 
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 
-import { fetchSolicitationsByTripId, updateSolicitationStatus } from "../services/requestsService";
-import { TravelAPIResponseType } from "../types/travel"
+import {
+  fetchSolicitationsByTripId,
+  updateSolicitationStatus,
+} from "../services/requestsService";
+import { TravelAPIResponseType } from "../types/travel";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { RequestType } from "../types/request";
 
 type TravelRequestsRouteProp = RouteProp<RootStackParamList, "TravelRequests">;
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, "TravelRequests">;
+type NavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "TravelRequests"
+>;
 
 export default function TravelRequestsScreen() {
   const navigation = useNavigation<NavigationProp>();
@@ -20,11 +33,14 @@ export default function TravelRequestsScreen() {
   const { id, travel } = route.params;
 
   const [loading, setLoading] = useState<boolean>(true);
-  const [solicitations, setSolicitations] = useState([]);
+  const [solicitations, setSolicitations] = useState<RequestType[]>([]);
   const [travels, setTravels] = useState<TravelAPIResponseType[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const handleUpdateStatus = async (solicitacaoId: number, status: "aceita" | "recusada") => {
+  const handleUpdateStatus = async (
+    solicitacaoId: number,
+    status: "aceita" | "recusada"
+  ) => {
     try {
       await updateSolicitationStatus(solicitacaoId, status);
       fetchTravelRequests();
@@ -47,7 +63,7 @@ export default function TravelRequestsScreen() {
     }
   }, [id]);
 
-  useEffect(() => { 
+  useEffect(() => {
     fetchTravelRequests();
   }, [fetchTravelRequests]);
 
@@ -59,18 +75,23 @@ export default function TravelRequestsScreen() {
 
       <View className="flex-row items-center space-x-2 mb-1 gap-2">
         <FontAwesome5 name="envelope" size={14} color="#2563EB" />
-        <Text className="text-gray-700">{item.usuario?.email ?? "Sem e-mail"}</Text>
+        <Text className="text-gray-700">
+          {item.usuario?.email ?? "Sem e-mail"}
+        </Text>
       </View>
 
       <View className="flex-row items-center space-x-2 mb-1 gap-2">
         <FontAwesome5 name="phone" size={14} color="#22C55E" />
-        <Text className="text-gray-700">{item.usuario?.numero ?? "Sem número"}</Text>
+        <Text className="text-gray-700">
+          {item.usuario?.numero ?? "Sem número"}
+        </Text>
       </View>
 
       <View className="flex-row items-center space-x-2 mb-1 gap-2">
         <FontAwesome5 name="clock" size={14} color="#6366F1" />
         <Text className="text-gray-700">
-          Solicitado em: {new Date(item.dataSolicitacao).toLocaleString("pt-BR")}
+          Solicitado em:{" "}
+          {new Date(item.dataSolicitacao).toLocaleString("pt-BR")}
         </Text>
       </View>
 
@@ -85,16 +106,20 @@ export default function TravelRequestsScreen() {
             className="flex-1 mr-2 bg-green-600 rounded-md py-2"
             onPress={() => handleUpdateStatus(item.id, "aceita")}
           >
-            <Text className="text-center text-white font-semibold">Aceitar</Text>
+            <Text className="text-center text-white font-semibold">
+              Aceitar
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             className="flex-1 ml-2 bg-red-600 rounded-md py-2"
             onPress={() => handleUpdateStatus(item.id, "recusada")}
           >
-            <Text className="text-center text-white font-semibold">Recusar</Text>
+            <Text className="text-center text-white font-semibold">
+              Recusar
+            </Text>
           </TouchableOpacity>
-      </View>
+        </View>
       )}
     </View>
   );
@@ -103,13 +128,17 @@ export default function TravelRequestsScreen() {
     <View className="flex-1 p-5 bg-gray-50">
       <View className="mb-5">
         <Text className="text-2xl font-bold text-gray-800 mb-1">{travel}</Text>
-        <Text className="text-lg text-gray-600">Solicitações desta viagem:</Text>
+        <Text className="text-lg text-gray-600">
+          Solicitações desta viagem:
+        </Text>
       </View>
 
       {loading && (
         <View className="flex-1 justify-center items-center mt-10">
           <ActivityIndicator size="large" color="#1E40AF" />
-          <Text className="mt-2 text-blue-700 font-semibold">Carregando solicitações...</Text>
+          <Text className="mt-2 text-blue-700 font-semibold">
+            Carregando solicitações...
+          </Text>
         </View>
       )}
 

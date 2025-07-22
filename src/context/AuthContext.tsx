@@ -10,10 +10,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserById, getUserProfile } from "../services/userService";
 import { LoginResponseType } from "../types/auth";
 import { setAccessToken } from "../lib/token";
-import { UserType } from "../types/user";
+import { UserTypeAPI } from "../types/user";
 
 type AuthContextType = {
-  userData: UserType | null;
+  userData: UserTypeAPI | null;
   login: (userInfo: LoginResponseType) => Promise<void>;
   logout: () => void;
   isLoading: false | true;
@@ -26,7 +26,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const logoutRef = createRef<() => void>();
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [userData, setUserData] = useState<UserType | null>(null);
+  const [userData, setUserData] = useState<UserTypeAPI | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [userToken, setUserToken] = useState<string | null>(null);
 
@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const userInfoRaw = await AsyncStorage.getItem("userInfo");
 
       if (userInfoRaw) {
-        const userInfo = JSON.parse(userInfoRaw) as UserType;
+        const userInfo = JSON.parse(userInfoRaw) as UserTypeAPI;
         console.log("userINfo", userInfo);
         setUserToken(userToken ?? "");
         setUserData(userInfo);

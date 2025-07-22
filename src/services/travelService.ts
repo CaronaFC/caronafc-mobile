@@ -23,3 +23,15 @@ export async function getTravels(filters?: {
     throw new Error("Erro inesperado ao buscar viagens.");
   }
 }
+
+export async function getTravelById(
+  id: number
+): Promise<TravelAPIResponseType> {
+  try {
+    const response = await api.get(`/viagem/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Erro inesperado ao buscar a viagem.");
+  }
+}

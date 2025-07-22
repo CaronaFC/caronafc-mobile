@@ -1,23 +1,28 @@
 import { api } from "../lib/api";
+import { RequestType } from "../types/request";
 
 export async function openRequest(id: number): Promise<any> {
   try {
     const response = await api.post("/solicitacoes", { viagemId: id });
-    
+
     if (response.status === 201) {
       return response.data;
     } else {
       throw new Error(`Status inesperado: ${response.status}`);
     }
-  } catch (error: any) {  
+  } catch (error: any) {
     if (error.response && error.response.status === 403) {
-      throw new Error(error.response.data.message || "Você já solicitou essa viagem.");
+      throw new Error(
+        error.response.data.message || "Você já solicitou essa viagem."
+      );
     }
     throw new Error("Erro inesperado ao pedir uma solicitação.");
   }
 }
 
-export async function fetchSolicitationsByTripId(id: number): Promise<any> {
+export async function fetchSolicitationsByTripId(
+  id: number
+): Promise<RequestType[]> {
   try {
     const response = await api.get(`/solicitacoes/viagem/${id}`);
     return response.data;

@@ -5,7 +5,6 @@ import {
   Text,
   Image,
   Pressable,
-  ToastAndroid,
   KeyboardAvoidingView,
   Platform,
   Alert,
@@ -58,7 +57,7 @@ export default function LoginScreen() {
       }
 
       await login(response.data);
-      ToastAndroid.show("Login realizado com sucesso", ToastAndroid.SHORT);
+      Alert.alert("Login realizado com sucesso");
     } catch (error: any) {
       setIsLoading(false);
       Alert.alert(error.message || "Erro desconhecido");

@@ -2,7 +2,6 @@ import React from "react";
 import {
   View,
   Text,
-  ToastAndroid,
   KeyboardAvoidingView,
   Platform,
   Alert,
@@ -19,7 +18,6 @@ import FormScreenWrapper from "../components/commom/FormScreenWrapper";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { resetPasswordUser } from "../services/authService";
 
-
 type ResetPasswordNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   "ResetPassword"
@@ -31,7 +29,8 @@ export default function ResetPassword() {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const [userNewPassword, setUserNewPassword] = React.useState("");
-  const [userNewConfirmPassword, setUserNewConfirmPassword] = React.useState("");
+  const [userNewConfirmPassword, setUserNewConfirmPassword] =
+    React.useState("");
   const [userCode, setUserCode] = React.useState("");
   const [showErrors, setShowErrors] = React.useState(false);
   type ResetPasswordRouteProp = RouteProp<RootStackParamList, "ResetPassword">;
@@ -115,7 +114,10 @@ export default function ResetPassword() {
                 />
               </View>
 
-              <DefaultButton btnText={isLoading ? "Enviando..." : "Enviar"} onPress={handleSubmit} />
+              <DefaultButton
+                btnText={isLoading ? "Enviando..." : "Enviar"}
+                onPress={handleSubmit}
+              />
             </View>
           </ScrollView>
         </View>

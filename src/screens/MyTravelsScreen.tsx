@@ -148,7 +148,7 @@ export default function MyTravelsScreen({}: Props) {
 
       <TouchableOpacity
         onPress={() => navigation.navigate("TravelRequests", { id: item.id, travel: item.jogo?.estadio?.nome })}
-        className="mt-3 bg-blue-600 rounded-md px-4 py-2"
+        className="mt-3 bg-black rounded-md px-4 py-2"
         activeOpacity={0.8}
       >
         <Text className="text-white font-semibold text-center">Ver solicitações</Text>

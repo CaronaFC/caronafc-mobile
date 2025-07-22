@@ -81,7 +81,7 @@ export default function ForgotPassword() {
               <TextInput
                 label="Email"
                 value={email}
-                setValue={(text) => setEmail(text.toLowerCase())}
+                setValue={(text) => setEmail(text.trim().toLowerCase())}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 placeholder="Digite seu email da conta que quer recuperar"

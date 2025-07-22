@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text,Platform, KeyboardAvoidingView, Alert } from "react-native";
 import { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import TextInput from "../components/commom/TextInput";
@@ -6,12 +6,13 @@ import DefaultButton from "../components/commom/DefaultButton";
 import SelectInput, { Option } from "../components/commom/SelectInput";
 import { useAuth } from "../context/AuthContext";
 import { getVehiclesTypes, createVehicle } from "../services/vehicleService";
-
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 
 import FipeSelect from "../components/fipe/FipeSelect";
 import FormScreenWrapper from "../components/commom/FormScreenWrapper";
+import { ScrollView } from "react-native-gesture-handler";
 
 type Props = {};
 
@@ -48,7 +49,10 @@ const VehicleCreationScreen = (props: Props) => {
     {
       label: "Placa",
       value: selectedPlate,
-      setValue: setSelectedPlate,
+      setValue: (text: string) => {
+    const upperClean = text.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 7 );
+    setSelectedPlate(upperClean);
+  },
       placeholder: "Placa",
     },
   ];
@@ -96,6 +100,7 @@ const VehicleCreationScreen = (props: Props) => {
       });
       console.log("Vehicle created successfully:", response);
       refreshUserData();
+      Alert.alert("veículo cadastrado com sucesso!");
       navigation.goBack();
     } catch (error) {
       console.error("Error creating vehicle:", error);
@@ -134,58 +139,58 @@ const VehicleCreationScreen = (props: Props) => {
     setSelectedModel("");
     setSelectedTipoVeiculo(newType);
   };
-
+  const insets = useSafeAreaInsets();
   return (
     <FormScreenWrapper>
-      <View className="h-screen bg-primaryWhite">
-        <View
-          style={{ gap: 10, flexDirection: "column" }}
-          className="p-4 gap-y-4 my-14"
-        >
-          <SelectInput
-            label="Tipo de Veículo"
-            selectedValue={selectedType}
-            onValueChange={handleTipoChange}
-            options={vehicleTypes}
-          />
-          <FipeSelect
-            type="brand"
-            dependency={selectedType}
-            selectedValue={selectedBrand}
-            onValueChange={setSelectedBrand}
-            textSelect={setSelectedBrandName}
-          />
-          <FipeSelect
-            type="model"
-            dependency={selectedBrand}
-            vehicleType={selectedType}
-            selectedValue={selectedModel}
-            onValueChange={setSelectedModel}
-            textSelect={setSelectedModelName}
-          />
-          {fields.map((field, index) => (
-            <View key={index}>
-              <TextInput
-                label={field.label}
-                value={field.value}
-                setValue={field.setValue}
-                placeholder={field.placeholder}
+          <View style={{ flex: 1 }} className="bg-primaryWhite">
+            <View
+              style={{ gap: 10, flexDirection: "column" }}
+              className="p-4 gap-y-4 my-14"
+            >
+              <SelectInput
+                label="Tipo de Veículo"
+                selectedValue={selectedType}
+                onValueChange={handleTipoChange}
+                options={vehicleTypes}
+              />
+              <FipeSelect
+                type="brand"
+                dependency={selectedType}
+                selectedValue={selectedBrand}
+                onValueChange={setSelectedBrand}
+                textSelect={setSelectedBrandName}
+              />
+              <FipeSelect
+                type="model"
+                dependency={selectedBrand}
+                vehicleType={selectedType}
+                selectedValue={selectedModel}
+                onValueChange={setSelectedModel}
+                textSelect={setSelectedModelName}
+              />
+              {fields.map((field, index) => (
+                <View key={index}>
+                  <TextInput
+                    label={field.label}
+                    value={field.value}
+                    setValue={field.setValue}
+                    placeholder={field.placeholder}
+                  />
+                </View>
+              ))}
+              <SelectInput
+                label="Cor"
+                selectedValue={selectedColor}
+                onValueChange={setSelectedColor}
+                options={colors}
+              />
+              <DefaultButton
+                btnText="Cadastrar Veículo"
+                className="mt-5"
+                onPress={handleSubmit}
               />
             </View>
-          ))}
-          <SelectInput
-            label="Cor"
-            selectedValue={selectedBrand}
-            onValueChange={setSelectedColor}
-            options={colors}
-          />
-          <DefaultButton
-            btnText="Cadastrar Veículo"
-            className="mt-5"
-            onPress={handleSubmit}
-          />
-        </View>
-      </View>
+          </View>
     </FormScreenWrapper>
   );
 };

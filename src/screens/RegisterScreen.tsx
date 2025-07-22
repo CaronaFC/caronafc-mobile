@@ -116,7 +116,7 @@ export default function RegisterScreen({}: Props) {
             <TextInput
               label="Email*"
               value={userEmail}
-              setValue={setUserEmail}
+              setValue={(text) => setUserEmail(text.trim().toLowerCase())}
               placeholder="Email"
               showError={showErrors && !userName}
             />
@@ -134,7 +134,7 @@ export default function RegisterScreen({}: Props) {
             <TextInput
               label="Telefone"
               value={userPhone}
-              setValue={setUserPhone}
+              setValue={(text)=>setUserPhone(text.trim())}
               placeholder="Telefone"
             />
           </View>

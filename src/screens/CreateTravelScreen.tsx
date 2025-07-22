@@ -176,7 +176,7 @@ export default function CreateTravelScreen() {
   ];
 
   const renderTimerPicker = () => (
-    <TouchableOpacity>
+    <TouchableOpacity >
       <MaterialCommunityIcons name="timer-outline" size={32} color="black" />
     </TouchableOpacity>
   );
@@ -304,7 +304,7 @@ export default function CreateTravelScreen() {
               value={valuePerPerson}
               setValue={setValuePerPerson}
               label="Valor por pessoa"
-              placeholder="0.00"
+              placeholder="R$ 0,00"
               keyboardType="numeric"
             />
 

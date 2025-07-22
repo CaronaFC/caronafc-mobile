@@ -13,7 +13,7 @@ import { TeamType } from "../types/teams";
 import { TravelAPIResponseType } from "../types/travel";
 import { filterTravels } from "../lib/filterTravels";
 import * as Location from "expo-location";
-import { openRequest } from "../services/requestsService"
+import { openRequest } from "../services/requestsService";
 
 type Props = {};
 
@@ -121,7 +121,7 @@ export default function HomeScreen({}: Props) {
               const data = await openRequest(vehicleId);
 
               if (data.status === 201) {
-                Alert.alert("Pedido enviado com sucesso!")
+                Alert.alert("Pedido enviado com sucesso!");
               }
             } catch (error: any) {
               Alert.alert(error.message);
@@ -170,7 +170,11 @@ export default function HomeScreen({}: Props) {
           className="mb-2"
           keyExtractor={(item: any) => item.id}
           renderItem={({ item }) => (
-            <CardTravel {...mapTravelToCardProps(item)} id={item.id} handleRequest={handleRequest}/>
+            <CardTravel
+              {...mapTravelToCardProps(item)}
+              id={item.id}
+              handleRequest={handleRequest}
+            />
           )}
           contentContainerStyle={{ gap: 16, paddingHorizontal: 16 }}
           showsVerticalScrollIndicator={false}

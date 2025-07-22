@@ -1,10 +1,12 @@
-import { TravelAPIResponseType } from "../types/travel"
-import { UserType } from "../types/user"
+import { TravelAPIResponseType } from "../types/travel";
+import { UserDataType } from "../types/user";
 
-export interface Request {
+export type RequestStatus = "pendente" | "aceita" | "recusada";
+
+export type RequestType = {
   id: number;
-  status: string;
-  usuario: UserType;
+  status: RequestStatus;
+  usuario: UserDataType;
   viagem: TravelAPIResponseType;
   dataSolicitacao: string;
-}
+};

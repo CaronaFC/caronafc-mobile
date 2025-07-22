@@ -1,26 +1,26 @@
 import React from "react";
 
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import {
-  View,
-  Text,
+  Alert,
   Image,
-  Pressable,
-  ToastAndroid,
   KeyboardAvoidingView,
   Platform,
-  Alert,
+  Pressable,
+  Text,
+  ToastAndroid,
+  View,
 } from "react-native";
-import HeroImage from "../../assets/images/hero-image.png";
-import TextInput from "../components/commom/TextInput";
-import DefaultButton from "../components/commom/DefaultButton";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../navigation";
-import { useNavigation } from "@react-navigation/native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { loginUser } from "../services/authService";
-import { useAuth } from "../context/AuthContext";
 import { ScrollView } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import HeroImage from "../../assets/images/hero-image.png";
+import DefaultButton from "../components/commom/DefaultButton";
 import FormScreenWrapper from "../components/commom/FormScreenWrapper";
+import TextInput from "../components/commom/TextInput";
+import { useAuth } from "../context/AuthContext";
+import { RootStackParamList } from "../navigation";
+import { loginUser, useGoogleAuth } from "../services/authService";
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -28,6 +28,7 @@ type LoginScreenNavigationProp = NativeStackNavigationProp<
 >;
 export default function LoginScreen() {
   const { login } = useAuth();
+  const { loginFirebase, request } = useGoogleAuth();
   const [userNumberOrEmail, setUserNumberOrEmail] = React.useState("");
   const [userPassword, setUserPassword] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
@@ -36,6 +37,19 @@ export default function LoginScreen() {
   const navigation = useNavigation<LoginScreenNavigationProp>();
 
   const insets = useSafeAreaInsets();
+
+  const handleLoginFirebase = async () => {
+    try{
+      const user = await loginFirebase();
+      if (user) {
+        Alert.alert("Login realizado com sucesso");
+      } else {
+        Alert.alert("Erro ao realizar login com o Google");
+      }
+    } catch (error) {
+      Alert.alert("Erro ao realizar login com o Google");
+    }
+  }
 
   const handleSubmit = async () => {
     try {
@@ -119,6 +133,11 @@ export default function LoginScreen() {
               <Pressable onPress={() => navigation.navigate("ForgotPassword")}>
                 <Text className="text-labelColor mt-4 text-center font-bold">
                   Recupere sua senha
+                </Text>
+              </Pressable>
+              <Pressable onPress={handleLoginFirebase}>
+                <Text className="text-labelColor mt-4 text-center font-bold">
+                  Login com Google
                 </Text>
               </Pressable>
             </View>

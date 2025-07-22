@@ -57,7 +57,10 @@ const CardTravel = ({
               {renderIcon()} {jogo.estadio?.nome || "Estádio Indefinido"}
             </Text>
             <Text className="text-lg text-black font-bold">
-              R$ {valorPorPessoa}
+              {Number(valorPorPessoa).toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
             </Text>
           </View>
           <Text className="text-base font-semibold">

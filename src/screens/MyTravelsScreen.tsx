@@ -5,6 +5,7 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  Alert
 } from "react-native";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
@@ -126,7 +127,6 @@ export default function MyTravelsScreen({}: Props) {
           <FontAwesome5 name="users" size={16} color="#F59E0B" />
           <Text className="text-gray-700 font-semibold ms-2">Vagas: {item.qtdVagas}</Text>
         </View>
-
         <View className="flex-row items-center space-x-1">
           <FontAwesome5 name="money-bill-wave" size={16} color="#22C55E" />
           <Text className="text-gray-700 font-semibold ms-2">
@@ -146,6 +146,24 @@ export default function MyTravelsScreen({}: Props) {
         <Text className="py-2">Nenhum passageiro</Text>
       )}
 
+      <View className="flex-row items-center space-x-1">         
+          <Text className="text-gray-700 font-semibold">Status: {item.status}</Text>
+      </View>
+
+      <TouchableOpacity
+        onPress={() => {
+          if (item.status === "finished") {
+            Alert.alert("Viagem finalizada", "Esta viagem já foi concluída.");
+            return;
+          }
+          navigation.navigate("TravelProgress", { id: item.id });
+        }}
+        className="mt-3 bg-black rounded-md px-4 py-2"
+        activeOpacity={0.8}
+      >
+        <Text className="text-white font-semibold text-center">Acompanhar</Text>
+      </TouchableOpacity>
+      
       <TouchableOpacity
         onPress={() => navigation.navigate("TravelRequests", { id: item.id, travel: item.jogo?.estadio?.nome })}
         className="mt-3 bg-black rounded-md px-4 py-2"

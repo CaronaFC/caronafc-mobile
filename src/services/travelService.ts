@@ -35,3 +35,16 @@ export async function getTravelById(
     throw new Error("Erro inesperado ao buscar a viagem.");
   }
 }
+
+export async function updateTravelStatus(
+  id: number,
+  status: string
+): Promise<TravelAPIResponseType> {
+  try {
+    const response = await api.patch(`/viagem/${id}/status`, { status });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Erro inesperado ao atualizar status da viagem.");
+  }
+}

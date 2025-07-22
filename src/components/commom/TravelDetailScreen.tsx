@@ -68,7 +68,7 @@ const TravelDetailScreen = (props: Props) => {
         <View className="flex-1 gap-5">
           {/* Primeira parada */}
           <View className="flex-row items-start gap-x-12">
-            <Text className="w-12 font-bold">
+            <Text className=" mx-1 font-bold">
               {travel?.horario
                 ? new Date(travel.horario).toLocaleTimeString("pt-BR", {
                     hour: "2-digit",
@@ -84,14 +84,14 @@ const TravelDetailScreen = (props: Props) => {
 
           {/* Segunda parada */}
           <View className="flex-row items-start gap-x-12">
-            <Text className="w-12 font-bold">{travel?.jogo.horario}</Text>
+            <Text className="mx-1 font-bold">{travel?.jogo.horario}</Text>
 
             <View>
               <Text className="font-bold">{travel?.jogo.estadio.nome}</Text>
             </View>
           </View>
 
-          <View className="items-center mx-2 absolute left-14">
+          <View className="items-center mx-8 absolute left-12 top-0">
             <View className="w-2 h-2 rounded-full border-2 bg-white  border-black" />
             <View className="w-0.5 h-12 bg-black" />
             <View className="w-2 h-2 rounded-full border-2 border-black bg-white" />

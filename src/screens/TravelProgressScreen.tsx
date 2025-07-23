@@ -41,7 +41,7 @@ export default function TravelProgress() {
         const data = await getTravelById(id);
         setViagem(data);
 
-        setViagemIniciada(data.status === "progress");
+        setViagemIniciada(data.status === "andamento");
       } catch {
         Alert.alert("Erro ao buscar dados da viagem");
       }
@@ -71,7 +71,7 @@ export default function TravelProgress() {
 
     try {
       setLoadingStatus(true);
-      await updateTravelStatus(id, "progress");
+      await updateTravelStatus(id, "andamento");
       setViagemIniciada(true);
     } catch {
       Alert.alert("Erro ao iniciar viagem.");
@@ -93,7 +93,7 @@ export default function TravelProgress() {
   const finalizarViagem = async () => {
     try {
       setLoadingStatus(true);
-      await updateTravelStatus(id, "finished");
+      await updateTravelStatus(id, "finalizada");
       setViagemIniciada(false);
       Alert.alert("Viagem finalizada com sucesso!");
       navigation.goBack()

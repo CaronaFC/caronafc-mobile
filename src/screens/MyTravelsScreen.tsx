@@ -212,7 +212,7 @@ export default function MyTravelsScreen({}: Props) {
 
       <TouchableOpacity
         onPress={() => {
-          if (item.status === "finished") {
+          if (item.status === "finalizada") {
             Alert.alert("Viagem finalizada", "Esta viagem já foi concluída.");
             return;
           }

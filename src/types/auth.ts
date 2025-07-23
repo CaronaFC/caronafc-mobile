@@ -4,6 +4,7 @@ export type RegisterUserType = {
     numero: string,
     cpf: string,
     senha: string,
+    imagem?: string,
 }
 
 export type RegisterResponseType = {

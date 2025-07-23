@@ -17,6 +17,7 @@ export function mapTravelToCardProps(
     veiculo: item.veiculo,
     motorista: {
       nome: item.motorista.nome_completo,
+      imagem: item.motorista.imagem,
       id: item.motorista.id,
     },
     jogo: item.jogo as Game,

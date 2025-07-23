@@ -38,6 +38,8 @@ export type TravelAPIResponseType = {
   valorPorPessoa: string;
   origem_lat: number;
   origem_long: number;
+  destino_lat: number; 
+  destino_long: number;
   temRetorno: boolean;
   qtdVagas: number;
   veiculo: VeiculoType;

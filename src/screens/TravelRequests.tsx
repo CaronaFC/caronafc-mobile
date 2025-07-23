@@ -4,20 +4,18 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { useEffect, useState, useCallback } from "react";
-
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
-
 import {
   fetchSolicitationsByTripId,
   updateSolicitationStatus,
 } from "../services/requestsService";
-import { TravelAPIResponseType } from "../types/travel";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { RequestType } from "../types/request";
+import { Request } from "../types/request";
 
 type TravelRequestsRouteProp = RouteProp<RootStackParamList, "TravelRequests">;
 
@@ -33,8 +31,7 @@ export default function TravelRequestsScreen() {
   const { id, travel } = route.params;
 
   const [loading, setLoading] = useState<boolean>(true);
-  const [solicitations, setSolicitations] = useState<RequestType[]>([]);
-  const [travels, setTravels] = useState<TravelAPIResponseType[]>([]);
+  const [solicitations, setSolicitations] = useState<Request[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const handleUpdateStatus = async (
@@ -67,27 +64,51 @@ export default function TravelRequestsScreen() {
     fetchTravelRequests();
   }, [fetchTravelRequests]);
 
-  const renderItem = ({ item }: { item: any }) => (
-    <View className="border border-gray-300 rounded-lg p-4 mb-4 bg-white shadow-sm">
-      <Text className="text-gray-800 font-semibold text-lg mb-1">
-        Solicitante: {item.usuario?.nome_completo ?? "Nome não informado"}
-      </Text>
+  const renderUserAvatar = (imagem: string | null | undefined) => {
+    if (imagem) {
+      return (
+        <Image
+          source={{ uri: imagem }}
+          className="w-12 h-12 rounded-full border border-gray-300"
+        />
+      );
+    }
+    return (
+      <View className="w-12 h-12 rounded-full bg-gray-200 items-center justify-center">
+        <FontAwesome5 name="user-alt" size={18} color="#888" />
+      </View>
+    );
+  };
 
-      <View className="flex-row items-center space-x-2 mb-1 gap-2">
+  const renderItem = ({ item }: { item: Request }) => (
+    <View className="border border-gray-200 rounded-xl p-4 mb-4 bg-white shadow-sm">
+      <View className="flex-row items-center gap-3 mb-2">
+        {renderUserAvatar(item.usuario?.imagem)}
+        <View className="flex-1">
+          <Text
+            className="text-gray-800 font-semibold text-lg"
+            numberOfLines={1}
+          >
+            {item.usuario?.nome_completo ?? "Nome não informado"}
+          </Text>
+        </View>
+      </View>
+
+      <View className="flex-row items-center gap-2 mb-1">
         <FontAwesome5 name="envelope" size={14} color="#2563EB" />
         <Text className="text-gray-700">
           {item.usuario?.email ?? "Sem e-mail"}
         </Text>
       </View>
 
-      <View className="flex-row items-center space-x-2 mb-1 gap-2">
+      <View className="flex-row items-center gap-2 mb-1">
         <FontAwesome5 name="phone" size={14} color="#22C55E" />
         <Text className="text-gray-700">
           {item.usuario?.numero ?? "Sem número"}
         </Text>
       </View>
 
-      <View className="flex-row items-center space-x-2 mb-1 gap-2">
+      <View className="flex-row items-center gap-2 mb-1">
         <FontAwesome5 name="clock" size={14} color="#6366F1" />
         <Text className="text-gray-700">
           Solicitado em:{" "}
@@ -95,9 +116,11 @@ export default function TravelRequestsScreen() {
         </Text>
       </View>
 
-      <View className="flex-row items-center space-x-2 mt-2 gap-2">
+      <View className="flex-row items-center gap-2 mt-2">
         <FontAwesome5 name="info-circle" size={14} color="#F59E0B" />
-        <Text className="text-gray-700 font-medium">Status: {item.status}</Text>
+        <Text className="text-gray-700 font-medium">
+          Status: {item.status}
+        </Text>
       </View>
 
       {item.status === "pendente" && (

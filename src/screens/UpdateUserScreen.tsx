@@ -45,7 +45,7 @@ export default function UpdateProfile() {
       });
 
       Alert.alert("Sucesso", "Perfil atualizado com sucesso.");
-      navigation.navigate('Profile'); // Redireciona para a tela de login após atualização
+      navigation.goBack();
     } catch (error: any) {
       Alert.alert("Erro", error.message || "Falha ao atualizar perfil.");
     } finally {

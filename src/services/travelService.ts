@@ -24,12 +24,27 @@ export async function getTravels(filters?: {
   }
 }
 
-export async function getTravel(travelId: number): Promise<any> {
+export async function getTravelById(
+  id: number
+): Promise<TravelAPIResponseType> {
   try {
-    const response = await api.get(`/viagem/${travelId}`);
+    const response = await api.get(`/viagem/${id}`);
     return response.data;
   } catch (error) {
     console.error(error);
-    throw new Error("Erro inesperado ao buscar detalhes da viagem.");
+    throw new Error("Erro inesperado ao buscar a viagem.");
+  }
+}
+
+export async function updateTravelStatus(
+  id: number,
+  status: string
+): Promise<TravelAPIResponseType> {
+  try {
+    const response = await api.patch(`/viagem/${id}/status`, { status });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Erro inesperado ao atualizar status da viagem.");
   }
 }

@@ -5,18 +5,30 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  Alert
 } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
 import { getTravels } from "../services/travelService";
 
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../navigation";
+
 type Props = {};
+
+type ProfileScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "MyTravelsScreen"
+>;
 
 export default function MyTravelsScreen({}: Props) {
   const { userData } = useAuth();
   const [travels, setTravels] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const navigation = useNavigation<ProfileScreenNavigationProp>();
 
   const fetchTravels = useCallback(async () => {
     if (!userData?.data?.id) {
@@ -115,7 +127,6 @@ export default function MyTravelsScreen({}: Props) {
           <FontAwesome5 name="users" size={16} color="#F59E0B" />
           <Text className="text-gray-700 font-semibold ms-2">Vagas: {item.qtdVagas}</Text>
         </View>
-
         <View className="flex-row items-center space-x-1">
           <FontAwesome5 name="money-bill-wave" size={16} color="#22C55E" />
           <Text className="text-gray-700 font-semibold ms-2">
@@ -123,6 +134,43 @@ export default function MyTravelsScreen({}: Props) {
           </Text>
         </View>
       </View>
+
+      {item.passageiros && item.passageiros.length > 0 ? (
+        item.passageiros.map((passageiro: any) => (
+          <View key={passageiro.id} className="flex-row items-center gap-2">
+            <Ionicons name="person-circle" size={18} color="#000" />
+            <Text className="font-semibold text-lg">{passageiro.nome_completo}</Text>
+          </View>
+        ))
+      ) : (
+        <Text className="py-2">Nenhum passageiro</Text>
+      )}
+
+      <View className="flex-row items-center space-x-1">         
+          <Text className="text-gray-700 font-semibold">Status: {item.status}</Text>
+      </View>
+
+      <TouchableOpacity
+        onPress={() => {
+          if (item.status === "finished") {
+            Alert.alert("Viagem finalizada", "Esta viagem já foi concluída.");
+            return;
+          }
+          navigation.navigate("TravelProgress", { id: item.id });
+        }}
+        className="mt-3 bg-black rounded-md px-4 py-2"
+        activeOpacity={0.8}
+      >
+        <Text className="text-white font-semibold text-center">Acompanhar</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity
+        onPress={() => navigation.navigate("TravelRequests", { id: item.id, travel: item.jogo?.estadio?.nome })}
+        className="mt-3 bg-black rounded-md px-4 py-2"
+        activeOpacity={0.8}
+      >
+        <Text className="text-white font-semibold text-center">Ver solicitações</Text>
+      </TouchableOpacity>
     </View>
   );
 

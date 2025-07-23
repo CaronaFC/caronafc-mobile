@@ -2,17 +2,20 @@ import React from "react";
 
 import LoginScreen from "../screens/LoginScreen";
 
+import { FontAwesome5 } from "@expo/vector-icons";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import RegisterScreen from "../screens/RegisterScreen";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import TravelDetailScreen from "../components/commom/TravelDetailScreen";
+import { useAuth } from "../context/AuthContext";
 import ForgotPassword from "../screens/ForgotPassword";
+import PaymentScreen from "../screens/PaymentScreen";
+import RegisterScreen from "../screens/RegisterScreen";
 import ResetPassword from "../screens/ResetPassword";
-import TabNavigator from "./TabNavigator";
+import TravelProgressScreen from "../screens/TravelProgressScreen";
+import TravelRequestsScreen from "../screens/TravelRequests";
 import VehicleCreationScreen from "../screens/VehicleCreationScreen";
 import VehicleScreen from "../screens/VehicleScreen";
-import { useAuth } from "../context/AuthContext";
-import { ActivityIndicator, View } from "react-native";
-import { TouchableOpacity, Text } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
+import TabNavigator from "./TabNavigator";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -20,11 +23,16 @@ export type RootStackParamList = {
   Register: undefined;
   CreateTravel: undefined;
   MyTravelRequests: undefined;
+  MyTravelsScreen: undefined;
   Profile: undefined;
   VehicleCreation: undefined;
   Vehicle: undefined;
   ForgotPassword: undefined;
   ResetPassword: { email: string } | undefined;
+  TravelRequests: { id: number; travel: string };
+  TravelDetail: { id: number };
+  TravelProgress: { id: number };
+  PaymentScreen: { travelId:number, solicitationId: number}
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -77,6 +85,14 @@ export default function RootNavigator() {
             }}
           />
           <Stack.Screen
+            name="TravelDetail"
+            component={TravelDetailScreen}
+            options={{
+              title: "Viagem",
+              headerShown: true,
+            }}
+          />
+          <Stack.Screen
             name="Vehicle"
             component={VehicleScreen}
             options={({ navigation }) => ({
@@ -92,6 +108,21 @@ export default function RootNavigator() {
                 </TouchableOpacity>
               ),
             })}
+          />
+          <Stack.Screen
+            name="PaymentScreen"
+            component={PaymentScreen}
+            options={{title: "Pagamento"}}
+          />
+          <Stack.Screen
+            name="TravelRequests"
+            component={TravelRequestsScreen}
+            options={{ title: "Solicitações de Viagem" }}
+          />
+          <Stack.Screen
+            name="TravelProgress"
+            component={TravelProgressScreen}
+            options={{ title: "Acompanhamento" }}
           />
         </>
       )}

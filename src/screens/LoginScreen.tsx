@@ -9,8 +9,7 @@ import {
   Platform,
   Pressable,
   Text,
-  ToastAndroid,
-  View,
+  View
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -72,7 +71,7 @@ export default function LoginScreen() {
       }
 
       await login(response.data);
-      ToastAndroid.show("Login realizado com sucesso", ToastAndroid.SHORT);
+      Alert.alert("Login realizado com sucesso");
     } catch (error: any) {
       setIsLoading(false);
       Alert.alert(error.message || "Erro desconhecido");
@@ -108,7 +107,7 @@ export default function LoginScreen() {
               <TextInput
                 label="Email ou número de telefone"
                 value={userNumberOrEmail}
-                setValue={(text) => setUserNumberOrEmail(text.toLowerCase())}
+                setValue={(text) => setUserNumberOrEmail(text.trim().toLowerCase())}
                 autoCapitalize="none"
                 placeholder="Email ou telefone"
                 showError={showErrors && !userNumberOrEmail}
@@ -124,10 +123,10 @@ export default function LoginScreen() {
             </View>
 
             <View className="gap-y-2 mt-4 justify-center">
-              <DefaultButton btnText="Login" onPress={handleSubmit} />
+              <DefaultButton btnText={isLoading ? "Acessando..." : "Login" }onPress={handleSubmit} />
               <Text className="text-center">OR</Text>
               <DefaultButton
-                btnText={isLoading ? "Acessando..." : "Criar conta"}
+                btnText="Criar conta"
                 onPress={() => navigation.navigate("Register")}
               />
               <Pressable onPress={() => navigation.navigate("ForgotPassword")}>

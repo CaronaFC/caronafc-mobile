@@ -1,478 +1,312 @@
 import { FontAwesome5 } from "@expo/vector-icons";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useCallback, useEffect, useState } from "react";
 import {
     ActivityIndicator,
     Alert,
     Linking,
-    Modal,
     ScrollView,
     Text,
     TouchableOpacity,
     View
 } from "react-native";
 import { useAuth } from "../context/AuthContext";
+import { RootStackParamList } from "../navigation";
 import { createPayment, PaymentData, PaymentResponse } from "../services/paymentService";
-import { getTravel } from "../services/travelService";
+import { getTravelById } from "../services/travelService";
+import { RequestPayment } from "../types/request";
 
-type PaymentMethod = 'pix' | 'credit' | 'debit' | 'cash';
+type PaymentScreenRouteProp = RouteProp<RootStackParamList, "PaymentScreen">;
+type PaymentScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "PaymentScreen">;
 
 export default function PaymentScreen() {
-  const { userData, userToken } = useAuth();
-  const route = useRoute();
-  const navigation = useNavigation();
-  const { travelId } = route.params as { travelId: number };
+    const navigation = useNavigation<PaymentScreenNavigationProp>();
+    const route = useRoute<PaymentScreenRouteProp>();
 
-  const [travelDetails, setTravelDetails] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [paymentResponse, setPaymentResponse] = useState<PaymentResponse | null>(null);
-  const [showPaymentDetails, setShowPaymentDetails] = useState(false);
+    // Recebe os dados da viagem via parâmetros
+    const { travelId, solicitationId } = route.params;
 
-  const paymentMethods = [
-    { id: 'pix', name: 'PIX', icon: 'qrcode', color: '#32D74B' },
-    { id: 'credit', name: 'Cartão de Crédito', icon: 'credit-card', color: '#007AFF' },
-    { id: 'debit', name: 'Cartão de Débito', icon: 'credit-card', color: '#FF9500' },
-    { id: 'cash', name: 'Dinheiro', icon: 'money-bill', color: '#34C759' },
-  ];
+    const { userData } = useAuth();
 
-  const fetchTravelDetails = useCallback(async () => {
-    if (!userData?.data?.id || !userToken) {
-      setError("Usuário não autenticado.");
-      setLoading(false);
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      setError(null);
-      
-      if (!travelId) {
-        throw new Error("ID da viagem não fornecido");
-      }
-      
-      const travelData = await getTravel(travelId);
-      setTravelDetails(travelData);
-    } catch (error: any) {
-      console.error("Error fetching travel details:", error);
-      
-      if (error.response?.status === 401) {
-        setError("Erro de autenticação. Faça login novamente.");
-      } else if (error.response?.status === 404) {
-        setError("Viagem não encontrada.");
-      } else {
-        setError("Erro ao carregar detalhes da viagem.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [travelId, userToken, userData]);
+    const [travelData, setTravelData] = useState<RequestPayment | null>(null);
+    const [travelMotorista, setTravelMotorista] = useState<any>(null);
+    const [travelPassageiro, setTravelPassageiro] = useState<any>(null);
+    const [payment, setPayment] = useState<PaymentResponse | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const [processingPayment, setProcessingPayment] = useState<boolean>(false);
 
-  useEffect(() => {
-    fetchTravelDetails();
-  }, [fetchTravelDetails]);
+    const fetchTravelData = useCallback(async () => {
+        if (!userData?.data.id) {
+            setError("Usuário não autenticado.");
+            setLoading(false);
+            return;
+        }
 
-  const formatDate = (dateString: string) => {
-    try {
-      return new Date(dateString).toLocaleDateString('pt-BR');
-    } catch {
-      return dateString;
-    }
-  };
+        setLoading(true);
+        setError(null);
 
-  const formatCurrency = (value: string | number) => {
-    const numValue = typeof value === 'string' ? parseFloat(value) : value;
-    return numValue.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    });
-  };
+        try {
+            // Buscar dados da viagem
+            const travel = await getTravelById(travelId);
 
-  const calculateTotal = () => {
-    if (!travelDetails) return 0;
-    const basePrice = parseFloat(travelDetails.valorPorPessoa);
-    const serviceFee = basePrice * 0.05; // Taxa de serviço de 5%
-    return basePrice + serviceFee;
-  };
-
-  const getServiceFee = () => {
-    if (!travelDetails) return 0;
-    const basePrice = parseFloat(travelDetails.valorPorPessoa);
-    return basePrice * 0.05;
-  };
-
-  const handlePayment = () => {
-    if (!selectedPaymentMethod) {
-      Alert.alert("Erro", "Selecione um método de pagamento");
-      return;
-    }
-    setShowConfirmModal(true);
-  };
-
-  const processPayment = async () => {
-    setIsProcessing(true);
-    
-    try {
-      if (!userData?.data?.id || !selectedPaymentMethod || !travelDetails) {
-        throw new Error("Dados insuficientes para processar pagamento");
-      }
-
-      const basePrice = parseFloat(travelDetails.valorPorPessoa);
-      const serviceFee = getServiceFee();
-      const total = calculateTotal();
-
-      const paymentData: PaymentData = {
-        travelId: travelId,
-        passengerId: userData.data.id,
-        paymentMethod: selectedPaymentMethod,
-        amount: basePrice,
-        serviceFee: serviceFee,
-        total: total
-      };
-
-      console.log("Processando pagamento:", paymentData);
-      
-      const response = await createPayment(paymentData);
-      setPaymentResponse(response);
-      
-      console.log("Resposta do pagamento:", response);
-
-      // Tratar diferentes tipos de resposta baseado no método de pagamento
-      if (response.status === 'completed') {
-        setShowConfirmModal(false);
-        Alert.alert(
-          "Pagamento Realizado!", 
-          response.message || "Seu pagamento foi processado com sucesso.",
-          [
-            {
-              text: "OK",
-              onPress: () => navigation.goBack()
-            }
-          ]
-        );
-      } else if (response.status === 'pending') {
-        setShowConfirmModal(false);
-        
-        if (selectedPaymentMethod === 'pix') {
-          // Para PIX, mostrar QR Code ou abrir app
-          setShowPaymentDetails(true);
-          
-          if (response.paymentUrl) {
-            Alert.alert(
-              "PIX Gerado",
-              "Seu código PIX foi gerado. Você pode copiar o código ou abrir no seu app de pagamento.",
-              [
-                {
-                  text: "Copiar Código",
-                  onPress: () => {
-                    // Implementar cópia do código PIX
-                    Alert.alert("Código copiado!", "Cole no seu app de pagamento");
-                  }
+            // Estruturar dados necessários para o pagamento
+            const travelInfo: RequestPayment = {
+                id: travel.id,
+                origem_lat: travel.origem_lat,
+                origem_long: travel.origem_long,
+                destino: travel.jogo.estadio.cidade,
+                estadio: travel.jogo.estadio.nome,
+                data_viagem: travel.jogo.data,
+                horario_viagem: travel.horario,
+                valor: travel.valorPorPessoa,
+                usuario: {
+                    id: userData.data.id,
+                    nome_completo: userData.data.nome_completo,
+                    email: userData.data.email
                 },
-                {
-                  text: "Abrir App",
-                  onPress: () => {
-                    if (response.paymentUrl) {
-                      Linking.openURL(response.paymentUrl);
-                    }
-                  }
+                motorista: {
+                    id: travel.motorista.id,
+                    nome: travel.motorista.nome,
+                    email: travel.motorista.email,
+                    numero: travel.motorista.numero
                 }
-              ]
-            );
-          }
+            };
+
+            setTravelData(travelInfo);
+        } catch (err) {
+            console.error("Erro ao carregar dados da viagem:", err);
+            setError("Erro ao carregar informações da viagem");
+        } finally {
+            setLoading(false);
+        }
+    }, [travelId, userData]);
+
+    const handleCreatePayment = async () => {
+        if (!travelData || !userData) return;
+
+        setProcessingPayment(true);
+
+
+
+        try {
+            const paymentData: PaymentData = {
+                valor: travelData.valor,
+                description: travelData.destino + travelData.estadio,
+                paymentMethod: "pix",
+                notificationUrl: "https://example.com/notification",
+                usuario: {
+                    email: userData.data.email,
+                    first_name: userData.data.nome_completo.split(' ')[0] || '',
+                    last_name: userData.data.nome_completo.split(' ').slice(1).join(' ') || '',
+                    identification: {
+                        type: 'CPF',
+                        number: userData.data.cpf || '',
+                    },
+                },
+                address: {
+                    zip_code: '',
+                    street_name: '',
+                    street_number: '',
+                    neighborhood: '',
+                    city: '',
+                    federal_unit: ''
+                }
+            }
+        const paymentResponse = await createPayment(paymentData);
+        setPayment(paymentResponse);
+
+        // Abrir link do pagamento PIX
+        if (paymentResponse.pixUrl) {
+            await Linking.openURL(paymentResponse.pixUrl);
+        }
+
+    } catch (err: any) {
+        if (err.response?.status === 401) {
+            Alert.alert("Sessão Expirada", "Sua sessão expirou. Faça login novamente.", [
+                { text: "OK", onPress: () => navigation.navigate("Login") }
+            ]);
         } else {
-          // Para outros métodos, aguardar confirmação
-          Alert.alert(
-            "Pagamento Iniciado",
-            response.message || "Aguarde a confirmação do pagamento.",
-            [
-              {
-                text: "OK",
-                onPress: () => navigation.goBack()
-              }
-            ]
-          );
+            Alert.alert("Erro", "Não foi possível processar o pagamento. Tente novamente.");
         }
-      } else {
-        throw new Error(response.message || "Falha no processamento do pagamento");
-      }
-
-    } catch (error: any) {
-      console.error("Erro no pagamento:", error);
-      Alert.alert(
-        "Erro no Pagamento", 
-        error.message || "Falha ao processar pagamento. Tente novamente."
-      );
     } finally {
-      setIsProcessing(false);
+        setProcessingPayment(false);
     }
-  };
+};
 
-  const handlePaymentSuccess = () => {
-    setShowPaymentDetails(false);
-    Alert.alert(
-      "Pagamento Confirmado!",
-      "Sua reserva foi confirmada com sucesso.",
-      [
-        {
-          text: "OK",
-          onPress: () => navigation.goBack()
-        }
-      ]
-    );
-  };
+useEffect(() => {
+    fetchTravelData();
+}, [fetchTravelData]);
 
-  if (loading) {
+if (loading) {
     return (
-      <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#007AFF" />
-        <Text className="mt-2 text-gray-600">Carregando informações da viagem...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View className="flex-1 justify-center items-center p-4 bg-white">
-        <Text className="text-red-500 text-center mb-4 text-lg">{error}</Text>
-        <TouchableOpacity
-          onPress={fetchTravelDetails}
-          className="bg-blue-500 px-6 py-3 rounded-lg"
-        >
-          <Text className="text-white font-semibold">Tentar Novamente</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  if (!travelDetails) {
-    return (
-      <View className="flex-1 justify-center items-center bg-white">
-        <Text className="text-gray-500 text-lg">Viagem não encontrada</Text>
-      </View>
-    );
-  }
-
-  return (
-    <View className="flex-1 bg-gray-50">
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header da Viagem */}
-        <View className="bg-white p-4 shadow-sm">
-          <Text className="text-2xl font-bold text-center mb-2">{travelDetails.destino}</Text>
-          <Text className="text-gray-600 text-center">{formatDate(travelDetails.dataViagem)} • {travelDetails.horario}</Text>
-        </View>
-
-        {/* Resumo da Viagem */}
-        <View className="bg-white mx-4 mt-4 p-4 rounded-lg shadow-sm">
-          <Text className="text-lg font-semibold mb-3 text-gray-800">📍 Detalhes da Viagem</Text>
-          <View className="space-y-2">
-            <View className="flex-row justify-between">
-              <Text className="text-gray-600">Origem:</Text>
-              <Text className="font-medium flex-1 text-right">{travelDetails.origem}</Text>
-            </View>
-            <View className="flex-row justify-between">
-              <Text className="text-gray-600">Destino:</Text>
-              <Text className="font-medium flex-1 text-right">{travelDetails.destino}</Text>
-            </View>
-            <View className="flex-row justify-between">
-              <Text className="text-gray-600">Vagas disponíveis:</Text>
-              <Text className="font-medium">{travelDetails.vagasDisponiveis}</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Informações do Motorista */}
-        <View className="bg-white mx-4 mt-4 p-4 rounded-lg shadow-sm">
-          <Text className="text-lg font-semibold mb-3 text-gray-800">👤 Motorista</Text>
-          <View className="flex-row items-center">
-            <View className="w-12 h-12 bg-blue-500 rounded-full items-center justify-center mr-3">
-              <FontAwesome5 name="user" size={20} color="white" />
-            </View>
-            <View className="flex-1">
-              <Text className="font-semibold text-base">{travelDetails.motorista.nome}</Text>
-              <Text className="text-gray-600">{travelDetails.motorista.telefone}</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Informações do Veículo */}
-        <View className="bg-white mx-4 mt-4 p-4 rounded-lg shadow-sm">
-          <Text className="text-lg font-semibold mb-3 text-gray-800">🚗 Veículo</Text>
-          <View className="space-y-2">
-            <Text className="text-base">{travelDetails.veiculo.marca} {travelDetails.veiculo.modelo}</Text>
-            <Text className="text-gray-600">{travelDetails.veiculo.cor} • {travelDetails.veiculo.placa}</Text>
-            <Text className="text-gray-600">{travelDetails.veiculo.tipoVeiculo.descricao}</Text>
-          </View>
-        </View>
-
-        {/* Passageiros Confirmados */}
-        {travelDetails.passageiros && travelDetails.passageiros.length > 0 && (
-          <View className="bg-white mx-4 mt-4 p-4 rounded-lg shadow-sm">
-            <Text className="text-lg font-semibold mb-3 text-gray-800">
-              👥 Passageiros Confirmados ({travelDetails.passageiros.length})
+        <View className="flex-1 justify-center items-center bg-gray-50">
+            <ActivityIndicator size="large" color="#1E40AF" />
+            <Text className="mt-2 text-blue-700 font-semibold">
+                Carregando informações da viagem...
             </Text>
-            {travelDetails.passageiros.map((passageiro: any, index: number) => (
-              <View key={passageiro.id || index} className="flex-row items-center py-2">
-                <View className="w-8 h-8 bg-green-500 rounded-full items-center justify-center mr-3">
-                  <FontAwesome5 name="check" size={12} color="white" />
-                </View>
-                <Text className="font-medium">{passageiro.nome}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* Resumo do Pagamento */}
-        <View className="bg-white mx-4 mt-4 p-4 rounded-lg shadow-sm">
-          <Text className="text-lg font-semibold mb-3 text-gray-800">💰 Resumo do Pagamento</Text>
-          <View className="space-y-2">
-            <View className="flex-row justify-between">
-              <Text className="text-gray-600">Valor da viagem:</Text>
-              <Text className="font-medium">{formatCurrency(travelDetails.valorPorPessoa)}</Text>
-            </View>
-            <View className="flex-row justify-between">
-              <Text className="text-gray-600">Taxa de serviço (5%):</Text>
-              <Text className="font-medium">{formatCurrency(getServiceFee())}</Text>
-            </View>
-            <View className="border-t border-gray-200 pt-2 mt-2">
-              <View className="flex-row justify-between">
-                <Text className="text-lg font-bold">Total:</Text>
-                <Text className="text-lg font-bold text-green-600">{formatCurrency(calculateTotal())}</Text>
-              </View>
-            </View>
-          </View>
         </View>
+    );
+}
 
-        {/* Métodos de Pagamento */}
-        <View className="bg-white mx-4 mt-4 p-4 rounded-lg shadow-sm">
-          <Text className="text-lg font-semibold mb-3 text-gray-800">💳 Método de Pagamento</Text>
-          {paymentMethods.map((method) => (
+if (error) {
+    return (
+        <View className="flex-1 justify-center items-center px-4 bg-gray-50">
+            <FontAwesome5 name="exclamation-circle" size={50} color="#EF4444" />
+            <Text className="text-red-600 mb-4 text-center font-semibold text-lg">{error}</Text>
             <TouchableOpacity
-              key={method.id}
-              onPress={() => setSelectedPaymentMethod(method.id as PaymentMethod)}
-              className={`flex-row items-center p-3 rounded-lg mb-2 border ${
-                selectedPaymentMethod === method.id
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 bg-gray-50'
-              }`}
+                onPress={fetchTravelData}
+                className="bg-blue-600 px-6 py-3 rounded-lg shadow-md"
+                activeOpacity={0.8}
             >
-              <View
-                className="w-10 h-10 rounded-full items-center justify-center mr-3"
-                style={{ backgroundColor: method.color }}
-              >
-                <FontAwesome5 name={method.icon as any} size={16} color="white" />
-              </View>
-              <Text className="flex-1 font-medium">{method.name}</Text>
-              {selectedPaymentMethod === method.id && (
-                <FontAwesome5 name="check-circle" size={20} color="#007AFF" />
-              )}
+                <Text className="text-white font-semibold text-lg">Tentar novamente</Text>
             </TouchableOpacity>
-          ))}
         </View>
-      </ScrollView>
+    );
+}
 
-      {/* Botão de Pagamento */}
-      <View className="bg-white p-4 border-t border-gray-200">
-        <TouchableOpacity
-          onPress={handlePayment}
-          disabled={!selectedPaymentMethod}
-          className={`py-4 rounded-lg ${
-            selectedPaymentMethod ? 'bg-green-500' : 'bg-gray-300'
-          }`}
-        >
-          <Text className="text-white text-center font-bold text-lg">
-            Pagar {formatCurrency(calculateTotal())}
-          </Text>
-        </TouchableOpacity>
-      </View>
+if (!travelData) {
+    return (
+        <View className="flex-1 justify-center items-center bg-gray-50">
+            <Text className="text-gray-600">Nenhuma informação disponível</Text>
+        </View>
+    );
+}
 
-      {/* Modal de Confirmação */}
-      <Modal
-        visible={showConfirmModal}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setShowConfirmModal(false)}
-      >
-        <View className="flex-1 bg-black/50 justify-center items-center">
-          <View className="bg-white mx-4 rounded-lg p-6 w-80">
-            <Text className="text-xl font-bold text-center mb-4">Confirmar Pagamento</Text>
-            
-            <View className="mb-4">
-              <Text className="text-gray-600 mb-2">Viagem: {travelDetails.destino}</Text>
-              <Text className="text-gray-600 mb-2">
-                Método: {paymentMethods.find(m => m.id === selectedPaymentMethod)?.name}
-              </Text>
-              <Text className="text-lg font-bold">Total: {formatCurrency(calculateTotal())}</Text>
+return (
+    <ScrollView className="flex-1 bg-gray-50">
+        <View className="p-6">
+            {/* Header */}
+            <View className="mb-6">
+                <Text className="text-2xl font-bold text-gray-800 mb-2">
+                    Finalizar Pagamento
+                </Text>
+                <Text className="text-gray-600">
+                    Confirme os dados da viagem e proceda com o pagamento
+                </Text>
             </View>
 
-            {isProcessing ? (
-              <View className="items-center py-4">
-                <ActivityIndicator size="large" color="#007AFF" />
-                <Text className="mt-2 text-gray-600">Processando pagamento...</Text>
-              </View>
+            {/* Informações da Viagem */}
+            <View className="bg-white rounded-lg p-4 mb-4 shadow-sm border border-gray-200">
+                <Text className="text-lg font-semibold text-gray-800 mb-3 flex-row items-center">
+                    <FontAwesome5 name="route" size={16} color="#1E40AF" /> Detalhes da Viagem
+                </Text>
+
+                <View className="space-y-2">
+                    <View className="flex-row items-center mb-2">
+                        <FontAwesome5 name="map-marker-alt" size={14} color="#22C55E" />
+                        <Text className="ml-3 text-gray-700">
+                            <Text className="font-medium">Coordenadas:</Text> {travelData.origem_lat}, {travelData.origem_long}
+                        </Text>
+                    </View>
+
+                    <View className="flex-row items-center mb-2">
+                        <FontAwesome5 name="flag-checkered" size={14} color="#EF4444" />
+                        <Text className="ml-3 text-gray-700">
+                            <Text className="font-medium">Destino:</Text> {travelData.destino || "Estádio não informado"}
+                        </Text>
+                    </View>
+
+                    <View className="flex-row items-center mb-2">
+                        <FontAwesome5 name="map-pin" size={14} color="#8B5CF6" />
+                        <Text className="ml-3 text-gray-700">
+                            <Text className="font-medium">Cidade:</Text> {travelData.estadio || "Cidade não informada"}
+                        </Text>
+                    </View>
+
+                    <View className="flex-row items-center mb-2">
+                        <FontAwesome5 name="calendar" size={14} color="#6366F1" />
+                        <Text className="ml-3 text-gray-700">
+                            <Text className="font-medium">Data:</Text> {new Date(travelData.data_viagem).toLocaleDateString('pt-BR')}
+                        </Text>
+                    </View>
+                </View>
+            </View>
+
+            {/* Informações do Motorista */}
+            <View className="bg-white rounded-lg p-4 mb-4 shadow-sm border border-gray-200">
+                <Text className="text-lg font-semibold text-gray-800 mb-3 flex-row items-center">
+                    <FontAwesome5 name="user-tie" size={16} color="#1E40AF" /> Motorista
+                </Text>
+
+                <View className="space-y-2">
+                    <View className="flex-row items-center mb-2">
+                        <FontAwesome5 name="user" size={14} color="#6366F1" />
+                        <Text className="ml-3 text-gray-700">{travelData.motorista?.nome}</Text>
+                    </View>
+
+                    <View className="flex-row items-center mb-2">
+                        <FontAwesome5 name="envelope" size={14} color="#2563EB" />
+                        <Text className="ml-3 text-gray-700">{travelData.motorista?.email}</Text>
+                    </View>
+
+                    <View className="flex-row items-center">
+                        <FontAwesome5 name="phone" size={14} color="#22C55E" />
+                        <Text className="ml-3 text-gray-700">{travelData.motorista.numero}</Text>
+                    </View>
+                </View>
+            </View>
+
+            {/* Informações do Passageiro */}
+            <View className="bg-white rounded-lg p-4 mb-4 shadow-sm border border-gray-200">
+                <Text className="text-lg font-semibold text-gray-800 mb-3 flex-row items-center">
+                    <FontAwesome5 name="user-friends" size={16} color="#1E40AF" /> Passageiro
+                </Text>
+
+                <View className="space-y-2">
+                    <View className="flex-row items-center mb-2">
+                        <FontAwesome5 name="user" size={14} color="#6366F1" />
+                        <Text className="ml-3 text-gray-700">{travelData.usuario.nome_completo}</Text>
+                    </View>
+
+                    <View className="flex-row items-center">
+                        <FontAwesome5 name="envelope" size={14} color="#2563EB" />
+                        <Text className="ml-3 text-gray-700">{travelData.usuario.email}</Text>
+                    </View>
+                </View>
+            </View>
+
+            {/* Valor Total */}
+            <View className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <View className="flex-row justify-between items-center">
+                    <Text className="text-lg font-semibold text-green-800">Valor Total:</Text>
+                    <Text className="text-2xl font-bold text-green-600">
+                        R$ {Number(travelData.valor).toFixed(2).replace('.', ',')}
+                    </Text>
+                </View>
+            </View>
+
+            {/* Botão de Pagamento */}
+            {!payment ? (
+                <TouchableOpacity
+                    onPress={handleCreatePayment}
+                    disabled={processingPayment}
+                    className={`${processingPayment ? 'bg-gray-400' : 'bg-blue-600'} rounded-lg py-4 shadow-lg`}
+                    activeOpacity={0.8}
+                >
+                    <View className="flex-row justify-center items-center">
+                        {processingPayment ? (
+                            <ActivityIndicator size="small" color="white" />
+                        ) : (
+                            <FontAwesome5 name="credit-card" size={18} color="white" />
+                        )}
+                        <Text className="text-white font-bold text-lg ml-2">
+                            {processingPayment ? 'Processando...' : 'Pagar com PIX'}
+                        </Text>
+                    </View>
+                </TouchableOpacity>
             ) : (
-              <View className="flex-row space-x-3">
-                <TouchableOpacity
-                  onPress={() => setShowConfirmModal(false)}
-                  className="flex-1 py-3 bg-gray-200 rounded-lg"
-                >
-                  <Text className="text-center font-semibold">Cancelar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={processPayment}
-                  className="flex-1 py-3 bg-green-500 rounded-lg"
-                >
-                  <Text className="text-white text-center font-semibold">Confirmar</Text>
-                </TouchableOpacity>
-              </View>
+                <View className="bg-green-100 border border-green-300 rounded-lg p-4">
+                    <Text className="text-green-800 font-semibold text-center mb-2">
+                        ✅ Pagamento criado com sucesso!
+                    </Text>
+                    <Text className="text-green-700 text-center">
+                        O link do PIX foi aberto automaticamente
+                    </Text>
+                </View>
             )}
-          </View>
         </View>
-      </Modal>
-
-      {/* Modal de Detalhes do Pagamento (PIX, etc.) */}
-      <Modal
-        visible={showPaymentDetails}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setShowPaymentDetails(false)}
-      >
-        <View className="flex-1 bg-black/50 justify-center items-center">
-          <View className="bg-white mx-4 rounded-lg p-6 w-80">
-            <Text className="text-xl font-bold text-center mb-4">
-              {selectedPaymentMethod === 'pix' ? 'Pagamento PIX' : 'Detalhes do Pagamento'}
-            </Text>
-            
-            {paymentResponse && (
-              <View className="mb-4">
-                <Text className="text-gray-600 mb-2">Status: {paymentResponse.status}</Text>
-                <Text className="text-gray-600 mb-2">ID: {paymentResponse.transactionId}</Text>
-                {paymentResponse.qrCode && (
-                  <Text className="text-gray-600 mb-2">QR Code disponível</Text>
-                )}
-              </View>
-            )}
-
-            <View className="flex-row space-x-3">
-              <TouchableOpacity
-                onPress={() => setShowPaymentDetails(false)}
-                className="flex-1 py-3 bg-gray-200 rounded-lg"
-              >
-                <Text className="text-center font-semibold">Fechar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={handlePaymentSuccess}
-                className="flex-1 py-3 bg-green-500 rounded-lg"
-              >
-                <Text className="text-white text-center font-semibold">Pagamento Feito</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-    </View>
-  );
+    </ScrollView>
+);
 }

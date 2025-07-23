@@ -1,10 +1,11 @@
 // src/mappers/mapTravelToCardProps.ts
 
-import { CardTravelProps, TravelAPIResponseType } from "../types/travel";
 import { Game } from '../types/game';
+import { CardTravelProps, TravelAPIResponseType } from "../types/travel";
 
 export function mapTravelToCardProps(
-  item: TravelAPIResponseType
+  item: TravelAPIResponseType,
+  handleRequest: (id:number) => void
 ): CardTravelProps {
   return {
     id: item.id,
@@ -20,6 +21,7 @@ export function mapTravelToCardProps(
       id: item.motorista.id,
     },
     jogo: item.jogo as Game,
+    handleRequest,
   };
 }
 

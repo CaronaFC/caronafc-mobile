@@ -1,21 +1,21 @@
 import { api } from '../lib/api';
+import { AddressType, PassengerTypePayment } from '../types/passanger';
 
 export interface PaymentData {
-  travelId: number;
-  passengerId: number;
+  viagemId?: number;
+  description: string;
   paymentMethod: string;
-  amount: number;
-  serviceFee: number;
-  total: number;
+  notificationUrl: string;
+  usuario: PassengerTypePayment;
+  address?: AddressType; // Optional, if needed
+  valor: string;
 }
 
 export interface PaymentResponse {
   id: number;
-  status: 'pending' | 'completed' | 'failed';
-  transactionId?: string;
-  paymentUrl?: string; // Para PIX ou outros métodos que precisam de redirecionamento
-  qrCode?: string; // Para PIX
-  message: string;
+  status: string;
+  pixUrl?: string;
+  pixCode?: string;
 }
 
 export async function createPayment(paymentData: any): Promise<any> {
@@ -40,7 +40,7 @@ export const confirmPayment = async (paymentId: number): Promise<PaymentResponse
 
 export async function getPaymentById(paymentId: string): Promise<any> {
   try {
-    const response = await api.get(`/pagamento/${paymentId}`);
+    const response = await api.get(`/payments/${paymentId}`);
     return response.data;
   } catch (error) {
     console.error(error);

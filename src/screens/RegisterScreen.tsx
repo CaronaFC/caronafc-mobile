@@ -2,7 +2,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
-import { Text, ToastAndroid, TouchableOpacity, View } from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 import DefaultButton from "../components/commom/DefaultButton";
 import TextInput from "../components/commom/TextInput";
 import { RootStackParamList } from "../navigation";
@@ -61,12 +61,12 @@ export default function RegisterScreen({}: Props) {
         numero: userPhone,
       });
       if (!data) {
-        ToastAndroid.show("Erro ao realizar cadastro.", ToastAndroid.SHORT);
+        Alert.alert("Erro ao realizar cadastro.");
         return;
       }
 
       console.log("response:", data);
-      ToastAndroid.show("Usuário cadastrado com sucesso", ToastAndroid.LONG);
+      Alert.alert("Usuário cadastrado com sucesso");
       navigation.navigate("Login");
     } catch (error) {
       setIsLoading(false);
@@ -116,7 +116,7 @@ export default function RegisterScreen({}: Props) {
             <TextInput
               label="Email*"
               value={userEmail}
-              setValue={setUserEmail}
+              setValue={(text) => setUserEmail(text.trim().toLowerCase())}
               placeholder="Email"
               showError={showErrors && !userName}
             />
@@ -134,7 +134,7 @@ export default function RegisterScreen({}: Props) {
             <TextInput
               label="Telefone"
               value={userPhone}
-              setValue={setUserPhone}
+              setValue={(text)=>setUserPhone(text.trim())}
               placeholder="Telefone"
             />
           </View>

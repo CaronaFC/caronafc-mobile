@@ -40,13 +40,16 @@ export default function ProfileScreen() {
         <MenuItem
           icon={<FontAwesome5 name="motorcycle" size={20} />}
           label="Veículos"
-          onPress={() => navigation.navigate("Vehicle")} />       
+          onPress={() => navigation.navigate("Vehicle")} />
         <MenuItem icon={<Ionicons name="time" size={20} />} label="Histórico de Caronas" />
-        <MenuItem icon={<Feather name="credit-card" size={20} />} label="Carteira" />
+        <MenuItem icon={<Feather name="credit-card" size={20} />}
+         label="Carteira"
+          />
       </View>
 
       <View className="border-t border-b border-gray-300 mt-4">
-        <MenuItem icon={<Feather name="settings" size={20} />} label="Configurações" />
+        <MenuItem icon={<Feather name="user" size={20} />} label="Alterar dados"
+        onPress={() => navigation.navigate("Updateuser",{usuario:userData?.data})} />
         <MenuItem
           icon={<Feather name="log-out" size={20} />}
           label="Sair"

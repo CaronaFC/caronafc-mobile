@@ -44,6 +44,15 @@ export default function ResetPassword() {
         Alert.alert("Email não informado. Retorne e tente novamente.");
         return;
       }
+      if (!userNewPassword || !userNewConfirmPassword || !userCode) {
+        Alert.alert("Preencha todos os campos.");
+        return;
+      }
+
+      if (userNewPassword !== userNewConfirmPassword) {
+        Alert.alert("As senhas não coincidem.");
+        return;
+      }
 
       const msg = await resetPasswordUser({
         email: email,

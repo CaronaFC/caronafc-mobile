@@ -25,7 +25,7 @@ export default function MyTravelRequestsScreen() {
       setSolicitacoes(res);
     } catch (error) {
       console.error(error);
-    } 
+    }
   };
 
   useEffect(() => {

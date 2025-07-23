@@ -20,17 +20,17 @@ export interface PaymentResponse {
 
 export async function createPayment(paymentData: any): Promise<any> {
   try {
-    const response = await api.post('/pagamentos/post', paymentData);
+    const response = await api.post('/pagamentos/pix', paymentData);
     return response.data;
   } catch (error) {
-    console.error(error);
+    console.error(error)
     throw new Error("Erro inesperado ao criar pagamento.");
   }
 }
 
-export async function getPaymentById(paymentId: string): Promise<any> {
+export async function getPaymentById(paymentId: number): Promise<any> {
   try {
-    const response = await api.get(`/paymentos/${paymentId}`);
+    const response = await api.get(`/pagamentos/${paymentId}`);
     return response.data;
   } catch (error) {
     console.error(error);
@@ -40,7 +40,7 @@ export async function getPaymentById(paymentId: string): Promise<any> {
 
 export const cancelPayment = async (paymentId: number): Promise<void> => {
   try {
-    await api.post(`/payments/${paymentId}/cancel`);
+    await api.post(`/pagamentos/${paymentId}/cancel`);
   } catch (error: any) {
     console.error('Erro ao cancelar pagamento:', error);
     throw new Error(error.response?.data?.message || 'Erro ao cancelar pagamento');

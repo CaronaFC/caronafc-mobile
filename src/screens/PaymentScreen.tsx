@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import { RootStackParamList } from "../navigation";
-import { createPayment, PaymentData, PaymentResponse } from "../services/paymentService";
+import { getPaymentById, PaymentResponse } from "../services/paymentService";
 import { getTravelById } from "../services/travelService";
 import { RequestDetails } from "../types/request";
 
@@ -127,39 +127,13 @@ export default function PaymentScreen() {
         if (!travelData || !userData) return;
 
         setProcessingPayment(true);
-
-
-
         try {
-            const paymentData: PaymentData = {
-                valor: travelData.viagem.valor,
-                description: travelData.viagem.destino + travelData.viagem.estadio,
-                paymentMethod: "pix",
-                notificationUrl: "https://example.com/notification",
-                usuario: {
-                    email: userData.data.email,
-                    first_name: userData.data.nome_completo.split(' ')[0] || '',
-                    last_name: userData.data.nome_completo.split(' ').slice(1).join(' ') || '',
-                    identification: {
-                        type: 'CPF',
-                        number: userData.data.cpf || '',
-                    },
-                },
-                address: {
-                    zip_code: '',
-                    street_name: '',
-                    street_number: '',
-                    neighborhood: '',
-                    city: '',
-                    federal_unit: ''
-                }
-            }
-            const paymentResponse = await createPayment(paymentData);
+            const paymentResponse = await getPaymentById(travelData.id);
             setPayment(paymentResponse);
-
             // Abrir link do pagamento PIX
             if (paymentResponse.pixUrl) {
                 await Linking.openURL(paymentResponse.pixUrl);
+                Alert.alert("Pagamento PIX", "O link do PIX foi aberto no navegador.");
             }
 
         } catch (err: any) {

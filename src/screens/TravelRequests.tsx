@@ -66,14 +66,13 @@ const handlePaymentPix = async (item: RequestType) => {
           number: item.usuario.cpf,
         },
       },
-      travelId: travelId,
-      solicitationId: item.id,
     };
 
     console.log("Enviando payload para criação do pagamento:", payload);
 
     try {
       const response = await createPayment(payload);
+      console.log("Resposta do pagamento Pix:", response);
       console.log("Pagamento Pix criado com sucesso:", response);
       // agora você pode exibir o QR CODE no app
     } catch (err) {

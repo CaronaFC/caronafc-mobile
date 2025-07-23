@@ -7,12 +7,14 @@ import TextInput from "../components/commom/TextInput";
 import DefaultButton from "../components/commom/DefaultButton";
 import { LoaderSpinner } from "../components/commom/LoaderSpinner";
 import { updateUser } from "../services/authService";
+import { useAuth } from "../context/AuthContext";
 
-type UpdateProfileRouteProp = RouteProp<RootStackParamList, "UpdateProfile">;
+type UpdateUserRouteProp  = RouteProp<RootStackParamList, "Updateuser">;
 
-export default function UpdateProfile() {
+export default function UpdateUserScreen() {
+  const {refreshUserData } = useAuth()
   const navigation = useNavigation();
-  const route = useRoute<UpdateProfileRouteProp>();
+  const route = useRoute<UpdateUserRouteProp>();
   const { usuario } = route.params;
 
   const [nome, setNome] = useState("");
@@ -34,7 +36,8 @@ export default function UpdateProfile() {
       return;
     }
 
-    setIsLoading(true);
+
+  setIsLoading(true);
 
     try {
       await updateUser({
@@ -43,6 +46,8 @@ export default function UpdateProfile() {
         email: email.trim().toLowerCase(),
         numero: telefone.trim(),
       });
+      console.log("Perfil atualizado com sucesso",usuario);
+      refreshUserData();
 
       Alert.alert("Sucesso", "Perfil atualizado com sucesso.");
       navigation.goBack();
@@ -92,3 +97,4 @@ export default function UpdateProfile() {
     </FormScreenWrapper>
   );
 }
+

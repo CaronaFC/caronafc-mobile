@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Text,
   TouchableOpacity,
@@ -12,6 +13,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 
 import { FontAwesome5 } from "@expo/vector-icons";
+import { createPayment } from "../services/paymentService";
 import {
   fetchSolicitationsByTripId,
   updateSolicitationStatus,
@@ -36,6 +38,51 @@ export default function TravelRequestsScreen() {
   const [solicitations, setSolicitations] = useState<RequestType[]>([]);
   const [travels, setTravels] = useState<TravelAPIResponseType[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+const handlePaymentPix = async (item: RequestType) => {
+    console.log("\n\n\nIniciando pagamento Pix para:", item);
+    const travelId = item.viagem?.id;
+    const amount = item.viagem?.valorPorPessoa;
+
+    if (!travelId || !amount) {
+      Alert.alert("Erro", "Dados da viagem incompletos");
+      return;
+    }
+
+    const nomeParts = item.usuario.nome_completo.split(" ");
+    const firstName = nomeParts[0];
+    const lastName = nomeParts.slice(1).join(" ");
+
+    const payload = {
+      amount: amount,
+      description: `Pagamento pela viagem ${travelId}`,
+      payment_method_id: 'pix',
+      payer: {
+        email: item.usuario.email,
+        first_name: firstName,
+        last_name: lastName || '-',
+        identification: {
+          type: 'CPF',
+          number: item.usuario.cpf,
+        },
+      },
+      travelId: travelId,
+      solicitationId: item.id,
+    };
+
+    console.log("Enviando payload para criação do pagamento:", payload);
+
+    try {
+      const response = await createPayment(payload);
+      console.log("Pagamento Pix criado com sucesso:", response);
+      // agora você pode exibir o QR CODE no app
+    } catch (err) {
+      console.error("Erro ao criar pagamento Pix:", err);
+      Alert.alert("Erro ao pagar", "Tente novamente mais tarde");
+    }
+  };
+
+
 
   const handleUpdateStatus = async (
     solicitacaoId: number,
@@ -105,7 +152,10 @@ export default function TravelRequestsScreen() {
         <View className="flex-row justify-between mt-4">
           <TouchableOpacity
             className="flex-1 mr-2 bg-green-600 rounded-md py-2"
-            onPress={() => handleUpdateStatus(item.id, "aceita")}
+            onPress={() => {
+              handleUpdateStatus(item.id, "aceita")
+              handlePaymentPix(item);
+            }}
           >
             <Text className="text-center text-white font-semibold">
               Aceitar

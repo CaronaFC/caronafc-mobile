@@ -30,7 +30,7 @@ export default function MyTravelRequestsScreen() {
 
   const handleNavigateToPayment = (item: RequestType) => {
     const travelId = item.viagem?.id;
-    
+
     if (!travelId) {
       Alert.alert("Erro", "ID da viagem não encontrado");
       return;
@@ -85,11 +85,10 @@ export default function MyTravelRequestsScreen() {
       <View className="flex-row items-center mb-2">
         <FontAwesome5 name="info-circle" size={14} color="#8B5CF6" />
         <Text className="text-gray-600 ml-2 font-medium">
-          Status: <Text className={`${
-            item.status === 'aceita' ? 'text-green-600' :
-            item.status === 'recusada' ? 'text-red-600' :
-            'text-yellow-600'
-          } font-semibold`}>
+          Status: <Text className={`${item.status === 'aceita' ? 'text-green-600' :
+              item.status === 'recusada' ? 'text-red-600' :
+                'text-yellow-600'
+            } font-semibold`}>
             {item.status}
           </Text>
         </Text>
@@ -105,16 +104,18 @@ export default function MyTravelRequestsScreen() {
       {/* Status visual para diferentes estados */}
       {item.status === "pendente" && (
         <View className="mt-2 bg-yellow-100 border border-yellow-300 rounded-md py-2">
+          <FontAwesome5 name="hourglass-half" size={16} color="yellow" />
           <Text className="text-center text-yellow-800 font-semibold">
-            ⏳ Aguardando Aprovação
+            Aguardando Aprovação
           </Text>
         </View>
       )}
 
       {item.status === "recusada" && (
         <View className="mt-2 bg-red-100 border border-red-300 rounded-md py-2">
+          <FontAwesome5 name="times-circle" size={16} color="red" />
           <Text className="text-center text-red-800 font-semibold">
-            ❌ Solicitação Recusada
+            Solicitação Recusada
           </Text>
         </View>
       )}
@@ -166,7 +167,7 @@ export default function MyTravelRequestsScreen() {
         <FlatList
           data={solicitacoes}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={renderRequestItem} // ✅ Agora usa a função correta
+          renderItem={renderRequestItem} 
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 20 }}
         />

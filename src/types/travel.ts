@@ -50,7 +50,16 @@ export type TravelAPIResponseType = {
   criadoEm: string;
 };
 
-export type TravelPayment ={
+export type TravelDatails = {
+  id: number;
+  destino: string;
+  estadio: string;
+  horario: string;
+  valor: string; 
+  data_viagem: string;
+}
+
+export type TravelPayment = {
   jogo: Game;
   motorista: DriverTypePayment;
   passageiros: PassengerType[];

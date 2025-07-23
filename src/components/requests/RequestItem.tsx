@@ -1,5 +1,5 @@
-import { View, Text } from "react-native";
-import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { Text, View } from "react-native";
 import { Request } from "../../types/request";
 
 export function RequestItem({ item }: { item: Request  }) {

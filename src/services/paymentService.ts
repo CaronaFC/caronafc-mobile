@@ -20,7 +20,7 @@ export interface PaymentResponse {
 
 export async function createPayment(paymentData: any): Promise<any> {
   try {
-    const response = await api.post('/pagamento', paymentData);
+    const response = await api.post('/pagamentos/post', paymentData);
     return response.data;
   } catch (error) {
     console.error(error);
@@ -28,19 +28,9 @@ export async function createPayment(paymentData: any): Promise<any> {
   }
 }
 
-export const confirmPayment = async (paymentId: number): Promise<PaymentResponse> => {
-  try {
-    const response = await api.post(`/payments/${paymentId}/confirm`);
-    return response.data;
-  } catch (error: any) {
-    console.error('Erro ao confirmar pagamento:', error);
-    throw new Error(error.response?.data?.message || 'Erro ao confirmar pagamento');
-  }
-};
-
 export async function getPaymentById(paymentId: string): Promise<any> {
   try {
-    const response = await api.get(`/payments/${paymentId}`);
+    const response = await api.get(`/paymentos/${paymentId}`);
     return response.data;
   } catch (error) {
     console.error(error);

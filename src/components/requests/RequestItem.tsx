@@ -79,9 +79,9 @@ export function RequestItem({ item }: { item: Request  }) {
        <View className="flex-row items-center space-x-2 font-bold">
         <Text className="text-gray-700 font-semibold">
           Status:
-          <Text className={`ms-2 ${statusColorClass}`}>
-            {item.status?.toUpperCase() ?? "N/D"}
-          </Text>
+        </Text>
+        <Text className={`ms-2 ${statusColorClass}`}>
+          {item.status?.toUpperCase() ?? "N/D"}
         </Text>
       </View>
     </View>

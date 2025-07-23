@@ -30,4 +30,5 @@ export type UserDataType = {
 export type DriverType = {
   id: number;
   nome: string;
+  imagem: string | null;
 };

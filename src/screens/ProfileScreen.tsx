@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 
-import { View, Text, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, Image } from "react-native";
 import { Ionicons, FontAwesome5, Feather } from "@expo/vector-icons";
 
 import { useAuth } from "../context/AuthContext"
@@ -26,7 +26,15 @@ export default function ProfileScreen() {
   return (
     <ScrollView className="flex-1 bg-white px-4">
       <View className="items-center my-4">
-        <Ionicons name="person-circle" size={80} color="#aaa" />
+        {userData?.data.imagem ? (
+          <Image
+            source={{ uri: userData.data.imagem }}
+            className="w-24 h-24 rounded-full"
+            resizeMode="cover"
+          />
+        ) : (
+          <Ionicons name="person-circle" size={80} color="#aaa" />
+        )}
         <Text className="text-lg font-semibold mt-2">
           {userData?.data.nome_completo ?? "Usuário Desconhecido"}
         </Text>
@@ -40,7 +48,7 @@ export default function ProfileScreen() {
         <MenuItem
           icon={<FontAwesome5 name="motorcycle" size={20} />}
           label="Veículos"
-          onPress={() => navigation.navigate("Vehicle")} />       
+          onPress={() => navigation.navigate("Vehicle")} />
         <MenuItem icon={<Ionicons name="time" size={20} />} label="Histórico de Caronas" />
         <MenuItem icon={<Feather name="credit-card" size={20} />} label="Carteira" />
       </View>

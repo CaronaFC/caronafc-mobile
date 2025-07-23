@@ -35,3 +35,11 @@ export type ForgotPasswordUserResponseType = {
     id: Number,
     message: string,
 }
+
+export interface UpdateUserType {
+  id: number; // id do usuário para identificar qual atualizar
+  nome_completo?: string;
+  email?: string;
+  numero?: string;
+  // outros campos que queira permitir atualizar
+}

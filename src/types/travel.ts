@@ -38,12 +38,12 @@ export type TravelAPIResponseType = {
   valorPorPessoa: string;
   origem_lat: number;
   origem_long: number;
-  destino_lat: number; 
+  destino_lat: number;
   destino_long: number;
   temRetorno: boolean;
   qtdVagas: number;
   veiculo: VeiculoType;
-  motorista: { id: number; nome_completo: string };
+  motorista: { id: number; nome_completo: string; imagem: string };
   jogo: Game;
   passageiros?: PassengerType[];
   status: string;

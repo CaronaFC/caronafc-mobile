@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
-import { Alert, FlatList, Text, View } from "react-native";
+import { Alert, FlatList, Text, View, Image } from "react-native";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 
 import { getTravelById } from "../../services/travelService";
 import { fetchSolicitationsByTripId } from "../../services/requestsService";
@@ -61,7 +61,7 @@ const TravelDetailScreen = (props: Props) => {
         <Text className="text-2xl font-bold text-center">
           {travel?.jogo?.timeCasa?.nome} vs {travel?.jogo?.timeFora?.nome}
         </Text>
-        <Text className="text-center text-gray-500 mt-1">
+        <Text className="text-center text-gray-900 mt-1">
           {travel?.jogo?.data} às {travel?.jogo?.horario}
         </Text>
       </View>
@@ -77,7 +77,7 @@ const TravelDetailScreen = (props: Props) => {
                   })
                 : "--:--"}
             </Text>
-            <MaterialIcons name="location-on" size={24} color="black" />
+            <MaterialIcons name="location-on" size={24} color="#374151" />
             <Text className="ml-2 text-gray-700 flex-1">{travelOrigin}</Text>
           </View>
 
@@ -85,13 +85,13 @@ const TravelDetailScreen = (props: Props) => {
             <Text className="font-bold w-16 text-center">
               {travel?.jogo?.horario || "--:--"}
             </Text>
-            <MaterialIcons name="stadium" size={24} color="black" />
+            <MaterialIcons name="stadium" size={24} color="#374151" />
             <Text className="ml-2 text-gray-700 flex-1">
               {travel?.jogo?.estadio?.nome || "Estádio indefinido"}
             </Text>
           </View>
           <View className="absolute left-12 top-4 items-center mx-7">
-            <View className="w-0.5 h-10 bg-black my-1" />
+            <View className="w-0.5 h-10 bg-[#374151] my-1" />
           </View>
         </View>
       </View>
@@ -101,14 +101,24 @@ const TravelDetailScreen = (props: Props) => {
           <MaterialIcons name="schedule" size={20} color="#6B7280" />
           <Text className="ml-2">
             Saída:{" "}
-            {travel?.horario
-              ? new Date(travel.horario).toLocaleTimeString("pt-BR", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              : "--:--"}
+            {travel &&
+              new Date(travel?.horario).toLocaleString("pt-BR", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
           </Text>
         </View>
+
+        <View className="flex-row items-center">
+          <AntDesign name="back" size={20} color="#6B7280" />
+          <Text className="ml-2">
+            {travel?.temRetorno ? "Viagem com retorno" : "Viagem sem retorno."}
+          </Text>
+        </View>
+
         <View className="flex-row items-center">
           <MaterialIcons name="directions-car" size={20} color="#6B7280" />
           <Text className="ml-2">
@@ -116,6 +126,7 @@ const TravelDetailScreen = (props: Props) => {
             {travel?.veiculo?.cor})
           </Text>
         </View>
+
         <View className="flex-row items-center">
           <MaterialIcons name="attach-money" size={20} color="#6B7280" />
           <Text className="ml-2">
@@ -142,13 +153,20 @@ const TravelDetailScreen = (props: Props) => {
         </Text>
       </View>
 
-      <View className="flex-row items-center bg-gray-600 p-4 rounded-md">
-        <MaterialIcons name="person" size={20} color="white" />
-        <Text className="ml-2 text-gray-200">
-          Motorista:{" "}
-          <Text className="font-semibold">
-            {travel?.motorista?.nome_completo}
-          </Text>
+      <Text className="text-base font-bold my-2">Motorista:</Text>
+      <View className="flex-row items-center bg-gray-600 p-4 rounded-md gap-4">
+        {travel?.motorista?.imagem ? (
+          <Image
+            source={{ uri: travel.motorista.imagem }}
+            className="w-12 h-12 rounded-full border border-gray-300"
+          />
+        ) : (
+          <View className="w-12 h-12 rounded-full bg-gray-300 items-center justify-center">
+            <MaterialIcons name="person" size={24} color="#888" />
+          </View>
+        )}
+        <Text className="text-white font-semibold">
+          {travel?.motorista?.nome_completo}
         </Text>
       </View>
 
@@ -163,6 +181,7 @@ const TravelDetailScreen = (props: Props) => {
             <CardPassenger
               status={item.status}
               estrelas={3}
+              img={item.usuario.imagem}
               nome={item.usuario.nome_completo}
               usuarioDesde={item.usuario.data_criacao}
             />

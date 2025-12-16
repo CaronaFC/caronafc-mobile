@@ -3,9 +3,9 @@ import SelectInput, { Option } from "../../components/commom/SelectInput";
 import { getFipeBrands, getFipeModels } from "../../services/fipeService";
 
 const fipePathMap: Record<string, string> = {
-  Carro: "carros",
-  Moto: "motos",
-  Caminhão: "caminhoes",
+  Carro: "cars",
+  Moto: "motorcycles",
+  Caminhão: "trucks",
 };
 
 type Props = {
@@ -33,8 +33,8 @@ function FipeSelect({
         const fipePath = fipePathMap[dependency];
         const brands = await getFipeBrands(fipePath);
         const formatted = brands.map((b: any) => ({
-          label: b.nome,
-          value: b.codigo,          
+          label: b.name,
+          value: b.code,          
         }));
         setOptions([{ label: "Selecione uma marca", value: "" }, ...formatted]);
       }
@@ -43,8 +43,8 @@ function FipeSelect({
         const fipePath = fipePathMap[vehicleType];
         const models = await getFipeModels(fipePath, dependency);
         const formatted = models.map((m: any) => ({
-          label: m.nome,
-          value: m.codigo,
+          label: m.name,
+          value: m.code,
         }));
         setOptions([{ label: "Selecione um modelo", value: "" }, ...formatted]);
       }

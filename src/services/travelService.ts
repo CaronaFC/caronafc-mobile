@@ -35,3 +35,8 @@ export async function getTravelById(
     throw new Error("Erro inesperado ao buscar a viagem.");
   }
 }
+
+export async function fetchTravelHistory(usuarioId:number): Promise<TravelAPIResponseType[]> {
+  const { data } = await api.get(`/viagem/${usuarioId}`);
+  return data;
+}

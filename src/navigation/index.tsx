@@ -15,6 +15,20 @@ import { ActivityIndicator, View } from "react-native";
 import { TouchableOpacity, Text } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import TravelDetailScreen from "../components/commom/TravelDetailScreen";
+import { useNavigation } from "@react-navigation/native";
+import HistoryTravelsScreen from "../screens/HistoryTravelsScreen";
+
+const renderLeftArrow = () => {
+  const navigation = useNavigation();
+  return (
+    <TouchableOpacity
+      onPress={() => navigation.goBack()}
+      style={{ marginLeft: 16, paddingRight: 8 }}
+    >
+      <FontAwesome5 name="arrow-left" size={20} />
+    </TouchableOpacity>
+  );
+};
 
 export type RootStackParamList = {
   Login: undefined;
@@ -30,6 +44,7 @@ export type RootStackParamList = {
   ResetPassword: { email: string } | undefined;
   TravelRequests: { id: number; travel: string };
   TravelDetail: { id: number };
+  History:undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -58,8 +73,20 @@ export default function RootNavigator() {
             component={LoginScreen}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+          <Stack.Screen
+            name="Register"
+            component={RegisterScreen}
+            options={{ title: "Cadastro" , headerShown:true,headerLeft: renderLeftArrow,}}
+          />
+          <Stack.Screen
+            name="ForgotPassword"
+            component={ForgotPassword}
+            options={{
+              title: "Recuperar Senha",
+              headerShown: true,
+              headerLeft: renderLeftArrow,
+            }}
+          />
           <Stack.Screen
             name="ResetPassword"
             component={ResetPassword}
@@ -79,6 +106,7 @@ export default function RootNavigator() {
             options={{
               title: "Cadastro de Veículo",
               headerShown: true,
+              headerLeft: renderLeftArrow,
             }}
           />
           <Stack.Screen
@@ -94,7 +122,7 @@ export default function RootNavigator() {
             component={VehicleScreen}
             options={({ navigation }) => ({
               title: "Veículos",
-              headerTitleAlign: "left",
+              headerLeft: renderLeftArrow,
               headerRight: () => (
                 <TouchableOpacity
                   onPress={() => navigation.navigate("VehicleCreation")}
@@ -109,7 +137,18 @@ export default function RootNavigator() {
           <Stack.Screen
             name="TravelRequests"
             component={TravelRequestsScreen}
-            options={{ title: "Solicitações de Viagem" }}
+            options={{
+              title: "Solicitações de Viagem",
+              headerLeft: renderLeftArrow,
+            }}
+          />
+          <Stack.Screen
+            name="History"
+            component={HistoryTravelsScreen}
+            options={{
+              title: "Histórico de caronas",
+              headerLeft: renderLeftArrow,
+            }}
           />
         </>
       )}

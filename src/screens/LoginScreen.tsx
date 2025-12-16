@@ -57,7 +57,6 @@ export default function LoginScreen() {
       }
 
       await login(response.data);
-      Alert.alert("Login realizado com sucesso");
     } catch (error: any) {
       setIsLoading(false);
       Alert.alert(error.message || "Erro desconhecido");
@@ -110,13 +109,13 @@ export default function LoginScreen() {
 
             <View className="gap-y-2 mt-4 justify-center">
               <DefaultButton btnText={isLoading ? "Acessando..." : "Login" }onPress={handleSubmit} />
-              <Text className="text-center">OR</Text>
-              <DefaultButton
-                btnText="Criar conta"
-                onPress={() => navigation.navigate("Register")}
-              />
+              <Pressable onPress={() => navigation.navigate("Register")}>
+                <Text className="text-labelColor mt-8 text-center font-bold">
+                  Crie sua conta
+                </Text>
+              </Pressable>
               <Pressable onPress={() => navigation.navigate("ForgotPassword")}>
-                <Text className="text-labelColor mt-4 text-center font-bold">
+                <Text className="text-labelColor mt-8 text-center font-bold">
                   Recupere sua senha
                 </Text>
               </Pressable>

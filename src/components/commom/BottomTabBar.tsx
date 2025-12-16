@@ -28,7 +28,7 @@ const MyTravelsIcon = () => (
 );
 
 const BottomTabBar = ({ navigation, state }: BottomTabBarProps) => {
-  const hiddenRoutes = ["Login", "Register"];
+  const hiddenRoutes = ["Login", "Registro"];
   const currentRoute = state.routeNames[state.index];
   const tabRouteNames = ["Home", "CreateTravel", "MyTravelRequests", "MyTravels", "Profile"];
   if (hiddenRoutes.includes(currentRoute)) {

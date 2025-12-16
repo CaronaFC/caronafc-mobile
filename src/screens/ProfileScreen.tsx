@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 
-import { View, Text, ScrollView, Image } from "react-native";
+import { View, Text, ScrollView, Image, ActivityIndicator } from "react-native";
 import { Ionicons, FontAwesome5, Feather } from "@expo/vector-icons";
 
 import { useAuth } from "../context/AuthContext"
@@ -48,23 +48,31 @@ export default function ProfileScreen() {
         <MenuItem
           icon={<FontAwesome5 name="motorcycle" size={20} />}
           label="Veículos"
-          onPress={() => navigation.navigate("Vehicle")} />
-        <MenuItem icon={<Ionicons name="time" size={20} />} label="Histórico de Caronas" />
-        <MenuItem icon={<Feather name="credit-card" size={20} />}
-         label="Carteira"
-          />
+          onPress={() => navigation.navigate("Vehicle")}
+        />
+        <MenuItem
+          icon={<Ionicons name="time" size={20} />}
+          label="Histórico de Caronas"
+          onPress={()=>navigation.navigate('History')}
+        />
+        <MenuItem
+          icon={<Feather name="star" size={20} />}
+          label="Avaliações"
+        />
       </View>
 
       <View className="border-t border-b border-gray-300 mt-4">
-        <MenuItem icon={<Feather name="user" size={20} />} label="Alterar dados"
-        onPress={() => navigation.navigate("Updateuser",{usuario:userData?.data})} />
+        <MenuItem
+          icon={<Feather name="settings" size={20} />}
+          label="Configurações"
+          onPress={() => navigation.navigate("Updateuser",{usuario:userData?.data})}
+        />
         <MenuItem
           icon={<Feather name="log-out" size={20} />}
           label="Sair"
           onPress={() => {
-            logout()
-          }
-          }
+            logout();
+          }}
         />
       </View>
     </ScrollView>

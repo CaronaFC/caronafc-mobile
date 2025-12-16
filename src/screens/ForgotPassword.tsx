@@ -77,6 +77,9 @@ export default function ForgotPassword() {
               <Text className="text-2xl font-bold text-center mb-4">
                 Recuperar Senha
               </Text>
+              <Text className="text-lg text-center mb-4">
+                Digite o email da sua conta que deseja recuperar o acesso
+              </Text>
 
               <TextInput
                 label="Email"

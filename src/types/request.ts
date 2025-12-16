@@ -3,7 +3,7 @@ import { UserDataType } from "../types/user";
 
 export type RequestStatus = "pendente" | "aceita" | "recusada";
 
-export type RequestType = {
+export type Request = {
   id: number;
   status: RequestStatus;
   usuario: UserDataType;

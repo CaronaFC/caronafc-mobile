@@ -11,18 +11,21 @@ import * as eva from "@eva-design/eva";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import RootNavigator from "./src/navigation";
 import { navigationRef } from './src/navigation/navigationService';
+import { MotoristaLocationProvider } from "./src/context/TravelContext";
 
 export default function App() {
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<SafeAreaProvider>
-				<AuthProvider>
-					<ApplicationProvider {...eva} theme={eva.light}>
-						<NavigationContainer ref={navigationRef}>
-							<RootNavigator />
-						</NavigationContainer>
-					</ApplicationProvider>
-				</AuthProvider>
+				<MotoristaLocationProvider>
+					<AuthProvider>
+						<ApplicationProvider {...eva} theme={eva.light}>
+							<NavigationContainer ref={navigationRef}>
+								<RootNavigator />
+							</NavigationContainer>
+						</ApplicationProvider>
+					</AuthProvider>
+				</MotoristaLocationProvider>
 			</SafeAreaProvider>
 		</GestureHandlerRootView>
 	)

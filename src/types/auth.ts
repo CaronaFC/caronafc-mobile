@@ -4,6 +4,7 @@ export type RegisterUserType = {
     numero: string,
     cpf: string,
     senha: string,
+    imagem?: string,
 }
 
 export type RegisterResponseType = {
@@ -33,4 +34,12 @@ export type ResetPasswordUserType = {
 export type ForgotPasswordUserResponseType = {
     id: Number,
     message: string,
+}
+
+export interface UpdateUserType {
+  id: number; // id do usuário para identificar qual atualizar
+  nome_completo?: string;
+  email?: string;
+  numero?: string;
+  // outros campos que queira permitir atualizar
 }

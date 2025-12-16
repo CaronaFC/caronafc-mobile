@@ -15,6 +15,8 @@ import { ActivityIndicator, View } from "react-native";
 import { TouchableOpacity, Text } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import TravelDetailScreen from "../components/commom/TravelDetailScreen";
+import TravelProgressScreen from "../screens/TravelProgressScreen";
+import UpdateUserScreen from "../screens/UpdateUserScreen";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -30,6 +32,11 @@ export type RootStackParamList = {
   ResetPassword: { email: string } | undefined;
   TravelRequests: { id: number; travel: string };
   TravelDetail: { id: number };
+  TravelProgress: { id: number };
+  Updateuser: undefined;
+  UpdateProfile: {
+    usuario: { nome_completo: string; email: string; numero: string };
+  };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -85,7 +92,7 @@ export default function RootNavigator() {
             name="TravelDetail"
             component={TravelDetailScreen}
             options={{
-              title: "Viagem",
+              title: "Detalhes",
               headerShown: true,
             }}
           />
@@ -110,6 +117,16 @@ export default function RootNavigator() {
             name="TravelRequests"
             component={TravelRequestsScreen}
             options={{ title: "Solicitações de Viagem" }}
+          />
+          <Stack.Screen
+            name="TravelProgress"
+            component={TravelProgressScreen}
+            options={{ title: "Acompanhamento" }}
+          />
+          <Stack.Screen
+            name="Updateuser"
+            component={UpdateUserScreen}
+            options={{ title: "Usuário" }}
           />
         </>
       )}

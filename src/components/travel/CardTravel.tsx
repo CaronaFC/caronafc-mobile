@@ -48,6 +48,38 @@ const CardTravel = ({
     getOrigemName();
   }, []);
 
+  const renderMotoristaAvatar = () => {
+    if (motorista.imagem) {
+      return (
+        <Image
+          source={{ uri: motorista.imagem }}
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            borderWidth: 1,
+            borderColor: "#ccc",
+          }}
+        />
+      );
+    } else {
+      return (
+        <View
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: "#E5E5E5",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <FontAwesome5 name="user-alt" size={20} color="#888" />
+        </View>
+      );
+    }
+  };
+
   return (
     <View className="bg-secondaryWhite border-2 border-[#BBF7D0] rounded-md">
       <View className="flex-row justify-between bg-[#F0FDF4] p-3">
@@ -87,7 +119,10 @@ const CardTravel = ({
             minute: "2-digit",
           })}
         </Text>
-        <Text>Motorista: {motorista.nome}</Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          {renderMotoristaAvatar()}
+          <Text className="font-semibold">Motorista:</Text><Text>{motorista.nome}</Text>
+        </View>
         <Text>Veiculo: {veiculo.modelo}</Text>
         <Text>Vagas: {qtdVagas}</Text>
         <Text>{temRetorno ? "Viagem com retorno" : "Viagem sem retorno."}</Text>
@@ -117,6 +152,4 @@ const CardTravel = ({
   );
 };
 
-export default CardTravel;
-
-const styles = StyleSheet.create({});
+export default CardTravel

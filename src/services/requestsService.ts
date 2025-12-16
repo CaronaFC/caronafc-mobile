@@ -1,5 +1,5 @@
 import { api } from "../lib/api";
-import { RequestType } from "../types/request";
+import { Request } from "../types/request";
 
 export async function openRequest(id: number): Promise<any> {
   try {

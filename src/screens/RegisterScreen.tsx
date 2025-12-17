@@ -1,16 +1,16 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import * as ImageManipulator from "expo-image-manipulator";
+import * as ImagePicker from "expo-image-picker";
 import React from "react";
-import { Alert, Text, TouchableOpacity, View, Image } from "react-native";
+import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
 import DefaultButton from "../components/commom/DefaultButton";
+import FormScreenWrapper from "../components/commom/FormScreenWrapper";
+import { LoaderSpinner } from "../components/commom/LoaderSpinner";
 import TextInput from "../components/commom/TextInput";
 import { RootStackParamList } from "../navigation";
-import { LoaderSpinner } from "../components/commom/LoaderSpinner";
 import { registerUser } from "../services/authService";
-import FormScreenWrapper from "../components/commom/FormScreenWrapper";
-import * as ImagePicker from "expo-image-picker";
-import * as ImageManipulator from "expo-image-manipulator";
 
 type Props = {};
 
@@ -82,7 +82,7 @@ export default function RegisterScreen({ }: Props) {
       }
 
       const pickerResult = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: 'images',
         allowsEditing: true,
         quality: 1,
       });
@@ -92,15 +92,24 @@ export default function RegisterScreen({ }: Props) {
 
         const manipResult = await ImageManipulator.manipulateAsync(
           asset.uri,
-          [{ resize: { width: 500 } }],
+          [{ resize: { width: 300 } }],
           {
-            compress: 0.3,
+            compress: 0.1,
             format: ImageManipulator.SaveFormat.JPEG,
             base64: true,
           }
         );
 
         if (manipResult.base64) {
+          // Verificar se a imagem não é muito grande
+          const imageSizeKB = (manipResult.base64.length * 3) / 4 / 1024;
+          console.log(`Tamanho da imagem: ${imageSizeKB.toFixed(2)} KB`);
+          
+          if (imageSizeKB > 1000) { // Limitar a 1MB
+            Alert.alert("Erro", "A imagem é muito grande. Tente uma imagem menor.");
+            return;
+          }
+          
           setUserImage(`data:image/jpeg;base64,${manipResult.base64}`);
         }
       }

@@ -1,20 +1,20 @@
-import {
-  Text,
-  View,
-  FlatList,
-  ActivityIndicator,
-  TouchableOpacity,
-  Image,
-} from "react-native";
-import { useEffect, useState, useCallback } from "react";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../navigation";
-import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
-import {
-  fetchSolicitationsByTripId,
-  updateSolicitationStatus,
-} from "../services/requestsService";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useCallback, useEffect, useState } from "react";
+import {
+    ActivityIndicator,
+    FlatList,
+    Image,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
+import { RootStackParamList } from "../navigation";
+import {
+    fetchSolicitationsByTripId,
+    updateSolicitationStatus,
+} from "../services/requestsService";
 import { Request } from "../types/request";
 
 type TravelRequestsRouteProp = RouteProp<RootStackParamList, "TravelRequests">;

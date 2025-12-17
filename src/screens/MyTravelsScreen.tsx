@@ -1,21 +1,21 @@
-import React, { useEffect, useState, useCallback } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  ActivityIndicator,
-  TouchableOpacity,
-  Alert,
-  Image,
-} from "react-native";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
-import { useAuth } from "../context/AuthContext";
-import { getTravels } from "../services/travelService";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useAuth } from "../context/AuthContext";
 import { RootStackParamList } from "../navigation";
-import { TravelAPIResponseType } from "../types/travel";
+import { getTravels } from "../services/travelService";
 import { PassengerType } from "../types/passanger";
+import { TravelAPIResponseType } from "../types/travel";
 
 type Props = {};
 

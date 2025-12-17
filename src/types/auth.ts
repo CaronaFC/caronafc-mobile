@@ -41,5 +41,6 @@ export interface UpdateUserType {
   nome_completo?: string;
   email?: string;
   numero?: string;
+  imagem?: string;
   // outros campos que queira permitir atualizar
 }

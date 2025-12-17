@@ -1,14 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 
-import { View, Text, ScrollView, Image, ActivityIndicator, StyleSheet } from "react-native";
-import { Ionicons, FontAwesome5, Feather } from "@expo/vector-icons";
+import { Feather, FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { useAuth } from "../context/AuthContext"
 import MenuItem from "../components/profile/MenuItem";
+import { useAuth } from "../context/AuthContext";
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,

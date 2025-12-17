@@ -1,15 +1,12 @@
-import { Image, StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
 import { FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
-import DefaultButton from "../commom/DefaultButton";
-import Flamengo from "../../../assets/images/teams/flamengo.png";
-import Palmeiras from "../../../assets/images/teams/palmeiras.png";
-import { reverseGeocodeCoords } from "../../lib/location";
-import { CardTravelProps } from "../../types/travel";
-import { navigate } from "../../navigation/navigationService";
 import { useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../../navigation";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React, { useEffect, useState } from "react";
+import { Image, Text, View } from "react-native";
+import { reverseGeocodeCoords } from "../../lib/location";
+import { RootStackParamList } from "../../navigation";
+import { CardTravelProps } from "../../types/travel";
+import DefaultButton from "../commom/DefaultButton";
 
 type TravelDetailNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -206,4 +203,4 @@ const CardTravel = ({
   );
 };
 
-export default CardTravel
+export default CardTravel;

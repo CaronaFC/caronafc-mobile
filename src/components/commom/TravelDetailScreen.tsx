@@ -1,16 +1,16 @@
-import React, { useCallback, useState } from "react";
-import { Alert, FlatList, Text, View, Image, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
+import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
-import { MaterialIcons, AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import React, { useCallback, useState } from "react";
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { getTravelById } from "../../services/travelService";
 import { fetchSolicitationsByTripId } from "../../services/requestsService";
+import { getTravelById } from "../../services/travelService";
 
-import { TravelAPIResponseType } from "../../types/travel";
-import { Request } from "../../types/request";
-import { reverseGeocodeCoords } from "../../lib/location";
 import { useAuth } from "../../context/AuthContext";
+import { reverseGeocodeCoords } from "../../lib/location";
+import { Request } from "../../types/request";
+import { TravelAPIResponseType } from "../../types/travel";
 import CardPassenger from "../travel/CardPassenger";
 
 type Props = {};

@@ -3,13 +3,15 @@ import React from "react";
 import {
   View,
   Text,
-  Image,
+  ImageBackground,
   Pressable,
   KeyboardAvoidingView,
   Platform,
   Alert,
+  StyleSheet,
+  Dimensions,
 } from "react-native";
-import HeroImage from "../../assets/images/hero-image.png";
+import HeroImage from "../../assets/images/hero.png";
 import TextInput from "../components/commom/TextInput";
 import DefaultButton from "../components/commom/DefaultButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -18,9 +20,9 @@ import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { loginUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
-import { ScrollView } from "react-native-gesture-handler";
-import FormScreenWrapper from "../components/commom/FormScreenWrapper";
 import { LinearGradient } from "expo-linear-gradient";
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -67,88 +69,164 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="flex-1 bg-dark-900">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={{ flex: 1 }}
+    <ImageBackground
+      source={HeroImage}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay} />
+      <LinearGradient
+        colors={['transparent', 'rgba(0, 0, 0, 0.65)', '#000000ff']}
+        style={styles.gradient}
       >
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-            paddingTop: insets.top,
-            paddingBottom: insets.bottom,
-          }}
-          keyboardShouldPersistTaps="handled"
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.container}
         >
-          <View className="relative">
-            <Image source={HeroImage} style={{ width: "100%", opacity: 0.8 }} />
-            <LinearGradient
-              colors={['transparent', '#0D0D0D']}
-              style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                height: 100,
-              }}
-            />
-            <Text className="absolute font-bold text-3xl top-10 left-10 z-10 text-accent-primary">
-              CARONA FC
-            </Text>
-          </View>
+          <View style={[styles.content, { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 20 }]}>
+            {/* Logo / Title */}
+            <View style={styles.headerSection}>
+              <Text style={styles.logoText}>CaronaFC</Text>
+              <Text style={styles.tagline}>Sua carona para a vitória! 🏆</Text>
+            </View>
 
-          <View className="flex-1 p-6 -mt-6">
-            <View className="bg-dark-700/80 rounded-2xl p-6 border border-dark-400">
-              <Text className="text-text-primary text-xl font-bold mb-6 text-center">
-                Bem-vindo de volta
-              </Text>
+            {/* Form Section */}
+            <View style={styles.formSection}>
+              <View style={styles.formCard}>
+                <Text style={styles.welcomeText}>
+                  Bem-vindo de volta
+                </Text>
 
-              <View className="gap-4">
-                <TextInput
-                  label="Email ou telefone"
-                  value={userNumberOrEmail}
-                  setValue={(text) => setUserNumberOrEmail(text.trim().toLowerCase())}
-                  autoCapitalize="none"
-                  placeholder="Digite seu email ou telefone"
-                  showError={showErrors && !userNumberOrEmail}
-                  keyboardType="email-address"
-                />
-                <TextInput
-                  label="Senha"
-                  value={userPassword}
-                  setValue={setUserPassword}
-                  placeholder="Digite sua senha"
-                  type="password"
-                  showError={showErrors && !userPassword}
-                />
+                <View style={styles.inputsContainer}>
+                  <TextInput
+                    label="Email ou telefone"
+                    value={userNumberOrEmail}
+                    setValue={(text) => setUserNumberOrEmail(text.trim().toLowerCase())}
+                    autoCapitalize="none"
+                    placeholder="Digite seu email ou telefone"
+                    showError={showErrors && !userNumberOrEmail}
+                    keyboardType="email-address"
+                  />
+                  <TextInput
+                    label="Senha"
+                    value={userPassword}
+                    setValue={setUserPassword}
+                    placeholder="Digite sua senha"
+                    type="password"
+                    showError={showErrors && !userPassword}
+                  />
+                </View>
+
+                <View style={styles.actionsContainer}>
+                  <DefaultButton
+                    btnText={isLoading ? "Entrando..." : "Entrar"}
+                    onPress={handleSubmit}
+                    disabled={isLoading}
+                  />
+
+                  <Pressable onPress={() => navigation.navigate("ForgotPassword")}>
+                    <Text style={styles.forgotText}>
+                      Esqueceu sua senha?
+                    </Text>
+                  </Pressable>
+                </View>
               </View>
 
-              <View className="gap-y-3 mt-6">
-                <DefaultButton
-                  btnText={isLoading ? "Entrando..." : "Entrar"}
-                  onPress={handleSubmit}
-                  disabled={isLoading}
-                />
-
-                <Pressable onPress={() => navigation.navigate("ForgotPassword")}>
-                  <Text className="text-text-secondary text-center">
-                    Esqueceu sua senha?
+              <View style={styles.registerSection}>
+                <Text style={styles.noAccountText}>Não tem uma conta?</Text>
+                <Pressable onPress={() => navigation.navigate("Register")}>
+                  <Text style={styles.registerText}>
+                    Cadastre-se!
                   </Text>
                 </Pressable>
               </View>
             </View>
-
-            <View className="mt-8 items-center">
-              <Text className="text-text-muted mb-2">Não tem uma conta?</Text>
-              <Pressable onPress={() => navigation.navigate("Register")}>
-                <Text className="text-accent-primary font-bold text-lg">
-                  Criar conta
-                </Text>
-              </Pressable>
-            </View>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </View>
+        </KeyboardAvoidingView>
+      </LinearGradient>
+    </ImageBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: SCREEN_HEIGHT,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  gradient: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+  },
+  headerSection: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  logoText: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: '#00FF87',
+    letterSpacing: 2,
+  },
+  tagline: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: '#FFFFFF',
+    marginTop: 8,
+  },
+  formSection: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingTop: 20,
+  },
+  formCard: {
+    backgroundColor: 'rgba(26, 26, 26, 0.95)',
+    borderRadius: 20,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+  },
+  welcomeText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  inputsContainer: {
+    gap: 16,
+  },
+  actionsContainer: {
+    gap: 12,
+    marginTop: 24,
+  },
+  forgotText: {
+    color: '#AAAAAA',
+    textAlign: 'center',
+    fontSize: 14,
+  },
+  registerSection: {
+    alignItems: 'center',
+    marginTop: 24,
+  },
+  noAccountText: {
+    color: '#666666',
+    marginBottom: 8,
+  },
+  registerText: {
+    color: '#00FF87',
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+});

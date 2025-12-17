@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
-import { getTravels } from "../services/travelService";
+import { getTravels, deleteTravel } from "../services/travelService";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
@@ -53,6 +53,31 @@ export default function MyTravelsScreen({}: Props) {
   useEffect(() => {
     fetchTravels();
   }, [fetchTravels]);
+
+  const handleDeleteTravel = (travelId: number, travelName: string) => {
+    Alert.alert(
+      "Excluir Viagem",
+      `Tem certeza que deseja excluir a viagem para "${travelName}"?\n\nEssa ação não pode ser desfeita.`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteTravel(travelId);
+              setTravels((prev) => prev.filter((t) => t.id !== travelId));
+              Alert.alert("Sucesso", "Viagem excluída com sucesso!");
+            } catch (error) {
+              console.error("Erro ao deletar viagem:", error);
+              Alert.alert("Erro", "Não foi possível excluir a viagem.");
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   if (loading) {
     return (
@@ -238,6 +263,33 @@ export default function MyTravelsScreen({}: Props) {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {item.status === "espera" && (
+        <TouchableOpacity
+          onPress={() => handleDeleteTravel(
+            item.id,
+            `${item.jogo?.timeCasa?.nome ?? "Time"} x ${item.jogo?.timeFora?.nome ?? "Time"}`
+          )}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            backgroundColor: '#1A1A1A',
+            borderRadius: 12,
+            paddingVertical: 12,
+            marginTop: 12,
+            borderWidth: 1,
+            borderColor: '#FF4444'
+          }}
+          activeOpacity={0.8}
+        >
+          <FontAwesome5 name="trash" size={14} color="#FF4444" />
+          <Text style={{ color: '#FF4444', fontWeight: '600' }}>
+            Excluir Viagem
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 

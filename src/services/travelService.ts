@@ -53,6 +53,15 @@ export async function updateTravelStatus(
   }
 }
 
+export async function deleteTravel(id: number): Promise<void> {
+  try {
+    await api.delete(`/viagem/${id}`);
+  } catch (error) {
+    console.error(error);
+    throw new Error("Erro inesperado ao deletar a viagem.");
+  }
+}
+
 export async function fetchTravelHistory(usuarioId:number): Promise<TravelAPIResponseType[]> {
   const { data } = await api.get(`/viagem/usuario/${usuarioId}`, { params: { status: 'finalizada' } });
   return data;

@@ -6,7 +6,7 @@ import DefaultButton from "../components/commom/DefaultButton";
 import CardTravel from "../components/travel/CardTravel";
 import FiltersModal, { FilterData } from "../components/travel/FiltersModal";
 import { getTravels } from "../services/travelService";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { mapTravelToCardProps } from "../mappers/mapTravelToCardProps";
 import { fetchAllTeams } from "../services/teamsService";
 import { TeamType } from "../types/teams";
@@ -15,11 +15,16 @@ import { filterTravels } from "../lib/filterTravels";
 import * as Location from "expo-location";
 import { openRequest } from "../services/requestsService";
 import { useAuth } from "../context/AuthContext";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../navigation";
+
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">;
 
 type Props = {};
 
 export default function HomeScreen({}: Props) {
   const { userData } = useAuth();
+  const navigation = useNavigation<HomeScreenNavigationProp>();
   const [showFiltersModal, setShowFiltersModal] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<FilterData>({
     team: "",
@@ -114,21 +119,34 @@ export default function HomeScreen({}: Props) {
   const handleRequest = async (vehicleId: number) => {
     Alert.alert(
       "Confirmação",
-      "Tem certeza que deseja enviar um pedido?",
+      "Tem certeza que deseja solicitar essa carona?",
       [
         { text: "Cancelar", style: "cancel" },
         {
-          text: "Sim",
-          style: "destructive",
+          text: "Solicitar",
+          style: "default",
           onPress: async () => {
             try {
               const data = await openRequest(vehicleId);
 
               if (data.status === 201) {
-                Alert.alert("Pedido enviado com sucesso!");
+                Alert.alert(
+                  "Sucesso! 🎉",
+                  "Carona solicitada com sucesso! Aguarde a confirmação do motorista.",
+                  [
+                    {
+                      text: "Ver minhas solicitações",
+                      onPress: () => navigation.navigate("MyTravelRequests"),
+                    },
+                    {
+                      text: "Continuar buscando",
+                      style: "cancel",
+                    },
+                  ]
+                );
               }
             } catch (error: any) {
-              Alert.alert(error.message);
+              Alert.alert("Erro", error.message || "Não foi possível solicitar a carona.");
             }
           },
         },

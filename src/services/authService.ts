@@ -10,9 +10,11 @@ export async function registerUser(userData: RegisterUserType): Promise<Register
         return response.data
     } catch (error) {
         if (axios.isAxiosError(error)) {
+            console.log("erro completo",error.response?.data)
+            console.log("status",error.response?.status)
             const status = error.response?.status
             const message = error.response?.data?.message || "Erro na requisição"
-            throw new Error(`Erro ${status ?? "desconhecido"}: ${message}`);
+            throw new Error(message);
         } else {
             throw new Error("Erro inesperado ao registrar usuário.");
         }

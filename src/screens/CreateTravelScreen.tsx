@@ -176,9 +176,9 @@ export default function CreateTravelScreen() {
   ];
 
   const renderTimerPicker = () => (
-    <TouchableOpacity>
-      <MaterialCommunityIcons name="timer-outline" size={32} color="#00FF87" />
-    </TouchableOpacity>
+    <View>
+      <MaterialCommunityIcons name="timer-outline" size={28} color="#00FF87" />
+    </View>
   );
 
   const handleSubmit = async () => {
@@ -245,16 +245,26 @@ export default function CreateTravelScreen() {
         <View className="p-4 gap-y-4">
           {/* Header */}
           <View className="mb-2">
-            <Text style={{ color: '#00FF87', fontSize: 24, fontWeight: 'bold' }}>
+            <Text
+              style={{ color: "#00FF87", fontSize: 24, fontWeight: "bold" }}
+            >
               Criar Viagem
             </Text>
-            <Text style={{ color: '#888888', fontSize: 14, marginTop: 4 }}>
+            <Text style={{ color: "#888888", fontSize: 14, marginTop: 4 }}>
               Preencha os dados para oferecer uma carona
             </Text>
           </View>
 
           {/* Location Section */}
-          <View style={{ backgroundColor: '#1A1A1A', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#2A2A2A' }}>
+          <View
+            style={{
+              backgroundColor: "#1A1A1A",
+              borderRadius: 16,
+              padding: 16,
+              borderWidth: 1,
+              borderColor: "#2A2A2A",
+            }}
+          >
             <TextInput
               value={starterPoint?.address || ""}
               setValue={() => {}}
@@ -297,7 +307,7 @@ export default function CreateTravelScreen() {
           />
 
           {/* Vehicle and Spaces Row */}
-          <View style={{ flexDirection: 'row', gap: 12 }}>
+          <View style={{ flexDirection: "row", gap: 12 }}>
             <View style={{ flex: 1 }}>
               <SelectInput
                 label="Vagas"
@@ -319,7 +329,9 @@ export default function CreateTravelScreen() {
           </View>
 
           {/* Price and Return */}
-          <View style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-end' }}>
+          <View
+            style={{ flexDirection: "row", gap: 12, alignItems: "flex-end" }}
+          >
             <View style={{ flex: 1 }}>
               <TextInput
                 value={valuePerPerson}
@@ -341,15 +353,17 @@ export default function CreateTravelScreen() {
           {/* Time Picker */}
           <TimePickerInput
             label="Horário de Saída"
-            value={time ?? new Date()}
-            onChange={setTime}
+            value={time instanceof Date ? time : new Date()}
+            onChange={(selectedTime) => {
+              if (selectedTime) setTime(selectedTime);
+            }}
             accessoryLeft={renderTimerPicker}
-            styles={{ height: 55, width: "100%" }}
-            disabled={!time}
+            styles={{ height: 55, width: "100%", alignItems:'center' }}
+            //disabled={!time}
           />
 
           {/* Submit Button */}
-          <View style={{ marginTop: 8 }}>
+          <View style={{ marginTop: 70 }}>
             <DefaultButton
               btnText={loading ? "Criando viagem..." : "Criar Viagem"}
               btnColor="primary"

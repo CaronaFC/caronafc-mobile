@@ -55,7 +55,8 @@ export default function RegisterScreen({}: Props) {
       console.log("response:", data);
       Alert.alert("Usuário cadastrado com sucesso");
       navigation.navigate("Login");
-    } catch (error) {
+    } catch (error:any) {
+      Alert.alert("Erro ao cadastrar",error.message)
       setIsLoading(false);
     } finally {
       setIsLoading(false);

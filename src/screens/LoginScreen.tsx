@@ -111,6 +111,7 @@ export default function LoginScreen() {
                   autoCapitalize="none"
                   placeholder="Digite seu email ou telefone"
                   showError={showErrors && !userNumberOrEmail}
+                  keyboardType="email-address"
                 />
                 <TextInput
                   label="Senha"

@@ -28,7 +28,9 @@ const CardTravel = ({
   qtdVagas,
   motorista,
   jogo,
+  currentUserId,
 }: CardTravelProps) => {
+  const isOwnTravel = currentUserId !== undefined && motorista.id === currentUserId;
   const renderIcon = () => (
     <MaterialCommunityIcons name="stadium-variant" size={24} color="black" />
   );
@@ -36,17 +38,30 @@ const CardTravel = ({
   const navigation = useNavigation<TravelDetailNavigationProp>();
 
   useEffect(() => {
-    const getOrigemName = async () => {
-      const origemName = await reverseGeocodeCoords({
-        latitude: origemLat,
-        longitude: origemLong,
-      });
+    let isMounted = true;
 
-      setOrigemName(origemName);
+    const getOrigemName = async () => {
+      try {
+        const name = await reverseGeocodeCoords({
+          latitude: origemLat,
+          longitude: origemLong,
+        });
+        if (isMounted) {
+          setOrigemName(name);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar nome da origem:", error);
+      }
     };
 
-    getOrigemName();
-  }, []);
+    if (origemLat && origemLong) {
+      getOrigemName();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [origemLat, origemLong]);
 
   const renderMotoristaAvatar = () => {
     if (motorista.imagem) {
@@ -57,8 +72,8 @@ const CardTravel = ({
             width: 40,
             height: 40,
             borderRadius: 20,
-            borderWidth: 1,
-            borderColor: "#ccc",
+            borderWidth: 2,
+            borderColor: "#00FF87",
           }}
         />
       );
@@ -69,84 +84,123 @@ const CardTravel = ({
             width: 40,
             height: 40,
             borderRadius: 20,
-            backgroundColor: "#E5E5E5",
+            backgroundColor: "#262626",
             alignItems: "center",
             justifyContent: "center",
+            borderWidth: 2,
+            borderColor: "#00FF87",
           }}
         >
-          <FontAwesome5 name="user-alt" size={20} color="#888" />
+          <FontAwesome5 name="user-alt" size={20} color="#00FF87" />
         </View>
       );
     }
   };
 
   return (
-    <View className="bg-secondaryWhite border-2 border-[#BBF7D0] rounded-md">
-      <View className="flex-row justify-between bg-[#F0FDF4] p-3">
-        <View className="w-full">
-          <View className="flex-row items-center">
-            <Text className="text-lg mb-2 flex-1 font-bold">
-              {renderIcon()} {jogo.estadio?.nome || "Estádio Indefinido"}
+    <View className="bg-dark-700 border border-dark-400 rounded-xl overflow-hidden">
+      {/* Header do Card */}
+      <View className="bg-dark-600/80 p-4 border-b border-accent-primary/20">
+        <View className="flex-row items-center justify-between mb-2">
+          <View className="flex-row items-center flex-1">
+            <MaterialCommunityIcons name="stadium-variant" size={22} color="#00FF87" />
+            <Text className="text-text-primary text-lg font-bold ml-2 flex-1" numberOfLines={1}>
+              {jogo.estadio?.nome || "Estádio Indefinido"}
             </Text>
-            <Text className="text-lg text-black font-bold">
+          </View>
+          <View className="bg-accent-primary/20 px-3 py-1 rounded-full">
+            <Text className="text-accent-primary font-bold text-lg">
               {Number(valorPorPessoa).toLocaleString("pt-BR", {
                 style: "currency",
                 currency: "BRL",
               })}
             </Text>
           </View>
-          <Text className="text-base font-semibold">
-            {jogo.liga?.nome || "Indefinido"}
+        </View>
+        <Text className="text-accent-muted font-semibold text-sm">
+          {jogo.liga?.nome || "Liga Indefinida"}
+        </Text>
+        <Text className="text-text-primary font-semibold mt-1">
+          {jogo.timeCasa?.nome || "Indefinido"} vs {jogo.timeFora?.nome || "Indefinido"}
+        </Text>
+      </View>
+
+      {/* Body do Card */}
+      <View className="p-4 gap-3">
+        {origemName && (
+          <View className="flex-row items-center">
+            <FontAwesome5 name="map-marker-alt" size={14} color="#00D170" />
+            <Text className="text-text-secondary ml-2 flex-1">{origemName}</Text>
+          </View>
+        )}
+
+        <View className="flex-row items-center">
+          <FontAwesome5 name="calendar-alt" size={14} color="#00D170" />
+          <Text className="text-text-secondary ml-2">
+            Jogo: {jogo.data || "Data indefinida"}
           </Text>
-          <Text className="text-base font-semibold">
-            {jogo.timeCasa?.nome || "Indefinido"} vs{" "}
-            {jogo.timeFora?.nome || "Indefinido"}
+        </View>
+
+        <View className="flex-row items-center">
+          <FontAwesome5 name="clock" size={14} color="#00D170" />
+          <Text className="text-text-secondary ml-2">
+            Saída:{" "}
+            {new Date(horario).toLocaleString("pt-BR", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
           </Text>
-          {origemName && (
-            <Text className="text-base">Origem: {origemName}</Text>
+        </View>
+
+        <View className="flex-row items-center bg-dark-600/50 p-2 rounded-lg">
+          {renderMotoristaAvatar()}
+          <View className="ml-3">
+            <Text className="text-text-muted text-xs">Motorista</Text>
+            <Text className="text-text-primary font-semibold">{motorista.nome}</Text>
+          </View>
+        </View>
+
+        <View className="flex-row justify-between items-center">
+          <View className="flex-row items-center">
+            <FontAwesome5 name="car" size={14} color="#00D170" />
+            <Text className="text-text-secondary ml-2">{veiculo.modelo}</Text>
+          </View>
+          <View className="flex-row items-center">
+            <FontAwesome5 name="users" size={14} color="#00D170" />
+            <Text className="text-text-primary font-bold ml-2">{qtdVagas} vagas</Text>
+          </View>
+        </View>
+
+        <View className="flex-row items-center">
+          <FontAwesome5
+            name={temRetorno ? "exchange-alt" : "long-arrow-alt-right"}
+            size={14}
+            color={temRetorno ? "#00FF87" : "#666666"}
+          />
+          <Text className={`ml-2 ${temRetorno ? "text-accent-primary" : "text-text-muted"}`}>
+            {temRetorno ? "Com retorno incluído" : "Somente ida"}
+          </Text>
+        </View>
+
+        <View className="flex-row gap-3 mt-2">
+          <DefaultButton
+            btnText="Detalhes"
+            btnColor="dark"
+            style={{ flex: 1 }}
+            onPress={() => navigation.navigate("TravelDetail", { id })}
+          />
+          {!isOwnTravel && (
+            <DefaultButton
+              onPress={() => handleRequest(id)}
+              btnText="Pedir Carona"
+              btnColor="primary"
+              style={{ flex: 1 }}
+            />
           )}
         </View>
-      </View>
-      <View className=" gap-2 relative bg-[#F8F8F8] p-3 ">
-        <Text>Data do jogo: {jogo.data || "Data indefinida"}</Text>
-        <Text>
-          Data de saída:{" "}
-          {new Date(horario).toLocaleString("pt-BR", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </Text>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-          {renderMotoristaAvatar()}
-          <Text className="font-semibold">Motorista:</Text><Text>{motorista.nome}</Text>
-        </View>
-        <Text>Veiculo: {veiculo.modelo}</Text>
-        <Text>Vagas: {qtdVagas}</Text>
-        <Text>{temRetorno ? "Viagem com retorno" : "Viagem sem retorno."}</Text>
-
-        <DefaultButton
-          btnText="Ver Detalhes"
-          btnColor="light"
-          onPress={() => navigation.navigate("TravelDetail", { id })}
-        />
-        <DefaultButton
-          onPress={() => handleRequest(id)}
-          btnText="Pedir Carona"
-          btnColor="dark"
-        />
-
-        {/* <View className="flex-row gap-2 absolute top-[-14] right-4">
-          {times.map((time, index) => (
-            <Image
-              key={index}
-              source={time.escudo}
-              style={{ width: 42, height: 42 }}
-            />
-          ))}
-        </View> */}
       </View>
     </View>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 
 type Props = {
@@ -12,14 +12,30 @@ export default function CustomCheckbox({ text, checked, setChecked }: Props) {
     return (
         <TouchableOpacity
             onPress={() => setChecked(!checked)}
-            style={{ flexDirection: 'row', alignItems: 'center' }}
+            style={styles.container}
+            activeOpacity={0.7}
         >
             {checked ? (
-                <FontAwesome name="check-square" size={24} color="black" />
+                <FontAwesome name="check-square" size={24} color="#00FF87" />
             ) : (
-                <FontAwesome5 name="square" size={24} color="black" />
+                <FontAwesome5 name="square" size={24} color="#666666" />
             )}
-            <Text style={{ marginLeft: 8 }}>{text}</Text>
+            <Text style={[styles.text, checked && styles.textChecked]}>{text}</Text>
         </TouchableOpacity>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    text: {
+        marginLeft: 8,
+        color: '#AAAAAA',
+        fontSize: 14,
+    },
+    textChecked: {
+        color: '#FFFFFF',
+    },
+});

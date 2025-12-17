@@ -1,4 +1,4 @@
-import { View, Text, Platform, StyleProp, ViewStyle } from "react-native";
+import { View, Text, Platform, StyleProp, ViewStyle, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { Button } from "@ui-kitten/components";
@@ -17,7 +17,7 @@ const TimePickerInput = ({
   value,
   onChange,
   accessoryLeft,
-  styles,
+  styles: customStyles,
   disabled,
   mode = "time", // padrão: time
 }: Props) => {
@@ -30,30 +30,31 @@ const TimePickerInput = ({
   };
 
   return (
-    <View style={styles}>
-      {label && <Text className="label-input mb-2">{label}</Text>}
+    <View style={customStyles}>
+      {label && <Text style={styles.label}>{label}</Text>}
       <Button
         onPress={() => setShow(true)}
         appearance="ghost"
-        style={{ borderWidth: 0, backgroundColor: "#F2F3F3" }}
+        style={styles.button}
         accessoryLeft={accessoryLeft}
-        className="flex-row items-center justify-center"
         disabled={disabled}
       >
-        <View className="flex-row items-center">
-          <Text style={{ color: "black" }}>
-            {value
-              ? mode === "time"
-                ? value.toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })
-                : mode === "date"
-                ? value.toLocaleDateString()
-                : value.toLocaleString()
-              : "Nenhum valor"}
-          </Text>
-        </View>
+        {() => (
+          <View style={styles.buttonContent}>
+            <Text style={styles.buttonText}>
+              {value
+                ? mode === "time"
+                  ? value.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : mode === "date"
+                  ? value.toLocaleDateString()
+                  : value.toLocaleString()
+                : "Nenhum valor"}
+            </Text>
+          </View>
+        )}
       </Button>
       {show && (
         <RNDateTimePicker
@@ -62,10 +63,35 @@ const TimePickerInput = ({
           is24Hour={true}
           display="default"
           onChange={handleChange}
+          themeVariant="dark"
         />
       )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  label: {
+    color: '#AAAAAA',
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 8,
+  },
+  button: {
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+    backgroundColor: '#1A1A1A',
+    borderRadius: 12,
+    justifyContent: 'center',
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+  },
+});
 
 export default TimePickerInput;

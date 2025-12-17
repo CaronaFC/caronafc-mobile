@@ -89,7 +89,7 @@ const FiltersModal: React.FC<FiltersModalProps> = ({
 
   const renderTimerPicker = () => (
     <TouchableOpacity>
-      <Entypo name="calendar" size={24} color="black" />
+      <Entypo name="calendar" size={24} color="#00FF87" />
     </TouchableOpacity>
   );
 
@@ -99,22 +99,22 @@ const FiltersModal: React.FC<FiltersModalProps> = ({
       animationType="slide"
       presentationStyle="pageSheet"
     >
-      <View className="flex-1 bg-white">
+      <View style={{ flex: 1, backgroundColor: '#0D0D0D' }}>
         {/* Header */}
-        <View className="p-4 border-b border-gray-200">
+        <View style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: '#2A2A2A' }}>
           <View className="flex-row justify-between items-center">
-            <Text className="text-xl font-bold text-gray-800">Filtros</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#00FF87' }}>Filtros</Text>
             <TouchableOpacity
               onPress={onClose}
-              className="p-2 bg-gray-100 rounded-full"
+              style={{ padding: 8, backgroundColor: '#1A1A1A', borderRadius: 20 }}
             >
-              <Text className="text-gray-600 font-bold">✕</Text>
+              <Text style={{ color: '#FFFFFF', fontWeight: 'bold' }}>✕</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Conteúdo dos Filtros */}
-        <ScrollView className="flex-1 p-4">
+        <ScrollView style={{ flex: 1, padding: 16 }}>
           <PickerOption
             label="Time"
             options={teams.map((t) => t.name)}
@@ -133,21 +133,21 @@ const FiltersModal: React.FC<FiltersModalProps> = ({
 
           {/* Data */}
           <View>
-            <Text className="text-sm font-medium text-gray-700 mb-2">Data</Text>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: '#AAAAAA', marginBottom: 8 }}>Data</Text>
             <TimePickerInput
               value={selectedDate ?? new Date()}
               onChange={setSelectedDate}
               mode="date"
               accessoryLeft={renderTimerPicker}
             />
-            <Text className="mt-2 text-gray-700">
+            <Text style={{ marginTop: 8, color: '#666666' }}>
               {selectedDate ? null : "Nenhuma data selecionada"}
             </Text>
           </View>
 
           {/* Horário */}
-          <View className="mb-4">
-            <Text className="text-sm font-medium text-gray-700 mb-2">
+          <View style={{ marginBottom: 16, marginTop: 16 }}>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: '#AAAAAA', marginBottom: 8 }}>
               Horário
             </Text>
             <View className="flex-row flex-wrap">
@@ -155,18 +155,22 @@ const FiltersModal: React.FC<FiltersModalProps> = ({
                 <TouchableOpacity
                   key={period}
                   onPress={() => handleTimeSelection(period)}
-                  className={`px-4 py-2 rounded-full mr-2 mb-2 ${
-                    selectedTime === period
-                      ? "bg-blue-100 border border-blue-300"
-                      : "bg-gray-100"
-                  }`}
+                  style={{
+                    paddingHorizontal: 16,
+                    paddingVertical: 8,
+                    borderRadius: 20,
+                    marginRight: 8,
+                    marginBottom: 8,
+                    backgroundColor: selectedTime === period ? 'rgba(0, 255, 135, 0.2)' : '#1A1A1A',
+                    borderWidth: 1,
+                    borderColor: selectedTime === period ? '#00FF87' : '#2A2A2A',
+                  }}
                 >
                   <Text
-                    className={`text-sm ${
-                      selectedTime === period
-                        ? "text-blue-700"
-                        : "text-gray-600"
-                    }`}
+                    style={{
+                      fontSize: 14,
+                      color: selectedTime === period ? '#00FF87' : '#AAAAAA',
+                    }}
                   >
                     {period}
                   </Text>
@@ -176,40 +180,40 @@ const FiltersModal: React.FC<FiltersModalProps> = ({
           </View>
 
           {/* Mais próximos */}
-          <View className="mb-6">
+          <View style={{ marginBottom: 24 }}>
             <View className="flex-row justify-between items-center">
-              <View className="flex-1">
-                <Text className="text-sm font-medium text-gray-700">
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 14, fontWeight: '500', color: '#FFFFFF' }}>
                   Mostrar apenas caronas próximas
                 </Text>
-                <Text className="text-xs text-gray-500 mt-1">
+                <Text style={{ fontSize: 12, color: '#666666', marginTop: 4 }}>
                   Até 10km da sua localização
                 </Text>
               </View>
               <Switch
                 value={nearbyOnly}
                 onValueChange={setNearbyOnly}
-                trackColor={{ false: "#E5E7EB", true: "#DBEAFE" }}
-                thumbColor={nearbyOnly ? "#3B82F6" : "#9CA3AF"}
+                trackColor={{ false: "#2A2A2A", true: "rgba(0, 255, 135, 0.3)" }}
+                thumbColor={nearbyOnly ? "#00FF87" : "#666666"}
               />
             </View>
           </View>
         </ScrollView>
 
         {/* Botões */}
-        <View className="p-4 border-t border-gray-200 bg-gray-50">
-          <View className="flex-row gap-3">
+        <View style={{ padding: 16, borderTopWidth: 1, borderTopColor: '#2A2A2A', backgroundColor: '#1A1A1A' }}>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
             <TouchableOpacity
               onPress={handleClear}
-              className="flex-1 py-3 bg-gray-200 rounded-lg items-center"
+              style={{ flex: 1, paddingVertical: 14, backgroundColor: '#262626', borderRadius: 12, alignItems: 'center' }}
             >
-              <Text className="text-gray-700 font-medium">Limpar</Text>
+              <Text style={{ color: '#AAAAAA', fontWeight: '600' }}>Limpar</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleApply}
-              className="flex-1 py-3 bg-blue-600 rounded-lg items-center"
+              style={{ flex: 1, paddingVertical: 14, backgroundColor: '#00FF87', borderRadius: 12, alignItems: 'center' }}
             >
-              <Text className="text-white font-medium">Aplicar Filtros</Text>
+              <Text style={{ color: '#0D0D0D', fontWeight: '700' }}>Aplicar</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -103,99 +103,116 @@ export default function RegisterScreen({}: Props) {
 
   return (
     <FormScreenWrapper>
-      <View className="h-screen bg-primaryWhite">
-        <View>
-          <View style={{ marginBlock: 15 }} className="items-center ">
-            <TouchableOpacity
-              onPress={handlePickImage}
-              style={{
-                width: 110,
-                height: 105,
-                backgroundColor: "#D9D9D9",
-                borderWidth: 1,
-                borderColor: "gray",
-                borderRadius: 55,
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "hidden",
-              }}
-            >
-              {userImage ? (
-                <Image
-                  source={{ uri: userImage }}
-                  style={{ width: "100%", height: "100%" }}
-                  resizeMode="cover"
-                />
-              ) : (
-                <FontAwesome5 name="user-alt" size={20} color="#333" />
-              )}
-            </TouchableOpacity>
-          </View>
-          {userImage && (
-            <TouchableOpacity
-              style={{ alignSelf: "center"}}
-              onPress={() => setUserImage(null)}
-              className="bg-neutral-200 px-3 py-1 rounded-lg mb-2"
-            >
-              <Text className="font-bold text-red-700">Remover imagem</Text>
-            </TouchableOpacity>
-          )}
-          <Text className="text-primaryBlack text-md font-bold text-center ">
-            Selecão de foto
+      <View className="h-screen bg-dark-900">
+        {/* Header */}
+        <View style={{ paddingHorizontal: 16, paddingTop: 20 }}>
+          <Text style={{ color: '#00FF87', fontSize: 24, fontWeight: 'bold' }}>
+            Criar Conta
+          </Text>
+          <Text style={{ color: '#888888', fontSize: 14, marginTop: 4 }}>
+            Preencha seus dados para começar
           </Text>
         </View>
-        <View style={{ gap: 10, flexDirection: "column" }} className="p-4">
-          <View>
-            <TextInput
-              label="Nome completo*"
-              value={userName}
-              setValue={setUserName}
-              placeholder="Nome completo"
-              showError={showErrors && !userName}
-            />
-          </View>
-          <View>
-            <TextInput
-              label="Sua senha*"
-              value={userPassword}
-              setValue={setUserPassword}
-              placeholder="Senha"
-              type="password"
-              showError={showErrors && !userPassword}
-            />
-          </View>
-          <View>
-            <TextInput
-              label="Email*"
-              value={userEmail}
-              setValue={(text) => setUserEmail(text.trim().toLowerCase())}
-              placeholder="Email"
-              showError={showErrors && !userName}
-            />
-          </View>
-          <View>
-            <TextInput
-              label="CPF*"
-              value={userCPF}
-              setValue={setUserCPF}
-              placeholder="CPF"
-              showError={showErrors && !userName}
-            />
-          </View>
-          <View>
-            <TextInput
-              label="Telefone"
-              value={userPhone}
-              setValue={(text)=>setUserPhone(text.trim())}
-              placeholder="Telefone"
+
+        {/* Avatar Section */}
+        <View style={{ marginVertical: 20 }} className="items-center">
+          <TouchableOpacity
+            onPress={handlePickImage}
+            style={{
+              width: 110,
+              height: 110,
+              backgroundColor: "#1A1A1A",
+              borderWidth: 3,
+              borderColor: "#00FF87",
+              borderRadius: 55,
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+            }}
+          >
+            {userImage ? (
+              <Image
+                source={{ uri: userImage }}
+                style={{ width: "100%", height: "100%" }}
+                resizeMode="cover"
+              />
+            ) : (
+              <FontAwesome5 name="user-alt" size={32} color="#00FF87" />
+            )}
+          </TouchableOpacity>
+          {userImage ? (
+            <TouchableOpacity
+              style={{ marginTop: 8 }}
+              onPress={() => setUserImage(null)}
+            >
+              <Text style={{ color: '#FF4444', fontWeight: '600' }}>Remover foto</Text>
+            </TouchableOpacity>
+          ) : (
+            <Text style={{ color: '#888888', fontSize: 12, marginTop: 8 }}>
+              Toque para adicionar foto
+            </Text>
+          )}
+        </View>
+
+        {/* Form */}
+        <View style={{ gap: 12, paddingHorizontal: 16 }}>
+          <TextInput
+            label="Nome completo*"
+            value={userName}
+            setValue={setUserName}
+            placeholder="Digite seu nome completo"
+            showError={showErrors && !userName}
+          />
+          <TextInput
+            label="Senha*"
+            value={userPassword}
+            setValue={setUserPassword}
+            placeholder="Crie uma senha segura"
+            type="password"
+            showError={showErrors && !userPassword}
+          />
+          <TextInput
+            label="Email*"
+            value={userEmail}
+            setValue={(text) => setUserEmail(text.trim().toLowerCase())}
+            placeholder="seu@email.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            showError={showErrors && !userEmail}
+          />
+          <TextInput
+            label="CPF*"
+            value={userCPF}
+            setValue={setUserCPF}
+            placeholder="000.000.000-00"
+            keyboardType="numeric"
+            showError={showErrors && !userCPF}
+          />
+          <TextInput
+            label="Telefone"
+            value={userPhone}
+            setValue={(text) => setUserPhone(text.trim())}
+            placeholder="(00) 00000-0000"
+            keyboardType="phone-pad"
+          />
+
+          <View style={{ marginTop: 8 }}>
+            <DefaultButton
+              btnText={isLoading ? "Criando conta..." : "Criar Conta"}
+              btnColor="primary"
+              onPress={handleSubmit}
+              disabled={isLoading}
             />
           </View>
 
-          <DefaultButton
-            btnText="Registrar"
-            style={{ marginTop: 5 }}
-            onPress={handleSubmit}
-          />
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Login")}
+            style={{ marginTop: 16, alignItems: 'center' }}
+          >
+            <Text style={{ color: '#888888' }}>
+              Já tem uma conta? <Text style={{ color: '#00FF87', fontWeight: '600' }}>Entrar</Text>
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {isLoading && <LoaderSpinner />}

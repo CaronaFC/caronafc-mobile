@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from "react";
-import { Alert, FlatList, Text, View, Image } from "react-native";
+import { Alert, FlatList, Text, View, Image, StyleSheet, ScrollView } from "react-native";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
-import { MaterialIcons, AntDesign } from "@expo/vector-icons";
+import { MaterialIcons, AntDesign, FontAwesome5 } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
 import { getTravelById } from "../../services/travelService";
 import { fetchSolicitationsByTripId } from "../../services/requestsService";
@@ -15,12 +16,13 @@ import CardPassenger from "../travel/CardPassenger";
 type Props = {};
 
 const TravelDetailScreen = (props: Props) => {
-  const rouse = useRoute();
-  const { id } = rouse.params as { id: number };
+  const route = useRoute();
+  const { id } = route.params as { id: number };
   const { userData } = useAuth();
   const [travel, setTravel] = useState<TravelAPIResponseType>();
   const [travelOrigin, setTravelOrigin] = useState("");
   const [travelApplicants, setTravelApplicants] = useState<Request[]>([]);
+
   useFocusEffect(
     useCallback(() => {
       const fetchTravel = async () => {
@@ -46,7 +48,7 @@ const TravelDetailScreen = (props: Props) => {
           const applicants = await fetchSolicitationsByTripId(id);
           setTravelApplicants(applicants);
         } catch (error) {
-          Alert.alert("Erro ao Solicitantes");
+          Alert.alert("Erro ao buscar solicitantes");
         }
       };
 
@@ -55,141 +57,309 @@ const TravelDetailScreen = (props: Props) => {
     }, [id])
   );
 
+  const filledPercentage = ((travel?.passageiros?.length ?? 0) / (travel?.qtdVagas || 1)) * 100;
+
   return (
-    <View className="flex-1 bg-white px-4 pt-4">
-      <View className="mb-4">
-        <Text className="text-2xl font-bold text-center">
-          {travel?.jogo?.timeCasa?.nome} vs {travel?.jogo?.timeFora?.nome}
-        </Text>
-        <Text className="text-center text-gray-900 mt-1">
-          {travel?.jogo?.data} às {travel?.jogo?.horario}
-        </Text>
-      </View>
+    <LinearGradient
+      colors={['#0D0D0D', '#1A1A1A', '#0D0D0D']}
+      style={styles.container}
+    >
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Match Header */}
+        <View style={styles.matchHeader}>
+          <Text style={styles.matchTitle}>
+            {travel?.jogo?.timeCasa?.nome} vs {travel?.jogo?.timeFora?.nome}
+          </Text>
+          <Text style={styles.matchSubtitle}>
+            {travel?.jogo?.data} às {travel?.jogo?.horario}
+          </Text>
+        </View>
 
-      <View className="flex-row relative mb-4">
-        <View className="flex-1 gap-5">
-          <View className="flex-row items-center">
-            <Text className="font-bold w-16 text-center">
-              {travel?.horario
-                ? new Date(travel.horario).toLocaleTimeString("pt-BR", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })
-                : "--:--"}
+        {/* Route Card */}
+        <View style={styles.card}>
+          <View style={styles.routeContainer}>
+            <View style={styles.routeRow}>
+              <Text style={styles.routeTime}>
+                {travel?.horario
+                  ? new Date(travel.horario).toLocaleTimeString("pt-BR", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : "--:--"}
+              </Text>
+              <View style={styles.routeIconContainer}>
+                <MaterialIcons name="location-on" size={20} color="#00FF87" />
+              </View>
+              <Text style={styles.routeText} numberOfLines={2}>{travelOrigin}</Text>
+            </View>
+
+            <View style={styles.routeLine} />
+
+            <View style={styles.routeRow}>
+              <Text style={styles.routeTime}>
+                {travel?.jogo?.horario || "--:--"}
+              </Text>
+              <View style={styles.routeIconContainer}>
+                <MaterialIcons name="stadium" size={20} color="#00FF87" />
+              </View>
+              <Text style={styles.routeText} numberOfLines={2}>
+                {travel?.jogo?.estadio?.nome || "Estádio indefinido"}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Trip Details Card */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Detalhes da Viagem</Text>
+
+          <View style={styles.detailRow}>
+            <MaterialIcons name="schedule" size={18} color="#00D170" />
+            <Text style={styles.detailText}>
+              Saída:{" "}
+              {travel &&
+                new Date(travel?.horario).toLocaleString("pt-BR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
             </Text>
-            <MaterialIcons name="location-on" size={24} color="#374151" />
-            <Text className="ml-2 text-gray-700 flex-1">{travelOrigin}</Text>
           </View>
 
-          <View className="flex-row items-center">
-            <Text className="font-bold w-16 text-center">
-              {travel?.jogo?.horario || "--:--"}
-            </Text>
-            <MaterialIcons name="stadium" size={24} color="#374151" />
-            <Text className="ml-2 text-gray-700 flex-1">
-              {travel?.jogo?.estadio?.nome || "Estádio indefinido"}
-            </Text>
-          </View>
-          <View className="absolute left-12 top-4 items-center mx-7">
-            <View className="w-0.5 h-10 bg-[#374151] my-1" />
-          </View>
-        </View>
-      </View>
-
-      <View className="flex-col gap-2">
-        <View className="flex-row items-center">
-          <MaterialIcons name="schedule" size={20} color="#6B7280" />
-          <Text className="ml-2">
-            Saída:{" "}
-            {travel &&
-              new Date(travel?.horario).toLocaleString("pt-BR", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-          </Text>
-        </View>
-
-        <View className="flex-row items-center">
-          <AntDesign name="back" size={20} color="#6B7280" />
-          <Text className="ml-2">
-            {travel?.temRetorno ? "Viagem com retorno" : "Viagem sem retorno."}
-          </Text>
-        </View>
-
-        <View className="flex-row items-center">
-          <MaterialIcons name="directions-car" size={20} color="#6B7280" />
-          <Text className="ml-2">
-            {travel?.veiculo?.marca} - {travel?.veiculo?.modelo} (
-            {travel?.veiculo?.cor})
-          </Text>
-        </View>
-
-        <View className="flex-row items-center">
-          <MaterialIcons name="attach-money" size={20} color="#6B7280" />
-          <Text className="ml-2">
-            Valor por pessoa: R$ {travel?.valorPorPessoa}
-          </Text>
-        </View>
-      </View>
-
-      <View className="px-2 mt-4">
-        <Text className="text-sm text-gray-600">Vagas preenchidas</Text>
-        <View className="w-full h-3 bg-gray-200 rounded-full overflow-hidden mb-1">
-          <View
-            className="bg-green-500 h-full"
-            style={{
-              width: `${
-                ((travel?.passageiros?.length ?? 0) / (travel?.qtdVagas || 1)) *
-                100
-              }%`,
-            }}
-          />
-        </View>
-        <Text className="text-xs text-right text-gray-500 mb-2">
-          {travel?.passageiros?.length || 0}/{travel?.qtdVagas || 1}
-        </Text>
-      </View>
-
-      <Text className="text-base font-bold my-2">Motorista:</Text>
-      <View className="flex-row items-center bg-gray-600 p-4 rounded-md gap-4">
-        {travel?.motorista?.imagem ? (
-          <Image
-            source={{ uri: travel.motorista.imagem }}
-            className="w-12 h-12 rounded-full border border-gray-300"
-          />
-        ) : (
-          <View className="w-12 h-12 rounded-full bg-gray-300 items-center justify-center">
-            <MaterialIcons name="person" size={24} color="#888" />
-          </View>
-        )}
-        <Text className="text-white font-semibold">
-          {travel?.motorista?.nome_completo}
-        </Text>
-      </View>
-
-      <Text className="text-base font-bold my-2">Passageiros:</Text>
-      <View>
-        <FlatList
-          data={travelApplicants.filter((item) => item.status === "aceita")}
-          keyExtractor={(item) => item.id.toString()}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          renderItem={({ item }) => (
-            <CardPassenger
-              status={item.status}
-              estrelas={3}
-              img={item.usuario.imagem}
-              nome={item.usuario.nome_completo}
-              usuarioDesde={item.usuario.data_criacao}
+          <View style={styles.detailRow}>
+            <FontAwesome5
+              name={travel?.temRetorno ? "exchange-alt" : "long-arrow-alt-right"}
+              size={16}
+              color={travel?.temRetorno ? "#00FF87" : "#666666"}
             />
+            <Text style={[styles.detailText, travel?.temRetorno && styles.accentText]}>
+              {travel?.temRetorno ? "Com retorno incluído" : "Somente ida"}
+            </Text>
+          </View>
+
+          <View style={styles.detailRow}>
+            <MaterialIcons name="directions-car" size={18} color="#00D170" />
+            <Text style={styles.detailText}>
+              {travel?.veiculo?.marca} - {travel?.veiculo?.modelo} ({travel?.veiculo?.cor})
+            </Text>
+          </View>
+
+          <View style={styles.detailRow}>
+            <MaterialIcons name="attach-money" size={18} color="#00D170" />
+            <Text style={styles.priceText}>
+              R$ {travel?.valorPorPessoa} /pessoa
+            </Text>
+          </View>
+        </View>
+
+        {/* Capacity Card */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Vagas</Text>
+          <View style={styles.progressContainer}>
+            <View style={styles.progressBar}>
+              <View style={[styles.progressFill, { width: `${filledPercentage}%` }]} />
+            </View>
+            <Text style={styles.progressText}>
+              {travel?.passageiros?.length || 0}/{travel?.qtdVagas || 1} ocupadas
+            </Text>
+          </View>
+        </View>
+
+        {/* Driver Card */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Motorista</Text>
+          <View style={styles.driverContainer}>
+            {travel?.motorista?.imagem ? (
+              <Image
+                source={{ uri: travel.motorista.imagem }}
+                style={styles.driverAvatar}
+              />
+            ) : (
+              <View style={styles.driverAvatarPlaceholder}>
+                <FontAwesome5 name="user-alt" size={20} color="#00FF87" />
+              </View>
+            )}
+            <Text style={styles.driverName}>
+              {travel?.motorista?.nome_completo}
+            </Text>
+          </View>
+        </View>
+
+        {/* Passengers Card */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Passageiros Confirmados</Text>
+          {travelApplicants.filter((item) => item.status === "aceita").length === 0 ? (
+            <Text style={styles.emptyText}>Nenhum passageiro confirmado ainda</Text>
+          ) : (
+            travelApplicants
+              .filter((item) => item.status === "aceita")
+              .map((item) => (
+                <CardPassenger
+                  key={item.id}
+                  status={item.status}
+                  estrelas={3}
+                  img={item.usuario.imagem}
+                  nome={item.usuario.nome_completo}
+                  usuarioDesde={item.usuario.data_criacao}
+                />
+              ))
           )}
-        />
-      </View>
-    </View>
+        </View>
+      </ScrollView>
+    </LinearGradient>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 16,
+    paddingTop: 60,
+    paddingBottom: 32,
+  },
+  matchHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  matchTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  matchSubtitle: {
+    fontSize: 14,
+    color: '#AAAAAA',
+    marginTop: 4,
+  },
+  card: {
+    backgroundColor: '#1A1A1A',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 12,
+  },
+  routeContainer: {
+    gap: 8,
+  },
+  routeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  routeTime: {
+    width: 50,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#00FF87',
+    textAlign: 'center',
+  },
+  routeIconContainer: {
+    width: 32,
+    alignItems: 'center',
+  },
+  routeText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#AAAAAA',
+    marginLeft: 8,
+  },
+  routeLine: {
+    width: 2,
+    height: 20,
+    backgroundColor: '#2A2A2A',
+    marginLeft: 65,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 10,
+  },
+  detailText: {
+    fontSize: 14,
+    color: '#AAAAAA',
+    flex: 1,
+  },
+  accentText: {
+    color: '#00FF87',
+  },
+  priceText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#00FF87',
+  },
+  progressContainer: {
+    gap: 8,
+  },
+  progressBar: {
+    height: 8,
+    backgroundColor: '#2A2A2A',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#00FF87',
+    borderRadius: 4,
+  },
+  progressText: {
+    fontSize: 12,
+    color: '#AAAAAA',
+    textAlign: 'right',
+  },
+  driverContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: '#262626',
+    padding: 12,
+    borderRadius: 12,
+  },
+  driverAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: '#00FF87',
+  },
+  driverAvatarPlaceholder: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#1A1A1A',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#00FF87',
+  },
+  driverName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#666666',
+    fontStyle: 'italic',
+  },
+});
 
 export default TravelDetailScreen;

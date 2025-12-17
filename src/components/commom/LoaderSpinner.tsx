@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
-import { Button, Card, Layout, Modal, Spinner, } from '@ui-kitten/components';
-import { View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { Card, Layout, Modal, Spinner } from '@ui-kitten/components';
+
 type Props = {
     message?: string;
 };
@@ -15,14 +15,12 @@ export const LoaderSpinner = ({ message }: Props): React.ReactElement => {
             style={styles.container}
             level='1'
         >
-            <Modal visible={visible} backdropStyle={styles.backdrop}
-            >
-                <Card disabled={true}>
-                    <View className='items-center justify-center gap-y-4'>
-
-                        <Spinner size='giant' />
+            <Modal visible={visible} backdropStyle={styles.backdrop}>
+                <Card disabled={true} style={styles.card}>
+                    <View style={styles.content}>
+                        <Spinner size='giant' status='success' />
                         {message && (
-                            <Text>{message}</Text>
+                            <Text style={styles.message}>{message}</Text>
                         )}
                     </View>
                 </Card>
@@ -34,8 +32,24 @@ export const LoaderSpinner = ({ message }: Props): React.ReactElement => {
 const styles = StyleSheet.create({
     container: {
         minHeight: 192,
+        backgroundColor: 'transparent',
     },
     backdrop: {
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    },
+    card: {
+        backgroundColor: '#1A1A1A',
+        borderColor: '#2A2A2A',
+        borderRadius: 16,
+    },
+    content: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 16,
+        padding: 16,
+    },
+    message: {
+        color: '#FFFFFF',
+        fontSize: 14,
     },
 });

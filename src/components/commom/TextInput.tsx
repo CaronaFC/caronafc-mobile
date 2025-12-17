@@ -37,35 +37,39 @@ export default function TextInput({
   const toggleSecureEntry = () => setSecure(!secure);
   const renderIcon = () => (
     <TouchableOpacity onPress={toggleSecureEntry}>
-      <Feather name={secure ? "eye-off" : "eye"} size={20} color="#8F9BB3" />
+      <Feather name={secure ? "eye-off" : "eye"} size={20} color="#00FF87" />
     </TouchableOpacity>
   );
 
   return (
     <Input
       label={() => (
-        <Text className="label-input mb-2">
+        <Text className="text-text-secondary text-sm mb-2 font-medium">
           {label}
         </Text>
       )}
       placeholder={placeholder}
+      placeholderTextColor="#666666"
       accessoryLeft={iconLeft ? () => iconLeft : undefined}
       disabled={disabled}
       value={value}
       onChangeText={setValue}
       keyboardType={keyboardType}
       autoCapitalize={autoCapitalize}
-      className="text-input"
+      textStyle={{ color: '#FFFFFF' }}
       style={[
         {
-          backgroundColor: "#F2F3F3",
+          backgroundColor: "#1A1A1A",
+          borderColor: showError ? "#FF4444" : "#2A2A2A",
+          borderWidth: 1,
+          borderRadius: 12,
         },
         styles,
       ]}
       secureTextEntry={isPassword ? secure : false}
       accessoryRight={isPassword ? renderIcon : undefined}
       caption={showError ? "Campo obrigatório" : ""}
-      status={showError ? "danger" : "default"}
+      status={showError ? "danger" : "basic"}
     />
   );
 }

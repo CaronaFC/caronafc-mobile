@@ -47,11 +47,15 @@ export type RootStackParamList = {
   TravelRequests: { id: number; travel: string };
   TravelDetail: { id: number };
   TravelProgress: { id: number };
-  Updateuser: undefined;
-  UpdateProfile: {
-    usuario: { nome_completo: string; email: string; numero: string };
+  UpdateUser: {
+    usuario?: {
+      id: number;
+      nome_completo: string;
+      email: string;
+      numero: string;
+    };
   };
-  History:undefined;
+  History: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -155,7 +159,7 @@ export default function RootNavigator() {
             options={{ title: "Acompanhamento" }}
           />
           <Stack.Screen
-            name="Updateuser"
+            name="UpdateUser"
             component={UpdateUserScreen}
             options={{ title: "Usuário" }}
           />

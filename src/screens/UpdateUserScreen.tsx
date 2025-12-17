@@ -9,13 +9,13 @@ import { LoaderSpinner } from "../components/commom/LoaderSpinner";
 import { updateUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 
-type UpdateUserRouteProp  = RouteProp<RootStackParamList, "Updateuser">;
+type UpdateUserRouteProp  = RouteProp<RootStackParamList, "UpdateUser">;
 
 export default function UpdateUserScreen() {
   const {refreshUserData } = useAuth()
   const navigation = useNavigation();
   const route = useRoute<UpdateUserRouteProp>();
-  const { usuario } = route.params;
+  const usuario = route.params?.usuario;
 
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
@@ -33,6 +33,11 @@ export default function UpdateUserScreen() {
   const handleSubmit = async () => {
     if (!nome || !email) {
       Alert.alert("Erro", "Nome e email são obrigatórios.");
+      return;
+    }
+
+    if (!usuario?.id) {
+      Alert.alert("Erro", "Usuário não encontrado.");
       return;
     }
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
@@ -34,14 +34,18 @@ export default function TravelProgress() {
 
   const [viagemIniciada, setViagemIniciada] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState(false);
+  const locationSubscriptionRef = useRef<Location.LocationSubscription | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchViagem = async () => {
       try {
         const data = await getTravelById(id);
-        setViagem(data);
-
-        setViagemIniciada(data.status === "andamento");
+        if (isMounted) {
+          setViagem(data);
+          setViagemIniciada(data.status === "andamento");
+        }
       } catch {
         Alert.alert("Erro ao buscar dados da viagem");
       }
@@ -53,14 +57,20 @@ export default function TravelProgress() {
     socket.emit("entrarViagem", id);
 
     socket.on("motorista:atualizacao", ({ latitude, longitude }) => {
-      setMotoristaLocalizacao({ latitude, longitude });
+      if (isMounted) {
+        setMotoristaLocalizacao({ latitude, longitude });
+      }
     });
 
     return () => {
+      isMounted = false;
       socket.off("motorista:atualizacao");
       socket.disconnect();
+      if (locationSubscriptionRef.current) {
+        locationSubscriptionRef.current.remove();
+      }
     };
-  }, [id]);
+  }, [id, setMotoristaLocalizacao]);
 
   const iniciarViagem = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -80,14 +90,15 @@ export default function TravelProgress() {
       setLoadingStatus(false);
     }
 
-    Location.watchPositionAsync(
+    const subscription = await Location.watchPositionAsync(
       { accuracy: Location.Accuracy.High, timeInterval: 3000, distanceInterval: 5 },
-      (localizacao) => {
+      (localizacao: Location.LocationObject) => {
         const { latitude, longitude } = localizacao.coords;
         socket.emit("motorista:localizacao", { viagemId: id, latitude, longitude });
         setMotoristaLocalizacao({ latitude, longitude });
       }
     );
+    locationSubscriptionRef.current = subscription;
   };
 
   const finalizarViagem = async () => {

@@ -4,6 +4,7 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  StyleSheet,
 } from "react-native";
 import { useEffect, useState, useCallback } from "react";
 
@@ -12,6 +13,7 @@ import { RootStackParamList } from "../navigation";
 import { useNavigation } from "@react-navigation/native";
 
 import { FontAwesome5 } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { fetchTravelHistory } from "../services/travelService";
 import { TravelAPIResponseType } from "../types/travel";
 import { useAuth } from "../context/AuthContext"
@@ -52,79 +54,226 @@ export default function HistoryTravelsScreen() {
 
   const renderItem = ({ item }: { item: TravelAPIResponseType }) => (
     <TouchableOpacity
-      className="border border-gray-300 rounded-lg p-4 mb-4 bg-white shadow-sm"
+      style={styles.travelCard}
       onPress={() =>
         navigation.navigate("TravelDetail", { id: item.id })
       }
     >
-      <Text className="text-gray-800 font-semibold text-lg mb-2">
-        {item.jogo?.timeCasa?.nome} x {item.jogo?.timeFora?.nome}
-      </Text>
+      <View style={styles.cardHeader}>
+        <FontAwesome5 name="futbol" size={18} color="#00FF87" />
+        <Text style={styles.matchTitle}>
+          {item.jogo?.timeCasa?.nome} x {item.jogo?.timeFora?.nome}
+        </Text>
+      </View>
 
-      <View className="flex-row items-center gap-2 mb-1">
-        <FontAwesome5 name="calendar-alt" size={14} color="#2563EB" />
-        <Text className="text-gray-700">
+      <View style={styles.detailRow}>
+        <FontAwesome5 name="calendar-alt" size={14} color="#00FF87" />
+        <Text style={styles.detailText}>
           {new Date(item.horario).toLocaleString("pt-BR")}
         </Text>
       </View>
 
-      <View className="flex-row items-center gap-2 mb-1">
-        <FontAwesome5 name="map-marker-alt" size={14} color="#22C55E" />
-        <Text className="text-gray-700">
+      <View style={styles.detailRow}>
+        <FontAwesome5 name="map-marker-alt" size={14} color="#00FF87" />
+        <Text style={styles.detailText}>
           Origem: {item.origem_lat.toFixed(2)}, {item.origem_long.toFixed(2)}
         </Text>
       </View>
 
-      <View className="flex-row items-center gap-2 mt-2">
-        <FontAwesome5 name="info-circle" size={14} color="#F59E0B" />
-        <Text className="text-gray-700 font-medium">
-          Status: {item.status}
-        </Text>
+      <View style={styles.statusRow}>
+        <FontAwesome5 name="info-circle" size={14} color="#00FF87" />
+        <View style={styles.statusBadge}>
+          <Text style={styles.statusText}>
+            {item.status}
+          </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <View className="flex-1 p-5 bg-gray-50">
-      <View className="mb-5">
-        <Text className="text-2xl font-bold text-gray-800 mb-1">
+    <LinearGradient
+      colors={['#0D0D0D', '#1A1A1A', '#0D0D0D']}
+      style={styles.container}
+    >
+      <View style={styles.header}>
+        <Text style={styles.title}>
           Histórico de caronas
         </Text>
-        <Text className="text-lg text-gray-600">
+        <Text style={styles.subtitle}>
           Suas caronas
         </Text>
       </View>
 
       {loading && (
-        <View className="flex-1 justify-center items-center mt-10">
-          <ActivityIndicator size="large" color="#1E40AF" />
-          <Text className="mt-2 text-blue-700 font-semibold">
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#00FF87" />
+          <Text style={styles.loadingText}>
             Carregando histórico...
           </Text>
         </View>
       )}
 
       {!loading && error && (
-        <View className="justify-center items-center">
-          <Text className="text-red-600 font-semibold mb-4">
+        <View style={styles.errorContainer}>
+          <FontAwesome5 name="exclamation-circle" size={48} color="#FF4444" />
+          <Text style={styles.errorText}>
             {error}
           </Text>
+          <TouchableOpacity style={styles.retryButton} onPress={fetchHistory}>
+            <Text style={styles.retryText}>Tentar novamente</Text>
+          </TouchableOpacity>
         </View>
       )}
 
       {!loading && !error && travels.length === 0 && (
-        <Text className="italic text-gray-500 mt-5 text-center">
-          Nenhuma viagem encontrada.
-        </Text>
+        <View style={styles.emptyContainer}>
+          <FontAwesome5 name="car" size={48} color="#2A2A2A" />
+          <Text style={styles.emptyText}>
+            Nenhuma viagem encontrada.
+          </Text>
+          <Text style={styles.emptySubtext}>
+            Suas viagens anteriores aparecerão aqui.
+          </Text>
+        </View>
       )}
 
-      <FlatList
-        data={travels}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      />
-    </View>
+      {!loading && !error && travels.length > 0 && (
+        <FlatList
+          data={travels}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+        />
+      )}
+    </LinearGradient>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 16,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#AAAAAA',
+  },
+  travelCard: {
+    backgroundColor: '#1A1A1A',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 12,
+  },
+  matchTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    flex: 1,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 8,
+  },
+  detailText: {
+    color: '#AAAAAA',
+    fontSize: 14,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 4,
+  },
+  statusBadge: {
+    backgroundColor: '#00FF8720',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusText: {
+    color: '#00FF87',
+    fontWeight: '600',
+    fontSize: 12,
+    textTransform: 'uppercase',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 12,
+    color: '#00FF87',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  errorText: {
+    color: '#FF4444',
+    fontWeight: '600',
+    marginTop: 16,
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  retryButton: {
+    marginTop: 20,
+    backgroundColor: '#00FF87',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  retryText: {
+    color: '#0D0D0D',
+    fontWeight: '700',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  emptyText: {
+    color: '#AAAAAA',
+    fontSize: 18,
+    fontWeight: '500',
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  emptySubtext: {
+    color: '#666666',
+    fontSize: 14,
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  listContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+});

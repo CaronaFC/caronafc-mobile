@@ -27,7 +27,7 @@ const renderLeftArrow = () => {
       onPress={() => navigation.goBack()}
       style={{ marginLeft: 16, paddingRight: 8 }}
     >
-      <FontAwesome5 name="arrow-left" size={20} />
+      <FontAwesome5 name="arrow-left" size={20} color="#FFFFFF" />
     </TouchableOpacity>
   );
 };
@@ -133,14 +133,17 @@ export default function RootNavigator() {
             component={VehicleScreen}
             options={({ navigation }) => ({
               title: "Veículos",
+              headerStyle: { backgroundColor: '#0D0D0D' },
+              headerTintColor: '#FFFFFF',
+              headerTitleStyle: { color: '#FFFFFF' },
               headerLeft: renderLeftArrow,
               headerRight: () => (
                 <TouchableOpacity
                   onPress={() => navigation.navigate("VehicleCreation")}
-                  className="flex-row items-center gap-2"
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
                 >
-                  <Text className="text-lg">Adicionar Veículo</Text>
-                  <FontAwesome5 name="plus" size={16} />
+                  <Text style={{ fontSize: 16, color: '#00FF87', fontWeight: '600' }}>Adicionar Veículo</Text>
+                  <FontAwesome5 name="plus" size={16} color="#00FF87" />
                 </TouchableOpacity>
               ),
             })}
@@ -168,6 +171,9 @@ export default function RootNavigator() {
             component={HistoryTravelsScreen}
             options={{
               title: "Histórico de caronas",
+              headerStyle: { backgroundColor: '#0D0D0D' },
+              headerTintColor: '#FFFFFF',
+              headerTitleStyle: { color: '#FFFFFF' },
               headerLeft: renderLeftArrow,
             }}
           />

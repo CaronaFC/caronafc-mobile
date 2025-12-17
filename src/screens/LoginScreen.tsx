@@ -20,6 +20,7 @@ import { loginUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 import { ScrollView } from "react-native-gesture-handler";
 import FormScreenWrapper from "../components/commom/FormScreenWrapper";
+import { LinearGradient } from "expo-linear-gradient";
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -66,7 +67,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <FormScreenWrapper>
+    <View className="flex-1 bg-dark-900">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
@@ -76,53 +77,77 @@ export default function LoginScreen() {
             flexGrow: 1,
             paddingTop: insets.top,
             paddingBottom: insets.bottom,
-            backgroundColor: "white",
           }}
           keyboardShouldPersistTaps="handled"
         >
           <View className="relative">
-            <Image source={HeroImage} style={{ width: "100%" }} />
-            <Text className="absolute font-bold text-3xl top-10 left-10 z-10 text-white">
+            <Image source={HeroImage} style={{ width: "100%", opacity: 0.8 }} />
+            <LinearGradient
+              colors={['transparent', '#0D0D0D']}
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: 100,
+              }}
+            />
+            <Text className="absolute font-bold text-3xl top-10 left-10 z-10 text-accent-primary">
               CARONA FC
             </Text>
           </View>
 
-          <View className="flex-1 p-4">
-            <View className="gap-4">
-              <TextInput
-                label="Email ou número de telefone"
-                value={userNumberOrEmail}
-                setValue={(text) => setUserNumberOrEmail(text.trim().toLowerCase())}
-                autoCapitalize="none"
-                placeholder="Email ou telefone"
-                showError={showErrors && !userNumberOrEmail}
-              />
-              <TextInput
-                label="Sua senha"
-                value={userPassword}
-                setValue={setUserPassword}
-                placeholder="Senha"
-                type="password"
-                showError={showErrors && !userPassword}
-              />
+          <View className="flex-1 p-6 -mt-6">
+            <View className="bg-dark-700/80 rounded-2xl p-6 border border-dark-400">
+              <Text className="text-text-primary text-xl font-bold mb-6 text-center">
+                Bem-vindo de volta
+              </Text>
+
+              <View className="gap-4">
+                <TextInput
+                  label="Email ou telefone"
+                  value={userNumberOrEmail}
+                  setValue={(text) => setUserNumberOrEmail(text.trim().toLowerCase())}
+                  autoCapitalize="none"
+                  placeholder="Digite seu email ou telefone"
+                  showError={showErrors && !userNumberOrEmail}
+                />
+                <TextInput
+                  label="Senha"
+                  value={userPassword}
+                  setValue={setUserPassword}
+                  placeholder="Digite sua senha"
+                  type="password"
+                  showError={showErrors && !userPassword}
+                />
+              </View>
+
+              <View className="gap-y-3 mt-6">
+                <DefaultButton
+                  btnText={isLoading ? "Entrando..." : "Entrar"}
+                  onPress={handleSubmit}
+                  disabled={isLoading}
+                />
+
+                <Pressable onPress={() => navigation.navigate("ForgotPassword")}>
+                  <Text className="text-text-secondary text-center">
+                    Esqueceu sua senha?
+                  </Text>
+                </Pressable>
+              </View>
             </View>
 
-            <View className="gap-y-2 mt-4 justify-center">
-              <DefaultButton btnText={isLoading ? "Acessando..." : "Login" }onPress={handleSubmit} />
+            <View className="mt-8 items-center">
+              <Text className="text-text-muted mb-2">Não tem uma conta?</Text>
               <Pressable onPress={() => navigation.navigate("Register")}>
-                <Text className="text-labelColor mt-8 text-center font-bold">
-                  Crie sua conta
-                </Text>
-              </Pressable>
-              <Pressable onPress={() => navigation.navigate("ForgotPassword")}>
-                <Text className="text-labelColor mt-8 text-center font-bold">
-                  Recupere sua senha
+                <Text className="text-accent-primary font-bold text-lg">
+                  Criar conta
                 </Text>
               </Pressable>
             </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </FormScreenWrapper>
+    </View>
   );
 }

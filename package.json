@@ -24,6 +24,7 @@
     "expo": "~54.0.0",
     "expo-image-manipulator": "^14.0.8",
     "expo-image-picker": "^17.0.10",
+    "expo-linear-gradient": "~15.0.8",
     "expo-location": "~18.1.6",
     "expo-status-bar": "~2.2.3",
     "nativewind": "^4.2.1",

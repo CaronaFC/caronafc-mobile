@@ -14,10 +14,12 @@ import { TravelAPIResponseType } from "../types/travel";
 import { filterTravels } from "../lib/filterTravels";
 import * as Location from "expo-location";
 import { openRequest } from "../services/requestsService";
+import { useAuth } from "../context/AuthContext";
 
 type Props = {};
 
 export default function HomeScreen({}: Props) {
+  const { userData } = useAuth();
   const [showFiltersModal, setShowFiltersModal] = useState<boolean>(false);
   const [appliedFilters, setAppliedFilters] = useState<FilterData>({
     team: "",
@@ -134,15 +136,25 @@ export default function HomeScreen({}: Props) {
   };
 
   return (
-    <View className="flex-1 bg-primaryWhite">
+    <View className="flex-1 bg-dark-900">
       <View className="p-4">
+        {/* Header */}
+        <View className="mb-4">
+          <Text className="text-accent-primary text-2xl font-bold">
+            Viagens Disponíveis
+          </Text>
+          <Text className="text-text-muted text-sm mt-1">
+            Encontre sua carona para o próximo jogo
+          </Text>
+        </View>
+
         {getActiveFiltersCount() > 0 && (
-          <View className="bg-blue-50 p-3 rounded-lg mb-4 flex-row justify-between items-center">
-            <Text className="text-blue-700 text-sm">
+          <View className="bg-accent-primary/10 p-3 rounded-xl mb-4 flex-row justify-between items-center border border-accent-primary/30">
+            <Text className="text-accent-primary text-sm font-medium">
               {getActiveFiltersCount()} filtro(s) aplicado(s)
             </Text>
             <TouchableOpacity onPress={handleClearFilters}>
-              <Text className="text-blue-600 text-sm font-medium">
+              <Text className="text-accent-muted text-sm font-bold">
                 Limpar todos
               </Text>
             </TouchableOpacity>
@@ -153,7 +165,7 @@ export default function HomeScreen({}: Props) {
         <View className="flex-row flex-wrap gap-2">
           <DefaultButton
             btnText={"Filtros"}
-            btnColor="dark"
+            btnColor="secondary"
             style={{ flexGrow: 1 }}
             onPress={openFiltersModal}
           />
@@ -161,9 +173,15 @@ export default function HomeScreen({}: Props) {
       </View>
 
       {filteredTravels.length === 0 ? (
-        <Text className="text-center my-auto text-xl">
-          Nenhuma viagem disponível
-        </Text>
+        <View className="flex-1 justify-center items-center px-8">
+          <Text className="text-accent-primary text-5xl mb-4">⚽</Text>
+          <Text className="text-text-primary text-xl font-bold text-center">
+            Nenhuma viagem disponível
+          </Text>
+          <Text className="text-text-muted text-center mt-2">
+            Não encontramos viagens no momento. Tente aplicar outros filtros ou volte mais tarde.
+          </Text>
+        </View>
       ) : (
         <FlatList
           data={filteredTravels}
@@ -174,6 +192,7 @@ export default function HomeScreen({}: Props) {
               {...mapTravelToCardProps(item)}
               id={item.id}
               handleRequest={handleRequest}
+              currentUserId={userData?.data?.id}
             />
           )}
           contentContainerStyle={{ gap: 16, paddingHorizontal: 16 }}

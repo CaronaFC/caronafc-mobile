@@ -85,7 +85,7 @@ export default function CreateTravelScreen() {
   );
 
   useEffect(() => {
-    console.log(userData?.data.veiculos);
+    console.log(userData?.data?.veiculos);
     async function fetchJogos() {
       try {
         const jogos = await fetchAllMatches();
@@ -176,8 +176,8 @@ export default function CreateTravelScreen() {
   ];
 
   const renderTimerPicker = () => (
-    <TouchableOpacity >
-      <MaterialCommunityIcons name="timer-outline" size={32} color="black" />
+    <TouchableOpacity>
+      <MaterialCommunityIcons name="timer-outline" size={32} color="#00FF87" />
     </TouchableOpacity>
   );
 
@@ -241,37 +241,50 @@ export default function CreateTravelScreen() {
   };
   return (
     <FormScreenWrapper>
-      <View style={{ flex: 1, backgroundColor: "#FFF" }}>
-        <View
-          style={{ gap: 10, flexDirection: "column" }}
-          className="p-4 gap-y-4"
-        >
-          <View className="justify-between items-center gap-y-2">
+      <View style={{ flex: 1, backgroundColor: "#0D0D0D" }}>
+        <View className="p-4 gap-y-4">
+          {/* Header */}
+          <View className="mb-2">
+            <Text style={{ color: '#00FF87', fontSize: 24, fontWeight: 'bold' }}>
+              Criar Viagem
+            </Text>
+            <Text style={{ color: '#888888', fontSize: 14, marginTop: 4 }}>
+              Preencha os dados para oferecer uma carona
+            </Text>
+          </View>
+
+          {/* Location Section */}
+          <View style={{ backgroundColor: '#1A1A1A', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#2A2A2A' }}>
             <TextInput
               value={starterPoint?.address || ""}
               setValue={() => {}}
-              label="Origem"
-              placeholder="Selecione seu ponto de partida no mapa"
+              label="Local de Partida"
+              placeholder="Selecione no mapa"
               disabled={true}
             />
             {stadiumName && (
-              <TextInput
-                value={stadiumName}
-                setValue={setStadiumName}
-                label="Destino (Estádio)"
-                placeholder="Selecione o estádio"
-                disabled={true}
-              />
+              <View style={{ marginTop: 12 }}>
+                <TextInput
+                  value={stadiumName}
+                  setValue={setStadiumName}
+                  label="Destino (Estádio)"
+                  placeholder="Selecione o estádio"
+                  disabled={true}
+                />
+              </View>
             )}
-            <DefaultButton
-              btnText="Abrir Mapa"
-              className="w-full"
-              onPress={() => bottomSheetRef.current?.open()}
-            />
+            <View style={{ marginTop: 12 }}>
+              <DefaultButton
+                btnText="Abrir Mapa"
+                btnColor="secondary"
+                onPress={() => bottomSheetRef.current?.open()}
+              />
+            </View>
           </View>
 
+          {/* Game Selection */}
           <SelectInput
-            label="Jogo"
+            label="Selecione o Jogo"
             selectedValue={gameId !== null ? gameId.toString() : ""}
             onValueChange={(value) => {
               if (value === "") {
@@ -283,57 +296,67 @@ export default function CreateTravelScreen() {
             options={gamesOptions}
           />
 
-          <SelectInput
-            label="Vagas"
-            selectedValue={space}
-            onValueChange={setSpace}
-            options={spaces}
-          />
+          {/* Vehicle and Spaces Row */}
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <View style={{ flex: 1 }}>
+              <SelectInput
+                label="Vagas"
+                selectedValue={space}
+                onValueChange={setSpace}
+                options={spaces}
+              />
+            </View>
+            {userData?.data?.veiculos && (
+              <View style={{ flex: 1 }}>
+                <SelectInput
+                  label="Veículo"
+                  selectedValue={vehicle}
+                  onValueChange={setVehicle}
+                  options={vehicleOptions}
+                />
+              </View>
+            )}
+          </View>
 
-          {userData?.data?.veiculos && (
-            <SelectInput
-              label="Veículo"
-              selectedValue={vehicle}
-              onValueChange={setVehicle}
-              options={vehicleOptions}
-            />
-          )}
-
-          <View className="flex-row justify-between items-center">
-            <TextInput
-              value={valuePerPerson}
-              setValue={setValuePerPerson}
-              label="Valor por pessoa"
-              placeholder="R$ 0,00"
-              keyboardType="numeric"
-            />
-
-            <View className="my-auto mt-10">
+          {/* Price and Return */}
+          <View style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-end' }}>
+            <View style={{ flex: 1 }}>
+              <TextInput
+                value={valuePerPerson}
+                setValue={setValuePerPerson}
+                label="Valor por pessoa"
+                placeholder="R$ 0,00"
+                keyboardType="numeric"
+              />
+            </View>
+            <View style={{ flex: 1, paddingBottom: 8 }}>
               <CustomCheckbox
-                text="A viagem terá retorno?"
+                text="Com retorno?"
                 checked={hasReturn}
                 setChecked={setHasReturn}
               />
             </View>
           </View>
 
-          <View className="flex-row items-center">
-            <TimePickerInput
-              label="Horário da partida"
-              value={time ?? new Date()}
-              onChange={setTime}
-              accessoryLeft={renderTimerPicker}
-              styles={{ height: 55, width: "100%" }}
-              disabled={!time}
+          {/* Time Picker */}
+          <TimePickerInput
+            label="Horário de Saída"
+            value={time ?? new Date()}
+            onChange={setTime}
+            accessoryLeft={renderTimerPicker}
+            styles={{ height: 55, width: "100%" }}
+            disabled={!time}
+          />
+
+          {/* Submit Button */}
+          <View style={{ marginTop: 8 }}>
+            <DefaultButton
+              btnText={loading ? "Criando viagem..." : "Criar Viagem"}
+              btnColor="primary"
+              onPress={handleSubmit}
+              disabled={loading}
             />
           </View>
-
-          <DefaultButton
-            btnText={loading ? "Cadastrando..." : "Cadastrar Viagem"}
-            className="mt-10"
-            onPress={handleSubmit}
-            disabled={loading}
-          />
         </View>
       </View>
 

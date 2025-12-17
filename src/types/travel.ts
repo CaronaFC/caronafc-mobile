@@ -30,6 +30,7 @@ export type CardTravelProps = {
   jogo: Game;
   veiculo: VeiculoType;
   handleRequest: (id: number) => void;
+  currentUserId?: number;
 };
 
 export type TravelAPIResponseType = {

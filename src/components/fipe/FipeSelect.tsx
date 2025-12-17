@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import SelectInput, { Option } from "../../components/commom/SelectInput";
 import { getFipeBrands, getFipeModels } from "../../services/fipeService";
 
@@ -25,38 +25,60 @@ function FipeSelect({
   vehicleType,
   textSelect,
 }: Props) {
-  const [options, setOptions] = useState<Option[]>([]);
+  // Initialize with a default option to prevent empty Picker crash
+  const defaultOption: Option = type === "brand"
+    ? { label: "Selecione um tipo antes", value: "" }
+    : { label: "Selecione uma marca antes", value: "" };
 
-  async function loadOptions() {
+  const [options, setOptions] = useState<Option[]>([defaultOption]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const loadOptions = useCallback(async () => {
+    setIsLoading(true);
     try {
       if (type === "brand") {
         const fipePath = fipePathMap[dependency];
+        if (!fipePath) {
+          setIsLoading(false);
+          return;
+        }
         const brands = await getFipeBrands(fipePath);
-        const formatted = brands.map((b: any) => ({
-          label: b.name,
-          value: b.code,          
-        }));
-        setOptions([{ label: "Selecione uma marca", value: "" }, ...formatted]);
+        if (brands && Array.isArray(brands)) {
+          const formatted = brands.map((b: any) => ({
+            label: b.name || "Sem nome",
+            value: String(b.code || ""),
+          }));
+          setOptions([{ label: "Selecione uma marca", value: "" }, ...formatted]);
+        }
       }
 
       if (type === "model" && vehicleType) {
         const fipePath = fipePathMap[vehicleType];
+        if (!fipePath) {
+          setIsLoading(false);
+          return;
+        }
         const models = await getFipeModels(fipePath, dependency);
-        const formatted = models.map((m: any) => ({
-          label: m.name,
-          value: m.code,
-        }));
-        setOptions([{ label: "Selecione um modelo", value: "" }, ...formatted]);
+        if (models && Array.isArray(models)) {
+          const formatted = models.map((m: any) => ({
+            label: m.name || "Sem nome",
+            value: String(m.code || ""),
+          }));
+          setOptions([{ label: "Selecione um modelo", value: "" }, ...formatted]);
+        }
       }
     } catch (error) {
       console.error(`Erro ao carregar ${type}s FIPE:`, error);
+      // Set error option instead of empty array
+      setOptions([{ label: `Erro ao carregar ${type === "brand" ? "marcas" : "modelos"}`, value: "" }]);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  }, [type, dependency, vehicleType]);
 
   useEffect(() => {
     if (type === "brand" && (!dependency || dependency === "")) {
       setOptions([{ label: "Selecione um tipo antes", value: "" }]);
-      onValueChange("");
       return;
     }
 
@@ -65,23 +87,27 @@ function FipeSelect({
       (!vehicleType || !dependency || dependency === "")
     ) {
       setOptions([{ label: "Selecione uma marca antes", value: "" }]);
-      onValueChange("");
       return;
     }
+
+    // Set loading state before fetching
+    setOptions([{ label: "Carregando...", value: "" }]);
     loadOptions();
-  }, [dependency, type, vehicleType]);
+  }, [dependency, type, vehicleType, loadOptions]);
+
+  const handleValueChange = useCallback((value: string) => {
+    onValueChange(value);
+    const selectedOption = options.find(opt => opt.value === value);
+    if (selectedOption && selectedOption.value !== "") {
+      textSelect(selectedOption.label);
+    }
+  }, [options, onValueChange, textSelect]);
 
   return (
     <SelectInput
       label={type === "brand" ? "Marca do Veículo" : "Modelo do Veículo"}
       selectedValue={selectedValue}
-      onValueChange={(value) => {
-        onValueChange(value);
-        const selectedOption = options.find(opt => opt.value === value);
-        if (selectedOption) {
-          textSelect(selectedOption.label);
-        }
-      }}
+      onValueChange={handleValueChange}
       options={options}
     />
   );

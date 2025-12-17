@@ -56,9 +56,9 @@ export default function MyTravelsScreen({}: Props) {
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#1E40AF" />
-        <Text className="mt-2 text-blue-700 font-semibold">
+      <View className="flex-1 justify-center items-center bg-dark-900">
+        <ActivityIndicator size="large" color="#00FF87" />
+        <Text className="mt-2 text-accent-primary font-semibold">
           Carregando suas viagens...
         </Text>
       </View>
@@ -67,16 +67,16 @@ export default function MyTravelsScreen({}: Props) {
 
   if (error) {
     return (
-      <View className="flex-1 justify-center items-center px-4 bg-white">
-        <Text className="text-red-600 mb-4 text-center font-semibold">
+      <View className="flex-1 justify-center items-center px-4 bg-dark-900">
+        <Text className="text-red-500 mb-4 text-center font-semibold">
           {error}
         </Text>
         <TouchableOpacity
           onPress={fetchTravels}
-          className="bg-blue-600 px-5 py-3 rounded-md shadow"
+          style={{ backgroundColor: '#00FF87', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 12 }}
           activeOpacity={0.8}
         >
-          <Text className="text-white font-semibold text-lg">
+          <Text className="text-dark-900 font-bold text-lg">
             Tentar novamente
           </Text>
         </TouchableOpacity>
@@ -87,11 +87,11 @@ export default function MyTravelsScreen({}: Props) {
   const renderStatusColor = (status: string) => {
     const statusColorMap: { [key: string]: string } = {
       espera: "#F59E0B",
-      andamento: "#2563EB",
+      andamento: "#00FF87",
       finalizada: "#10B981",
     }
 
-    return statusColorMap[status] || "#9CA3AF";
+    return statusColorMap[status] || "#666666";
   };
 
   const renderStatusName = (status: string) => {
@@ -109,23 +109,23 @@ export default function MyTravelsScreen({}: Props) {
       return (
         <Image
           source={{ uri: passageiro.imagem }}
-          className="w-8 h-8 rounded-full border border-gray-300"
+          style={{ width: 32, height: 32, borderRadius: 16, borderWidth: 2, borderColor: '#00FF87' }}
         />
       );
     }
     return (
-      <View className="w-8 h-8 rounded-full bg-gray-200 items-center justify-center">
-        <Ionicons name="person-circle-outline" size={20} color="#666" />
+      <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: '#262626', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: '#00FF87' }}>
+        <Ionicons name="person" size={16} color="#00FF87" />
       </View>
     );
   };
 
   const renderItem = ({ item }: { item: TravelAPIResponseType }) => (
-    <View className="border border-gray-200 rounded-xl p-4 mb-4 bg-white shadow-sm">
+    <View style={{ backgroundColor: '#1A1A1A', borderRadius: 16, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: '#2A2A2A' }}>
       <View className="flex-row items-center gap-2 mb-2">
-        <FontAwesome5 name="futbol" size={16} color="#2563EB" />
+        <FontAwesome5 name="futbol" size={16} color="#00FF87" />
         <Text
-          className="text-gray-800 font-semibold text-base"
+          style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 16 }}
           numberOfLines={1}
         >
           {item.jogo?.timeCasa?.nome ?? "Indefinido"} x{" "}
@@ -134,31 +134,31 @@ export default function MyTravelsScreen({}: Props) {
       </View>
 
       <View className="flex-row items-center gap-2 mb-1">
-        <FontAwesome5 name="trophy" size={16} color="#EF4444" />
-        <Text className="text-gray-700 font-medium">
-          Liga: {item.jogo?.liga?.nome ?? "Indefinida"}
+        <FontAwesome5 name="trophy" size={14} color="#00D170" />
+        <Text style={{ color: '#AAAAAA' }}>
+          {item.jogo?.liga?.nome ?? "Liga Indefinida"}
         </Text>
       </View>
 
       <View className="flex-row items-center gap-2 mb-1">
-        <FontAwesome5 name="landmark" size={16} color="#10B981" />
-        <Text className="text-gray-700 font-medium">
-          Estádio: {item.jogo?.estadio?.nome || "Não informado"}
+        <FontAwesome5 name="landmark" size={14} color="#00D170" />
+        <Text style={{ color: '#AAAAAA' }}>
+          {item.jogo?.estadio?.nome || "Estádio não informado"}
         </Text>
       </View>
 
       <View className="flex-row items-center gap-2 mb-1">
-        <FontAwesome5 name="clock" size={16} color="#6366F1" />
-        <Text className="text-gray-700 font-medium">
-          Data: {item.jogo?.data || "Indefinida"}
+        <FontAwesome5 name="calendar-alt" size={14} color="#00D170" />
+        <Text style={{ color: '#AAAAAA' }}>
+          {item.jogo?.data || "Data indefinida"}
         </Text>
       </View>
 
-      <View className="my-3 border-b border-gray-200" />
+      <View style={{ height: 1, backgroundColor: '#2A2A2A', marginVertical: 12 }} />
 
       <View className="flex-row items-center gap-2 mb-2">
-        <FontAwesome5 name="clock" size={16} color="#6366F1" />
-        <Text className="text-gray-800 font-semibold">
+        <FontAwesome5 name="clock" size={14} color="#00D170" />
+        <Text style={{ color: '#FFFFFF', fontWeight: '600' }}>
           Saída:{" "}
           {new Date(item.horario).toLocaleString("pt-BR", {
             day: "2-digit",
@@ -172,23 +172,21 @@ export default function MyTravelsScreen({}: Props) {
 
       <View className="flex-row justify-between items-center mb-3">
         <View className="flex-row items-center gap-2">
-          <FontAwesome5 name="users" size={16} color="#F59E0B" />
-          <Text className="text-gray-700 font-medium">
-            Vagas: {item.qtdVagas}
+          <FontAwesome5 name="users" size={14} color="#00D170" />
+          <Text style={{ color: '#AAAAAA' }}>
+            {item.qtdVagas} vagas
           </Text>
         </View>
-        <View className="flex-row items-center gap-2">
-          <FontAwesome5 name="money-bill-wave" size={16} color="#22C55E" />
-          <Text className="text-gray-700 font-medium">
+        <View style={{ backgroundColor: '#00FF87', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12 }}>
+          <Text style={{ color: '#0D0D0D', fontWeight: '700' }}>
             {item.valorPorPessoa
               ? `R$ ${Number(item.valorPorPessoa).toFixed(2)}`
-              : "Grátis"}{" "}
-            /pessoa
+              : "Grátis"}
           </Text>
         </View>
       </View>
 
-      <Text className="text-gray-800 font-semibold mb-1">Passageiros:</Text>
+      <Text style={{ color: '#FFFFFF', fontWeight: '600', marginBottom: 8 }}>Passageiros:</Text>
       {item.passageiros && item.passageiros.length > 0 ? (
         item.passageiros.map((passageiro: PassengerType) => (
           <View
@@ -196,70 +194,85 @@ export default function MyTravelsScreen({}: Props) {
             className="flex-row items-center gap-3 mb-2"
           >
             {renderPassengerAvatar(passageiro)}
-            <Text className="text-gray-800 font-medium">
+            <Text style={{ color: '#FFFFFF' }}>
               {passageiro.nome_completo}
             </Text>
           </View>
         ))
       ) : (
-        <Text className="italic text-gray-500">Nenhum passageiro</Text>
+        <Text style={{ color: '#666666', fontStyle: 'italic' }}>Nenhum passageiro</Text>
       )}
 
       <View className="flex-row items-center gap-2 mt-3">
-        <FontAwesome5 name="info-circle" size={16} color={renderStatusColor(item.status)} />
-        <Text className="text-gray-700 font-medium">Status: {renderStatusName(item.status)}</Text>
+        <FontAwesome5 name="info-circle" size={14} color={renderStatusColor(item.status)} />
+        <Text style={{ color: renderStatusColor(item.status), fontWeight: '500' }}>{renderStatusName(item.status)}</Text>
       </View>
 
-      <TouchableOpacity
-        onPress={() => {
-          if (item.status === "finalizada") {
-            Alert.alert("Viagem finalizada", "Esta viagem já foi concluída.");
-            return;
-          }
-          navigation.navigate("TravelProgress", { id: item.id });
-        }}
-        className="mt-4 bg-black rounded-md px-4 py-2"
-        activeOpacity={0.8}
-      >
-        <Text className="text-white font-semibold text-center">Acompanhar</Text>
-      </TouchableOpacity>
+      <View style={{ flexDirection: 'row', gap: 12, marginTop: 16 }}>
+        <TouchableOpacity
+          onPress={() => {
+            if (item.status === "finalizada") {
+              Alert.alert("Viagem finalizada", "Esta viagem já foi concluída.");
+              return;
+            }
+            navigation.navigate("TravelProgress", { id: item.id });
+          }}
+          style={{ flex: 1, backgroundColor: '#00FF87', borderRadius: 12, paddingVertical: 12 }}
+          activeOpacity={0.8}
+        >
+          <Text style={{ color: '#0D0D0D', fontWeight: '700', textAlign: 'center' }}>Acompanhar</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={() =>
-          navigation.navigate("TravelRequests", {
-            id: item.id,
-            travel: item.jogo?.estadio?.nome,
-          })
-        }
-        className="mt-3 bg-black rounded-md px-4 py-2"
-        activeOpacity={0.8}
-      >
-        <Text className="text-white font-semibold text-center">
-          Ver solicitações
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("TravelRequests", {
+              id: item.id,
+              travel: item.jogo?.estadio?.nome,
+            })
+          }
+          style={{ flex: 1, backgroundColor: '#262626', borderRadius: 12, paddingVertical: 12, borderWidth: 1, borderColor: '#00FF87' }}
+          activeOpacity={0.8}
+        >
+          <Text style={{ color: '#00FF87', fontWeight: '700', textAlign: 'center' }}>
+            Solicitações
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
   return (
-    <View className="flex-1 p-5 bg-gray-50">
-      <View className="mb-4">
-        <TouchableOpacity
-          onPress={fetchTravels}
-          className="flex-row items-center bg-black px-5 py-3 rounded-md shadow"
-          activeOpacity={0.8}
-        >
-          <FontAwesome5 name="sync" size={18} color="#fff" />
-          <Text className="text-white ml-3 font-semibold text-lg">
-            Atualizar
-          </Text>
-        </TouchableOpacity>
+    <View style={{ flex: 1, padding: 16, backgroundColor: '#0D0D0D' }}>
+      <View style={{ marginBottom: 16 }}>
+        <Text style={{ color: '#00FF87', fontSize: 24, fontWeight: 'bold', marginBottom: 4 }}>
+          Minhas Viagens
+        </Text>
+        <Text style={{ color: '#888888', fontSize: 14 }}>
+          Gerencie suas viagens como motorista
+        </Text>
       </View>
 
-      {travels.length === 0 ? (
-        <Text className="text-center text-gray-500 text-lg mt-10">
-          Você ainda não possui viagens cadastradas.
+      <TouchableOpacity
+        onPress={fetchTravels}
+        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#1A1A1A', paddingVertical: 12, borderRadius: 12, marginBottom: 16, borderWidth: 1, borderColor: '#2A2A2A' }}
+        activeOpacity={0.8}
+      >
+        <FontAwesome5 name="sync" size={16} color="#00FF87" />
+        <Text style={{ color: '#00FF87', marginLeft: 8, fontWeight: '600' }}>
+          Atualizar Lista
         </Text>
+      </TouchableOpacity>
+
+      {travels.length === 0 ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 48, marginBottom: 16 }}>🚗</Text>
+          <Text style={{ color: '#FFFFFF', fontSize: 18, fontWeight: '600', textAlign: 'center' }}>
+            Nenhuma viagem cadastrada
+          </Text>
+          <Text style={{ color: '#666666', textAlign: 'center', marginTop: 8 }}>
+            Crie uma viagem para oferecer carona
+          </Text>
+        </View>
       ) : (
         <FlatList
           data={travels}

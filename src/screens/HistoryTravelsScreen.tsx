@@ -30,7 +30,7 @@ export default function HistoryTravelsScreen() {
   const { userData } = useAuth();
 
   const fetchHistory = useCallback(async () => {
-    const usuarioId=Number(userData?.data.id);
+    const usuarioId=Number(userData?.data?.id);
 
     setLoading(true);
     setError(null);
@@ -46,7 +46,7 @@ export default function HistoryTravelsScreen() {
   }, [userData]);
 
   useEffect(() => {
-    if (userData?.data.id){
+    if (userData?.data?.id) {
     fetchHistory();}
   }, [userData,fetchHistory]);
 

@@ -6,11 +6,13 @@ import {
   RefreshControl,
   TouchableOpacity,
   Alert,
+  StyleSheet,
 } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
 import { getUserById } from "../services/userService";
 import { deleteVehicleId } from "../services/vehicleService";
@@ -56,7 +58,7 @@ export default function VehicleScreen() {
   };
 
   const fetchUser = async () => {
-    const response = await getUserById(Number(userData?.data.id));
+    const response = await getUserById(Number(userData?.data?.id));
     setVehicles(response?.data.data.veiculos);
   };
 
@@ -94,38 +96,47 @@ export default function VehicleScreen() {
   };
 
   return (
-    <View className="flex-1 bg-white relative">
+    <LinearGradient
+      colors={['#0D0D0D', '#1A1A1A', '#0D0D0D']}
+      style={styles.container}
+    >
       <ScrollView
-        className="px-4"
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#00FF87"
+            colors={['#00FF87']}
+          />
         }
       >
-        <TouchableOpacity></TouchableOpacity>
+        <Text style={styles.title}>Meus Veículos</Text>
+
         {vehicles.map((vehicle) => (
-          <View
-            key={vehicle.id}
-            className="bg-gray-100 rounded-lg p-4 mb-4 border border-gray-300 relative mt-4"
-          >
-            <View className="flex-row items-center mb-1 gap-2">
+          <View key={vehicle.id} style={styles.vehicleCard}>
+            <View style={styles.cardHeader}>
               <FontAwesome5
                 name={
                   vehicle.tipoVeiculo.descricao === "Carro"
                     ? "car"
                     : "motorcycle"
                 }
-                size={20}
-                color="#1F2937"
+                size={24}
+                color="#00FF87"
               />
-              <Text className="font-semibold text-xl text-gray-800 max-w-[80%]">
-                {vehicle.modelo}
-              </Text>
+              <Text style={styles.vehicleModel}>{vehicle.modelo}</Text>
             </View>
 
-            <Text className="text-gray-700">Marca: {vehicle.marca}</Text>
-            <Text className="text-gray-700">Placa: {vehicle.placa}</Text>
-            <Text className="text-gray-700">RENAVAM: {vehicle.renavam}</Text>
-            <Text className="text-gray-700">Cor: {vehicle.cor}</Text>
+            <View style={styles.cardDetails}>
+              <Text style={styles.detailText}>Marca: {vehicle.marca}</Text>
+              <Text style={styles.detailText}>Placa: {vehicle.placa}</Text>
+              <Text style={styles.detailText}>RENAVAM: {vehicle.renavam}</Text>
+              <View style={styles.colorRow}>
+                <Text style={styles.detailText}>Cor: {vehicle.cor}</Text>
+              </View>
+            </View>
 
             <TouchableOpacity
               onPress={() => {
@@ -133,20 +144,19 @@ export default function VehicleScreen() {
                 setOpenMenuForId(isOpen ? null : vehicle.id);
                 setMenuOpen(!isOpen);
               }}
-              className="absolute right-4 top-4 bg-gray-300 px-4 py-2 rounded-md z-10"
+              style={styles.menuButton}
             >
-              <Text className="text-black text-lg font-bold">...</Text>
+              <Text style={styles.menuButtonText}>⋮</Text>
             </TouchableOpacity>
 
             {openMenuForId === vehicle.id && (
-              <View className="absolute right-4 top-16 bg-white rounded-md border border-gray-300 shadow-lg w-32 z-20">
+              <View style={styles.dropdownMenu}>
                 <TouchableOpacity
                   onPress={() => handleDelete(vehicle.id)}
-                  className="px-4 py-3"
+                  style={styles.deleteButton}
                 >
-                  <Text className="text-red-600 text-center font-semibold">
-                    Excluir
-                  </Text>
+                  <FontAwesome5 name="trash" size={14} color="#FF4444" />
+                  <Text style={styles.deleteText}>Excluir</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -154,11 +164,123 @@ export default function VehicleScreen() {
         ))}
 
         {vehicles.length === 0 && (
-          <Text className="text-center text-gray-500 mt-10">
-            Nenhum {selectedType.toLowerCase()} cadastrado.
-          </Text>
+          <View style={styles.emptyState}>
+            <FontAwesome5 name="car" size={48} color="#2A2A2A" />
+            <Text style={styles.emptyText}>
+              Nenhum veículo cadastrado
+            </Text>
+            <Text style={styles.emptySubtext}>
+              Adicione seu primeiro veículo para começar
+            </Text>
+          </View>
         )}
       </ScrollView>
-    </View>
+    </LinearGradient>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 20,
+    paddingTop: 60,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 24,
+  },
+  vehicleCard: {
+    backgroundColor: '#1A1A1A',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+    position: 'relative',
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 12,
+  },
+  vehicleModel: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    flex: 1,
+  },
+  cardDetails: {
+    gap: 4,
+  },
+  detailText: {
+    color: '#AAAAAA',
+    fontSize: 14,
+  },
+  colorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  menuButton: {
+    position: 'absolute',
+    right: 16,
+    top: 16,
+    backgroundColor: '#2A2A2A',
+    borderRadius: 8,
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  menuButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  dropdownMenu: {
+    position: 'absolute',
+    right: 16,
+    top: 56,
+    backgroundColor: '#2A2A2A',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#3A3A3A',
+    overflow: 'hidden',
+    zIndex: 100,
+  },
+  deleteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  deleteText: {
+    color: '#FF4444',
+    fontWeight: '600',
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+  },
+  emptyText: {
+    color: '#AAAAAA',
+    fontSize: 18,
+    fontWeight: '500',
+    marginTop: 16,
+  },
+  emptySubtext: {
+    color: '#666666',
+    fontSize: 14,
+    marginTop: 8,
+  },
+});

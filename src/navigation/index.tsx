@@ -87,7 +87,14 @@ export default function RootNavigator() {
           <Stack.Screen
             name="Register"
             component={RegisterScreen}
-            options={{ title: "Cadastro" , headerShown:true,headerLeft: renderLeftArrow,}}
+            options={{
+              title: "Cadastro",
+              headerShown: true,
+              headerStyle: { backgroundColor: '#0D0D0D' },
+              headerTintColor: '#FFFFFF',
+              headerTitleStyle: { color: '#FFFFFF' },
+              headerLeft: renderLeftArrow,
+            }}
           />
           <Stack.Screen
             name="ForgotPassword"
@@ -95,13 +102,23 @@ export default function RootNavigator() {
             options={{
               title: "Recuperar Senha",
               headerShown: true,
+              headerStyle: { backgroundColor: '#0D0D0D' },
+              headerTintColor: '#FFFFFF',
+              headerTitleStyle: { color: '#FFFFFF' },
               headerLeft: renderLeftArrow,
             }}
           />
           <Stack.Screen
             name="ResetPassword"
             component={ResetPassword}
-            options={{ title: "Resetar senha", headerShown: true }}
+            options={{
+              title: "Nova Senha",
+              headerShown: true,
+              headerStyle: { backgroundColor: '#0D0D0D' },
+              headerTintColor: '#FFFFFF',
+              headerTitleStyle: { color: '#FFFFFF' },
+              headerLeft: renderLeftArrow,
+            }}
           />
         </>
       ) : (

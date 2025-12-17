@@ -5,6 +5,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  StyleSheet,
 } from "react-native";
 import TextInput from "../components/commom/TextInput";
 import DefaultButton from "../components/commom/DefaultButton";
@@ -14,7 +15,8 @@ import { useNavigation } from "@react-navigation/native";
 import { forgotPasswordUser } from "../services/authService";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
-import FormScreenWrapper from "../components/commom/FormScreenWrapper";
+import { LinearGradient } from "expo-linear-gradient";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 type ForgotPasswordNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -52,50 +54,98 @@ export default function ForgotPassword() {
   };
 
   return (
-    <FormScreenWrapper>
+    <LinearGradient
+      colors={['#0D0D0D', '#1A1A1A', '#0D0D0D']}
+      style={styles.container}
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
       >
-        <View
-          style={{
-            flex: 1,
-            paddingTop: insets.top,
-            paddingBottom: insets.bottom,
-            backgroundColor: "white",
-          }}
+        <ScrollView
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 20 }
+          ]}
+          keyboardShouldPersistTaps="handled"
         >
-          <ScrollView
-            contentContainerStyle={{
-              flexGrow: 1,
-              padding: 16,
-              justifyContent: "center",
-            }}
-            keyboardShouldPersistTaps="handled"
-          >
-            <View className="gap-4">
-              <Text className="text-2xl font-bold text-center mb-4">
-                Recuperar Senha
-              </Text>
-              <Text className="text-lg text-center mb-4">
-                Digite o email da sua conta que deseja recuperar o acesso
-              </Text>
-
-              <TextInput
-                label="Email"
-                value={email}
-                setValue={(text) => setEmail(text.trim().toLowerCase())}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                placeholder="Digite seu email da conta que quer recuperar"
-                showError={showErrors && !email}
-              />
-
-              <DefaultButton btnText={isLoading ? "Enviando..." : "Enviar"} onPress={handleSubmit} />
+          <View style={styles.iconContainer}>
+            <View style={styles.iconCircle}>
+              <FontAwesome5 name="lock" size={32} color="#00FF87" />
             </View>
-          </ScrollView>
-        </View>
+          </View>
+
+          <Text style={styles.title}>Recuperar Senha</Text>
+          <Text style={styles.subtitle}>
+            Digite o email da sua conta que deseja recuperar o acesso
+          </Text>
+
+          <View style={styles.formCard}>
+            <TextInput
+              label="Email"
+              value={email}
+              setValue={(text) => setEmail(text.trim().toLowerCase())}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              placeholder="Digite seu email da conta que quer recuperar"
+              showError={showErrors && !email}
+            />
+
+            <View style={{ marginTop: 24 }}>
+              <DefaultButton
+                btnText={isLoading ? "Enviando..." : "Enviar código"}
+                onPress={handleSubmit}
+              />
+            </View>
+          </View>
+        </ScrollView>
       </KeyboardAvoidingView>
-    </FormScreenWrapper>
+    </LinearGradient>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    padding: 24,
+    justifyContent: 'center',
+  },
+  iconContainer: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  iconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#1A1A1A',
+    borderWidth: 2,
+    borderColor: '#00FF87',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#AAAAAA',
+    textAlign: 'center',
+    marginBottom: 32,
+    paddingHorizontal: 20,
+  },
+  formCard: {
+    backgroundColor: '#1A1A1A',
+    borderRadius: 20,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+  },
+});

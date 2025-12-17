@@ -13,6 +13,7 @@ export async function createTravel(travelData: CreateTravelType): Promise<any> {
 
 export async function getTravels(filters?: {
   motoristaId?: number;
+  status?: string;
 }): Promise<TravelAPIResponseType[]> {
   try {
     const params = filters ? filters : {};
@@ -29,9 +30,12 @@ export async function getTravelById(
 ): Promise<TravelAPIResponseType> {
   try {
     const response = await api.get(`/viagem/${id}`);
-    return response.data;
+    console.log("getTravelById response:", JSON.stringify(response.data, null, 2));
+    // Handle both direct data and wrapped { data: ... } responses
+    const travelData = response.data?.data || response.data;
+    return travelData;
   } catch (error) {
-    console.error(error);
+    console.error("getTravelById error:", error);
     throw new Error("Erro inesperado ao buscar a viagem.");
   }
 }
@@ -50,6 +54,6 @@ export async function updateTravelStatus(
 }
 
 export async function fetchTravelHistory(usuarioId:number): Promise<TravelAPIResponseType[]> {
-  const { data } = await api.get(`/viagem/${usuarioId}`);
+  const { data } = await api.get(`/viagem/usuario/${usuarioId}`, { params: { status: 'finalizada' } });
   return data;
 }

@@ -26,6 +26,18 @@ export async function reverseGeocodeCoords(
   point: CoordsPoint
 ): Promise<string> {
   try {
+    // Validate that coordinates are valid numbers
+    if (
+      point == null ||
+      typeof point.latitude !== 'number' ||
+      typeof point.longitude !== 'number' ||
+      isNaN(point.latitude) ||
+      isNaN(point.longitude)
+    ) {
+      console.warn("Invalid coordinates provided to reverseGeocodeCoords:", point);
+      return "";
+    }
+
     const [result] = await Location.reverseGeocodeAsync(point);
     if (result) {
       return `${result.street || result.name || ""}, ${

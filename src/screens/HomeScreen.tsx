@@ -37,7 +37,9 @@ export default function HomeScreen({}: Props) {
     useCallback(() => {
       const fetchTravels = async () => {
         try {
-          const travels = (await getTravels()).sort((a, b) =>
+          const travels = (await getTravels({
+            status: 'espera',
+          })).sort((a, b) =>
             a.jogo.estadio.nome.localeCompare(b.jogo.estadio.nome)
           );
           if (travels.length === 0) return;

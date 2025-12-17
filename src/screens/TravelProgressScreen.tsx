@@ -123,27 +123,49 @@ export default function TravelProgress() {
     );
   }
 
+  // Ensure coordinates are valid numbers
+  const origemLat = Number(viagem.origem_lat);
+  const origemLong = Number(viagem.origem_long);
+  const destinoLat = Number(viagem.destino_lat);
+  const destinoLong = Number(viagem.destino_long);
+
+  // Check if coordinates are valid
+  const hasValidCoordinates =
+    !isNaN(origemLat) && !isNaN(origemLong) &&
+    !isNaN(destinoLat) && !isNaN(destinoLong) &&
+    origemLat !== 0 && origemLong !== 0;
+
+  if (!hasValidCoordinates) {
+    return (
+      <View className="flex-1 justify-center items-center bg-dark-900 p-4">
+        <Text className="text-white text-center">
+          Coordenadas da viagem não disponíveis
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <MapView
         style={{ flex: 1 }}
         initialRegion={{
-          latitude: viagem.origem_lat,
-          longitude: viagem.origem_long,
+          latitude: origemLat,
+          longitude: origemLong,
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }}
       >
         {/* Origem */}
         <Marker
-          coordinate={{ latitude: viagem.origem_lat, longitude: viagem.origem_long }}
+          coordinate={{ latitude: origemLat, longitude: origemLong }}
           title="Origem"
           pinColor="green"
         />
 
         {/* Destino */}
         <Marker
-          coordinate={{ latitude: viagem.destino_lat, longitude: viagem.destino_long }}
+          coordinate={{ latitude: destinoLat, longitude: destinoLong }}
           title="Destino"
           pinColor="red"
         />
@@ -163,9 +185,9 @@ export default function TravelProgress() {
           origin={
             motoristaLocalizacao
               ? motoristaLocalizacao
-              : { latitude: viagem.origem_lat, longitude: viagem.origem_long }
+              : { latitude: origemLat, longitude: origemLong }
           }
-          destination={{ latitude: viagem.destino_lat, longitude: viagem.destino_long }}
+          destination={{ latitude: destinoLat, longitude: destinoLong }}
           apikey={GOOGLE_MAPS_APIKEY}
           strokeWidth={5}
           strokeColor="black"

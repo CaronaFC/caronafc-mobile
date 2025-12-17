@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Alert, FlatList, Text, View, Image, StyleSheet, ScrollView } from "react-native";
+import { Alert, FlatList, Text, View, Image, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
 import { MaterialIcons, AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -22,42 +22,108 @@ const TravelDetailScreen = (props: Props) => {
   const [travel, setTravel] = useState<TravelAPIResponseType>();
   const [travelOrigin, setTravelOrigin] = useState("");
   const [travelApplicants, setTravelApplicants] = useState<Request[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
+      let isMounted = true;
+      setIsLoading(true);
+
       const fetchTravel = async () => {
         try {
-          const travel = await getTravelById(id);
-          if (!travel) {
+          console.log("Fetching travel with id:", id);
+          const travelData = await getTravelById(id);
+          console.log("Travel data received:", JSON.stringify(travelData, null, 2));
+
+          if (!travelData) {
             Alert.alert("Viagem não encontrada");
             return;
           }
-          setTravel(travel);
-          const originAddress = await reverseGeocodeCoords({
-            latitude: travel.origem_lat,
-            longitude: travel.origem_long,
-          });
-          setTravelOrigin(originAddress);
+
+          if (isMounted) {
+            setTravel(travelData);
+
+            // Validate coordinates before reverse geocoding
+            const lat = Number(travelData.origem_lat);
+            const lng = Number(travelData.origem_long);
+
+            console.log("Coordinates:", { lat, lng });
+
+            if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) {
+              const originAddress = await reverseGeocodeCoords({
+                latitude: lat,
+                longitude: lng,
+              });
+              if (isMounted) {
+                setTravelOrigin(originAddress);
+              }
+            } else {
+              if (isMounted) {
+                setTravelOrigin("Localização não disponível");
+              }
+            }
+          }
         } catch (error) {
-          Alert.alert("Erro ao buscar viagem");
+          console.error("Erro ao buscar viagem:", error);
+          if (isMounted) {
+            Alert.alert("Erro ao buscar viagem");
+          }
+        } finally {
+          if (isMounted) {
+            setIsLoading(false);
+          }
         }
       };
 
       const fetchApplicants = async () => {
         try {
           const applicants = await fetchSolicitationsByTripId(id);
-          setTravelApplicants(applicants);
+          if (isMounted) {
+            setTravelApplicants(applicants);
+          }
         } catch (error) {
-          Alert.alert("Erro ao buscar solicitantes");
+          console.error("Erro ao buscar solicitantes:", error);
         }
       };
 
       fetchTravel();
       fetchApplicants();
+
+      return () => {
+        isMounted = false;
+      };
     }, [id])
   );
 
   const filledPercentage = ((travel?.passageiros?.length ?? 0) / (travel?.qtdVagas || 1)) * 100;
+
+  if (isLoading) {
+    return (
+      <LinearGradient
+        colors={['#0D0D0D', '#1A1A1A', '#0D0D0D']}
+        style={styles.container}
+      >
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#00FF87" />
+          <Text style={styles.loadingText}>Carregando detalhes da viagem...</Text>
+        </View>
+      </LinearGradient>
+    );
+  }
+
+  if (!travel) {
+    return (
+      <LinearGradient
+        colors={['#0D0D0D', '#1A1A1A', '#0D0D0D']}
+        style={styles.container}
+      >
+        <View style={styles.loadingContainer}>
+          <FontAwesome5 name="exclamation-circle" size={48} color="#FF4444" />
+          <Text style={styles.errorText}>Viagem não encontrada</Text>
+        </View>
+      </LinearGradient>
+    );
+  }
 
   return (
     <LinearGradient
@@ -359,6 +425,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666666',
     fontStyle: 'italic',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: '#00FF87',
+    fontSize: 16,
+    fontWeight: '500',
+    marginTop: 16,
+  },
+  errorText: {
+    color: '#FF4444',
+    fontSize: 18,
+    fontWeight: '500',
+    marginTop: 16,
+    textAlign: 'center',
   },
 });
 

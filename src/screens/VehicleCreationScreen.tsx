@@ -44,16 +44,19 @@ const VehicleCreationScreen = (props: Props) => {
     {
       label: "RENAVAM",
       value: selectedRenavam,
-      setValue: setSelectedRenavam,
+      setValue: (num: string) => {
+        const limited = num.slice(0, 11);
+        setSelectedRenavam(limited);
+      },
       placeholder: "RENAVAM",
     },
     {
       label: "Placa",
       value: selectedPlate,
       setValue: (text: string) => {
-    const upperClean = text.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 7 );
-    setSelectedPlate(upperClean);
-  },
+        const upperClean = text.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 7);
+        setSelectedPlate(upperClean);
+      },
       placeholder: "Placa",
     },
   ];
@@ -180,6 +183,7 @@ const VehicleCreationScreen = (props: Props) => {
                   value={field.value}
                   setValue={field.setValue}
                   placeholder={field.placeholder}
+                  keyboardType={field.label == "RENAVAM" ? "numeric" : "default"}
                 />
               </View>
             ))}

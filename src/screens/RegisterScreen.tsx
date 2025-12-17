@@ -19,7 +19,7 @@ type RegisterScreenNavigationProp = NativeStackNavigationProp<
   "Register"
 >;
 
-export default function RegisterScreen({}: Props) {
+export default function RegisterScreen({ }: Props) {
   const [userName, setUserName] = React.useState("");
   const [userPassword, setUserPassword] = React.useState("");
   const [userEmail, setUserEmail] = React.useState("");
@@ -29,6 +29,12 @@ export default function RegisterScreen({}: Props) {
   const [showErrors, setShowErros] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const navigation = useNavigation<RegisterScreenNavigationProp>();
+  const [emailError, setEmailError] = React.useState(false);
+
+
+  function isValidEmail(email: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
 
   const handleSubmit = async () => {
     try {
@@ -36,6 +42,11 @@ export default function RegisterScreen({}: Props) {
 
       if (!userName || !userPassword || !userCPF || !userEmail) {
         setShowErros(true);
+        return;
+      }
+
+      if (!isValidEmail(userEmail)) {
+        setEmailError(true);
         return;
       }
 
@@ -174,17 +185,24 @@ export default function RegisterScreen({}: Props) {
           <TextInput
             label="Email*"
             value={userEmail}
-            setValue={(text) => setUserEmail(text.trim().toLowerCase())}
-            placeholder="seu@email.com"
+            setValue={(text) => {
+              const email = text.trim().toLowerCase();
+              setUserEmail(email);
+              setEmailError(email.length > 0 && !isValidEmail(email));
+            }}
+            placeholder="Email"
             keyboardType="email-address"
             autoCapitalize="none"
-            showError={showErrors && !userEmail}
+            showError={emailError}
+            errorMessage="Formato de e-mail inválido"
           />
+
           <TextInput
             label="CPF*"
             value={userCPF}
             setValue={setUserCPF}
             placeholder="000.000.000-00"
+            mask="999.999.999-99"
             keyboardType="numeric"
             showError={showErrors && !userCPF}
           />
@@ -193,7 +211,8 @@ export default function RegisterScreen({}: Props) {
             value={userPhone}
             setValue={(text) => setUserPhone(text.trim())}
             placeholder="(00) 00000-0000"
-            keyboardType="phone-pad"
+            mask="(99) 99999-9999"
+            keyboardType="numeric"
           />
 
           <View style={{ marginTop: 8 }}>

@@ -2,6 +2,7 @@ import { Input } from "@ui-kitten/components";
 import { Text, TextInputProps } from "react-native";
 import React, { useState } from "react";
 import { Feather } from "@expo/vector-icons";
+import { mask } from "react-native-mask-text";
 
 import { StyleProp, TouchableOpacity, ViewStyle } from "react-native";
 
@@ -14,9 +15,11 @@ type Props = {
   styles?: StyleProp<ViewStyle>;
   placeholder?: string;
   type?: "text" | "password";
-  keyboardType?: "default" | "email-address" | "numeric" | "decimal-pad"|"number-pad" | "phone-pad";
+  keyboardType?: "default" | "email-address" | "numeric" | "decimal-pad" | "number-pad" | "phone-pad";
   showError?: true | false;
   autoCapitalize?: TextInputProps['autoCapitalize'];
+  mask?: string;
+  errorMessage?: string;
 };
 
 export default function TextInput({
@@ -31,6 +34,8 @@ export default function TextInput({
   disabled = false,
   autoCapitalize = "sentences",
   iconLeft,
+  mask: maskPattern,
+  errorMessage = "Campo obrigatório",
 }: Props) {
   const isPassword = type === "password";
   const [secure, setSecure] = useState(isPassword);
@@ -40,6 +45,20 @@ export default function TextInput({
       <Feather name={secure ? "eye-off" : "eye"} size={20} color="#00FF87" />
     </TouchableOpacity>
   );
+
+  const handleChange = (text: string) => {
+    if (maskPattern) {
+      const raw = text.replace(/\D/g, "");
+      setValue(raw);
+      return;
+    }
+    setValue(text);
+  };
+
+  const displayValue = maskPattern
+    ? mask(value, maskPattern)
+    : value;
+
 
   return (
     <Input
@@ -52,8 +71,8 @@ export default function TextInput({
       placeholderTextColor="#666666"
       accessoryLeft={iconLeft ? () => iconLeft : undefined}
       disabled={disabled}
-      value={value}
-      onChangeText={setValue}
+      value={displayValue}
+      onChangeText={handleChange}
       keyboardType={keyboardType}
       autoCapitalize={autoCapitalize}
       textStyle={{ color: '#FFFFFF' }}
@@ -68,7 +87,7 @@ export default function TextInput({
       ]}
       secureTextEntry={isPassword ? secure : false}
       accessoryRight={isPassword ? renderIcon : undefined}
-      caption={showError ? "Campo obrigatório" : ""}
+      caption={showError ? errorMessage : ""}
       status={showError ? "danger" : "basic"}
     />
   );

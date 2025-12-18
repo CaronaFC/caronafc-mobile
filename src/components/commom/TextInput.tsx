@@ -1,7 +1,7 @@
-import { Input } from "@ui-kitten/components";
-import { Text, TextInputProps } from "react-native";
-import React, { useState } from "react";
 import { Feather } from "@expo/vector-icons";
+import { Input } from "@ui-kitten/components";
+import React, { useState } from "react";
+import { Text, TextInputProps } from "react-native";
 import { mask } from "react-native-mask-text";
 
 import { StyleProp, TouchableOpacity, ViewStyle } from "react-native";
@@ -20,6 +20,9 @@ type Props = {
   autoCapitalize?: TextInputProps['autoCapitalize'];
   mask?: string;
   errorMessage?: string;
+  // Novas propriedades adicionadas:
+  multiline?: boolean;
+  numberOfLines?: number;
 };
 
 export default function TextInput({
@@ -36,6 +39,9 @@ export default function TextInput({
   iconLeft,
   mask: maskPattern,
   errorMessage = "Campo obrigatório",
+  // Recebendo as novas propriedades
+  multiline = false,
+  numberOfLines = 1,
 }: Props) {
   const isPassword = type === "password";
   const [secure, setSecure] = useState(isPassword);
@@ -59,13 +65,15 @@ export default function TextInput({
     ? mask(value, maskPattern)
     : value;
 
-
   return (
     <Input
       label={() => (
-        <Text className="text-text-secondary text-sm mb-2 font-medium">
-          {label}
-        </Text>
+        // Renderiza label apenas se existir
+        label ? (
+          <Text className="text-text-secondary text-sm mb-2 font-medium">
+            {label}
+          </Text>
+        ) : <></>
       )}
       placeholder={placeholder}
       placeholderTextColor="#666666"
@@ -75,7 +83,13 @@ export default function TextInput({
       onChangeText={handleChange}
       keyboardType={keyboardType}
       autoCapitalize={autoCapitalize}
-      textStyle={{ color: '#FFFFFF' }}
+      // Repassando propriedades de multiline
+      multiline={multiline}
+      textStyle={{ 
+        color: '#FFFFFF', 
+        minHeight: multiline ? 60 : undefined, // Garante altura mínima se for multiline
+        textAlignVertical: multiline ? 'top' : 'center' // Começa o texto do topo
+      }}
       style={[
         {
           backgroundColor: "#1A1A1A",

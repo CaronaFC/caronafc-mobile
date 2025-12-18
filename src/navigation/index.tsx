@@ -2,23 +2,23 @@ import React from "react";
 
 import LoginScreen from "../screens/LoginScreen";
 
+import { FontAwesome5 } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import RegisterScreen from "../screens/RegisterScreen";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import TravelDetailScreen from "../components/commom/TravelDetailScreen";
+import { useAuth } from "../context/AuthContext";
 import ForgotPassword from "../screens/ForgotPassword";
+import HistoryTravelsScreen from "../screens/HistoryTravelsScreen";
+import { RateRideScreen } from "../screens/RateRideScreen";
+import RegisterScreen from "../screens/RegisterScreen";
 import ResetPassword from "../screens/ResetPassword";
-import TabNavigator from "./TabNavigator";
+import TravelProgressScreen from "../screens/TravelProgressScreen";
+import TravelRequestsScreen from "../screens/TravelRequests";
+import UpdateUserScreen from "../screens/UpdateUserScreen";
 import VehicleCreationScreen from "../screens/VehicleCreationScreen";
 import VehicleScreen from "../screens/VehicleScreen";
-import TravelRequestsScreen from "../screens/TravelRequests";
-import { useAuth } from "../context/AuthContext";
-import { ActivityIndicator, View } from "react-native";
-import { TouchableOpacity, Text } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
-import TravelDetailScreen from "../components/commom/TravelDetailScreen";
-import TravelProgressScreen from "../screens/TravelProgressScreen";
-import UpdateUserScreen from "../screens/UpdateUserScreen";
-import { useNavigation } from "@react-navigation/native";
-import HistoryTravelsScreen from "../screens/HistoryTravelsScreen";
+import TabNavigator from "./TabNavigator";
 
 const BackButton: React.FC = () => {
   const navigation = useNavigation();
@@ -47,6 +47,12 @@ export type RootStackParamList = {
   TravelRequests: { id: number; travel: string };
   TravelDetail: { id: number };
   TravelProgress: { id: number };
+  RateRide: {
+    avaliadoId: number;
+    viagemId: number;
+    nome: string;
+    tipo: 'motorista' | 'passageiro';
+  };
   UpdateUser: {
     usuario?: {
       id: number;
@@ -178,6 +184,17 @@ export default function RootNavigator() {
             name="TravelProgress"
             component={TravelProgressScreen}
             options={{ title: "Acompanhamento" }}
+          />
+          <Stack.Screen
+            name="RateRide"
+            component={RateRideScreen}
+            options={{
+              title: "Avaliar Carona",
+              headerStyle: { backgroundColor: '#0D0D0D' },
+              headerTintColor: '#FFFFFF',
+              headerTitleStyle: { color: '#FFFFFF' },
+              headerLeft: () => <BackButton />,
+            }}
           />
           <Stack.Screen
             name="UpdateUser"

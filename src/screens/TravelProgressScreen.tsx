@@ -1,21 +1,21 @@
-import { useState, useEffect, useRef } from "react";
-import { Alert, Text, TouchableOpacity, View, StyleSheet, ActivityIndicator } from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import MapViewDirections from "react-native-maps-directions";
-import * as Location from "expo-location";
-import { socket } from "../services/socket";
 import { FontAwesome5 } from "@expo/vector-icons";
+import * as Location from "expo-location";
+import { useEffect, useRef, useState } from "react";
+import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import MapView, { Marker } from "react-native-maps";
+import MapViewDirections from "react-native-maps-directions";
+import { socket } from "../services/socket";
 
-import { useRoute, RouteProp } from "@react-navigation/native";
-import { RootStackParamList } from "../navigation";
-import { useNavigation } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../navigation";
 
 import { getTravelById, updateTravelStatus } from "../services/travelService";
 import { TravelAPIResponseType } from "../types/travel";
 
-import { useMotoristaLocation } from "../context/TravelContext";
+import { RateRideModal } from "../components/commom/RateRideModal";
 import { useAuth } from "../context/AuthContext";
+import { useMotoristaLocation } from "../context/TravelContext";
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -42,8 +42,50 @@ export default function TravelProgress() {
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const locationSubscriptionRef = useRef<Location.LocationSubscription | null>(null);
 
+  // Estados para o modal de avaliação
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [pessoasParaAvaliar, setPessoasParaAvaliar] = useState<Array<{
+    id: number;
+    nome: string;
+    tipo: 'motorista' | 'passageiro';
+  }>>([]);
+  const [indexAvaliacaoAtual, setIndexAvaliacaoAtual] = useState(0);
+
   // Check if current user is the driver
   const isDriver = viagem?.motorista?.id === userData?.data?.id;
+
+  // Inicializar lista de pessoas a avaliar quando a viagem for finalizada
+  const initializeRatings = () => {
+    if (!viagem) return;
+    
+    const pessoasAvaliar: Array<{
+      id: number;
+      nome: string;
+      tipo: 'motorista' | 'passageiro';
+    }> = [];
+
+    // Se é motorista, pode avaliar passageiros
+    if (isDriver && viagem.passageiros && viagem.passageiros.length > 0) {
+      viagem.passageiros.forEach(passageiro => {
+        pessoasAvaliar.push({
+          id: passageiro.id,
+          nome: passageiro.nome_completo || passageiro.nome,
+          tipo: 'passageiro',
+        });
+      });
+    } 
+    // Se é passageiro, pode avaliar motorista
+    else if (!isDriver && viagem.motorista) {
+      pessoasAvaliar.push({
+        id: viagem.motorista.id,
+        nome: viagem.motorista.nome_completo,
+        tipo: 'motorista',
+      });
+    }
+
+    setPessoasParaAvaliar(pessoasAvaliar);
+    setIndexAvaliacaoAtual(0);
+  };
 
   useEffect(() => {
     const getUserLocation = async () => {
@@ -178,13 +220,33 @@ export default function TravelProgress() {
       // Emit socket event to notify passengers
       socket.emit("viagem:finalizar", { viagemId: id });
 
-      Alert.alert("Viagem finalizada com sucesso!");
-      navigation.goBack()
+      // Inicializar avaliações e mostrar modal
+      initializeRatings();
+      setTimeout(() => {
+        setShowRatingModal(true);
+      }, 500);
     } catch {
       Alert.alert("Erro ao finalizar viagem.");
     } finally {
       setLoadingStatus(false);
     }
+  };
+
+  // Função para ir para a próxima avaliação ou fechar modal
+  const handleAvaliacaoProxima = () => {
+    if (indexAvaliacaoAtual < pessoasParaAvaliar.length - 1) {
+      setIndexAvaliacaoAtual(indexAvaliacaoAtual + 1);
+    } else {
+      handleCloseRatingModal();
+    }
+  };
+
+  // Função para fechar o modal de avaliação
+  const handleCloseRatingModal = () => {
+    setShowRatingModal(false);
+    setPessoasParaAvaliar([]);
+    setIndexAvaliacaoAtual(0);
+    navigation.goBack();
   };
 
   if (!viagem) {
@@ -446,6 +508,19 @@ export default function TravelProgress() {
       >
         <FontAwesome5 name="crosshairs" size={20} color="#00FF87" />
       </TouchableOpacity>
+
+      {/* Modal de Avaliação */}
+      {pessoasParaAvaliar.length > 0 && (
+        <RateRideModal
+          visible={showRatingModal}
+          avaliadoId={pessoasParaAvaliar[indexAvaliacaoAtual]?.id}
+          viagemId={id}
+          nome={pessoasParaAvaliar[indexAvaliacaoAtual]?.nome}
+          tipo={pessoasParaAvaliar[indexAvaliacaoAtual]?.tipo}
+          onClose={handleAvaliacaoProxima}
+          onSuccess={handleAvaliacaoProxima}
+        />
+      )}
     </View>
   );
 }

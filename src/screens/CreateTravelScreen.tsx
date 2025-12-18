@@ -28,7 +28,7 @@ import { mapRawGameToGameProps } from "../mappers/mapTravelToCardProps";
 
 type CreateTravelScreenProps = NativeStackNavigationProp<
   RootStackParamList,
-  "Home"
+  "CreateTravel"
 >;
 
 export default function CreateTravelScreen() {
@@ -213,9 +213,13 @@ export default function CreateTravelScreen() {
       };
 
       await createTravel(dto);
-      Alert.alert("Sucesso", "Viagem criada com sucesso!");
       resetForm();
-      navigation.navigate("Home");
+      Alert.alert("Sucesso", "Viagem criada com sucesso!", [
+        {
+          text: "OK",
+          onPress: () => navigation.navigate("Home"),
+        },
+      ]);
     } catch (error: any) {
       Alert.alert(
         "Erro",
@@ -228,10 +232,12 @@ export default function CreateTravelScreen() {
 
   const resetForm = () => {
     setGameId(null);
-    setTime(new Date());
+    setMatch(null);
+    setTime(null);
     setStadiumName(null);
     setStadiumCoords(null);
     setSpace("");
+    setVehicle("");
     setValuePerPerson("");
     setHasReturn(false);
     setLocation(null);

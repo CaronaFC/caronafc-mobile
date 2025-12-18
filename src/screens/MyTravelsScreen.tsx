@@ -21,7 +21,7 @@ type Props = {};
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
-  "MyTravelsScreen"
+  "MyTravels"
 >;
 
 export default function MyTravelsScreen({}: Props) {

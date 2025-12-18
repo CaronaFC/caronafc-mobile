@@ -34,11 +34,11 @@ const renderLeftArrow = () => {
 
 export type RootStackParamList = {
   Login: undefined;
-  Home: undefined;
+  MainTabs: undefined;
   Register: undefined;
   CreateTravel: undefined;
   MyTravelRequests: undefined;
-  MyTravelsScreen: undefined;
+  MyTravels: undefined;
   Profile: undefined;
   VehicleCreation: undefined;
   Vehicle: undefined;
@@ -56,6 +56,7 @@ export type RootStackParamList = {
     };
   };
   History: undefined;
+  Home: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -124,7 +125,7 @@ export default function RootNavigator() {
       ) : (
         <>
           <Stack.Screen
-            name="Home"
+            name="MainTabs"
             component={TabNavigator}
             options={{ headerShown: false }}
           />

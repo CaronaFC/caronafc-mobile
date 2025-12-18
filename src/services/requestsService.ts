@@ -46,3 +46,7 @@ export async function updateSolicitationStatus(
 ): Promise<void> {
   await api.patch(`/solicitacoes/${id}/status/${status}`);
 }
+
+export async function deleteSolicitation(id: number): Promise<void> {
+  await api.delete(`/solicitacoes/${id}`);
+}

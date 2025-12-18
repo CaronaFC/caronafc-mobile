@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, RefreshControl, ActivityIndicator } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, RefreshControl, ActivityIndicator, Alert } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
@@ -7,7 +7,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { RequestItem } from "../components/requests/RequestItem";
-import { fetchSolicitationPassenger } from "../services/requestsService";
+import { fetchSolicitationPassenger, deleteSolicitation } from "../services/requestsService";
 import { Request } from "../types/request";
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<
@@ -49,6 +49,16 @@ export default function MyTravelRequestsScreen() {
   const onRefresh = useCallback(() => {
     fetchRequests(true);
   }, [fetchRequests]);
+
+  const handleDeleteRequest = useCallback(async (id: number) => {
+    try {
+      await deleteSolicitation(id);
+      setSolicitacoes((prev) => prev.filter((s) => s.id !== id));
+      Alert.alert("Sucesso", "Solicitação cancelada com sucesso!");
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível cancelar a solicitação.");
+    }
+  }, []);
 
   // Filter to show accepted rides with active status at the top
   const sortedSolicitacoes = [...solicitacoes].sort((a, b) => {
@@ -109,7 +119,7 @@ export default function MyTravelRequestsScreen() {
           <FlatList
             data={sortedSolicitacoes}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <RequestItem item={item} />}
+            renderItem={({ item }) => <RequestItem item={item} onDelete={handleDeleteRequest} />}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContent}
             refreshControl={

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert, RefreshControl } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import DefaultButton from "../components/commom/DefaultButton";
 import CardTravel from "../components/travel/CardTravel";
@@ -37,38 +37,47 @@ export default function HomeScreen({}: Props) {
   const [teams, setTeams] = useState<TeamType[]>([]);
   const [userLocation, setUserLocation] =
     useState<Location.LocationObjectCoords | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchTravels = useCallback(async () => {
+    try {
+      const travels = (await getTravels({
+        status: 'espera',
+      })).sort((a, b) =>
+        a.jogo.estadio.nome.localeCompare(b.jogo.estadio.nome)
+      );
+      if (travels.length === 0) {
+        setTravels([]);
+        return;
+      }
+      setTravels(travels);
+    } catch {
+      Alert.alert("Erro ao buscar viagens");
+    }
+  }, []);
+
+  const fetchTeams = useCallback(async () => {
+    try {
+      const teams = (await fetchAllTeams()).sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
+      setTeams(teams);
+    } catch {
+      Alert.alert("Erro ao buscar times");
+    }
+  }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([fetchTravels(), fetchTeams()]);
+    setRefreshing(false);
+  }, [fetchTravels, fetchTeams]);
 
   useFocusEffect(
     useCallback(() => {
-      const fetchTravels = async () => {
-        try {
-          const travels = (await getTravels({
-            status: 'espera',
-          })).sort((a, b) =>
-            a.jogo.estadio.nome.localeCompare(b.jogo.estadio.nome)
-          );
-          if (travels.length === 0) return;
-
-          setTravels(travels);
-        } catch {
-          Alert.alert("Erro ao buscar viagens");
-        }
-      };
-
-      const fetchTeams = async () => {
-        try {
-          const teams = (await fetchAllTeams()).sort((a, b) =>
-            a.name.localeCompare(b.name)
-          );
-          setTeams(teams);
-        } catch {
-          Alert.alert("Erro ao buscar times");
-        }
-      };
-
       fetchTravels();
       fetchTeams();
-    }, [])
+    }, [fetchTravels, fetchTeams])
   );
 
   const getActiveFiltersCount = (): number => {
@@ -216,6 +225,14 @@ export default function HomeScreen({}: Props) {
           )}
           contentContainerStyle={{ gap: 16, paddingHorizontal: 16 }}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor="#00FF87"
+              colors={["#00FF87"]}
+            />
+          }
         />
       )}
 

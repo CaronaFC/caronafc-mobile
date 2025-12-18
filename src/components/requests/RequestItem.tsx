@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import { Request } from "../../types/request";
 import { useNavigation } from "@react-navigation/native";
@@ -7,7 +7,12 @@ import { RootStackParamList } from "../../navigation";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "MyTravelRequests">;
 
-export function RequestItem({ item }: { item: Request  }) {
+type RequestItemProps = {
+  item: Request;
+  onDelete?: (id: number) => void;
+};
+
+export function RequestItem({ item, onDelete }: RequestItemProps) {
   const navigation = useNavigation<NavigationProp>();
 
   const statusConfig: { [key: string]: { color: string; bgColor: string; label: string } } = {
@@ -34,6 +39,23 @@ export function RequestItem({ item }: { item: Request  }) {
   const handleTrackRide = () => {
     navigation.navigate("TravelProgress", { id: item.viagem.id });
   };
+
+  const handleDelete = () => {
+    Alert.alert(
+      "Cancelar Solicitação",
+      "Tem certeza que deseja cancelar esta solicitação de carona?",
+      [
+        { text: "Não", style: "cancel" },
+        {
+          text: "Sim, cancelar",
+          style: "destructive",
+          onPress: () => onDelete?.(item.id),
+        },
+      ]
+    );
+  };
+
+  const canDelete = item.status === "pendente" && onDelete;
 
   return (
     <View style={styles.card}>
@@ -147,6 +169,18 @@ export function RequestItem({ item }: { item: Request  }) {
           </Text>
         </TouchableOpacity>
       )}
+
+      {/* Delete Button - only for pending requests */}
+      {canDelete && (
+        <TouchableOpacity
+          onPress={handleDelete}
+          style={styles.deleteButton}
+          activeOpacity={0.8}
+        >
+          <FontAwesome5 name="trash-alt" size={14} color="#EF4444" />
+          <Text style={styles.deleteButtonText}>Cancelar Solicitação</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -228,5 +262,22 @@ const styles = StyleSheet.create({
   },
   trackButtonTextActive: {
     color: '#0D0D0D',
+  },
+  deleteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    marginTop: 12,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#EF4444',
+    backgroundColor: 'transparent',
+  },
+  deleteButtonText: {
+    color: '#EF4444',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

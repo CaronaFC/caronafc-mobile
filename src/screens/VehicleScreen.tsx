@@ -81,7 +81,7 @@ export default function VehicleScreen() {
               setVehicles((prev) => prev.filter((v) => v.id !== vehicleId));
               setOpenMenuForId(null);
             } catch (error) {
-              console.error("Erro ao deletar:", error);
+              Alert.alert("Erro", "Não foi possível excluir o veículo.");
             }
           },
         },

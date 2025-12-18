@@ -6,7 +6,6 @@ import { LoginResponseType, LoginUserType, RegisterResponseType, RegisterUserTyp
 export async function registerUser(userData: RegisterUserType): Promise<RegisterResponseType> {
     try {
         const response = await api.post("/usuario", userData)
-        console.log("response")
         return response.data
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -28,7 +27,6 @@ export async function loginUser(userData: LoginUserType): Promise<AxiosResponse<
         if (axios.isAxiosError(error)) {
             const status = error.response?.status
             if (status == 401) {
-                console.log("Credenciais inválidas")
                 throw new Error(`Credenciais inválidas`);
             }
             const message = error.response?.data?.message || "Erro na requisição"
@@ -43,8 +41,6 @@ export async function forgotPasswordUser(userData: ForgotPasswordUserType): Prom
     const response = await api.post("/auth/forgot-password", userData);
     return response.data?.message ?? "Solicitação enviada com sucesso.";
   } catch (error: any) {
-    console.error("Erro inesperado:", error);
-
     if (axios.isAxiosError(error)) {
       const msg = error.response?.data?.message;
 
@@ -64,8 +60,6 @@ export async function resetPasswordUser(userData: ResetPasswordUserType): Promis
     const response = await api.post("/auth/reset-password", userData);
     return response.data?.message ?? "Solicitação de reset enviada com sucesso.";
   } catch (error: any) {
-    console.error("Erro inesperado:", error);
-
     if (axios.isAxiosError(error)) {
       const msg = error.response?.data?.message;
 
@@ -87,8 +81,6 @@ export async function updateUser(userData: UpdateUserType): Promise<any> {
     const response = await api.patch(`/usuario/${id}`, rest);
     return response.data ?? "Usuário atualizado com sucesso.";
   } catch (error: any) {
-    console.error("Erro inesperado:", error);
-
     if (axios.isAxiosError(error)) {
       const msg = error.response?.data?.message;
 

@@ -82,16 +82,6 @@ const VehicleCreationScreen = (props: Props) => {
       (tipo) => tipo.descricao === selectedType
     );
 
-    console.log("Submitting vehicle:", {
-      tipoVeiculoId: selectedTypeId.id,
-      marca: selectedBrand,
-      modelo: selectedModel,
-      renavam: selectedRenavam,
-      placa: selectedPlate,
-      cor: selectedColor,
-      usuarioId: userData?.data?.id,
-    });
-
     try {
       const response = await createVehicle({
         tipoVeiculoId: selectedTypeId.id,
@@ -102,12 +92,11 @@ const VehicleCreationScreen = (props: Props) => {
         cor: selectedColor,
         usuarioId: userData?.data?.id ?? 0,
       });
-      console.log("Vehicle created successfully:", response);
       refreshUserData();
       Alert.alert("veículo cadastrado com sucesso!");
       navigation.goBack();
     } catch (error) {
-      console.error("Error creating vehicle:", error);
+      Alert.alert("Erro", "Não foi possível cadastrar o veículo.");
     }
   };
 
@@ -125,7 +114,7 @@ const VehicleCreationScreen = (props: Props) => {
         ...typesOption,
       ]);
     } catch (error) {
-      console.log("Erro ao carregar tipos de veículos:", error);
+      // Silent fail - empty types will be shown
     }
   }
 

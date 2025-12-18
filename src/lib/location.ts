@@ -14,7 +14,7 @@ export async function geocodeAddress(
       return { latitude, longitude };
     }
   } catch (error) {
-    console.error("Erro ao geocodificar o endereço:", error);
+    // Geocoding failed silently
   }
   return null;
 }
@@ -26,7 +26,6 @@ export async function reverseGeocodeCoords(
   point: CoordsPoint
 ): Promise<string> {
   try {
-    // Validate that coordinates are valid numbers
     if (
       point == null ||
       typeof point.latitude !== 'number' ||
@@ -34,7 +33,6 @@ export async function reverseGeocodeCoords(
       isNaN(point.latitude) ||
       isNaN(point.longitude)
     ) {
-      console.warn("Invalid coordinates provided to reverseGeocodeCoords:", point);
       return "";
     }
 
@@ -45,7 +43,7 @@ export async function reverseGeocodeCoords(
       }`;
     }
   } catch (error) {
-    console.error("Erro ao converter coordenadas em endereço:", error);
+    // Reverse geocoding failed silently
   }
   return "";
 }

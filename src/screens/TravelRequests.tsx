@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Image,
+  Alert,
 } from "react-native";
 import { useEffect, useState, useCallback } from "react";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -42,7 +43,7 @@ export default function TravelRequestsScreen() {
       await updateSolicitationStatus(solicitacaoId, status);
       fetchTravelRequests();
     } catch (err) {
-      console.error("Erro ao atualizar status:", err);
+      Alert.alert("Erro", "Não foi possível atualizar o status da solicitação.");
     }
   };
 
@@ -53,7 +54,6 @@ export default function TravelRequestsScreen() {
       const res = await fetchSolicitationsByTripId(id);
       setSolicitations(res);
     } catch (e) {
-      console.error(e);
       setError("Erro ao carregar solicitações.");
     } finally {
       setLoading(false);

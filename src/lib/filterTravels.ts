@@ -23,7 +23,6 @@ export const filterTravels = (
     }
 
     if (filters.championship) {
-      console.log(jogo);
       if (
         !jogo.liga.nome
           .toLowerCase()

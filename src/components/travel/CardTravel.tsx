@@ -50,7 +50,7 @@ const CardTravel = ({
           setOrigemName(name);
         }
       } catch (error) {
-        console.error("Erro ao buscar nome da origem:", error);
+        // Silent fail for geocoding
       }
     };
 

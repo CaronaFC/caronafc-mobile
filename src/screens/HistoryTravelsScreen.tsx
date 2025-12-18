@@ -40,7 +40,6 @@ export default function HistoryTravelsScreen() {
       const res = await fetchTravelHistory(usuarioId);
       setTravels(res);
     } catch (e) {
-      console.error(e);
       setError("Erro ao carregar histórico de viagens.");
     } finally {
       setLoading(false);

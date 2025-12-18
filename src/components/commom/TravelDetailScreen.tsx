@@ -31,9 +31,7 @@ const TravelDetailScreen = (props: Props) => {
 
       const fetchTravel = async () => {
         try {
-          console.log("Fetching travel with id:", id);
           const travelData = await getTravelById(id);
-          console.log("Travel data received:", JSON.stringify(travelData, null, 2));
 
           if (!travelData) {
             Alert.alert("Viagem não encontrada");
@@ -46,8 +44,6 @@ const TravelDetailScreen = (props: Props) => {
             // Validate coordinates before reverse geocoding
             const lat = Number(travelData.origem_lat);
             const lng = Number(travelData.origem_long);
-
-            console.log("Coordinates:", { lat, lng });
 
             if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) {
               const originAddress = await reverseGeocodeCoords({
@@ -64,7 +60,6 @@ const TravelDetailScreen = (props: Props) => {
             }
           }
         } catch (error) {
-          console.error("Erro ao buscar viagem:", error);
           if (isMounted) {
             Alert.alert("Erro ao buscar viagem");
           }
@@ -82,7 +77,7 @@ const TravelDetailScreen = (props: Props) => {
             setTravelApplicants(applicants);
           }
         } catch (error) {
-          console.error("Erro ao buscar solicitantes:", error);
+          // Silent fail for applicants fetch
         }
       };
 

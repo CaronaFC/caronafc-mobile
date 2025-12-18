@@ -69,7 +69,6 @@ export default function MyTravelsScreen({}: Props) {
               setTravels((prev) => prev.filter((t) => t.id !== travelId));
               Alert.alert("Sucesso", "Viagem excluída com sucesso!");
             } catch (error) {
-              console.error("Erro ao deletar viagem:", error);
               Alert.alert("Erro", "Não foi possível excluir a viagem.");
             }
           },

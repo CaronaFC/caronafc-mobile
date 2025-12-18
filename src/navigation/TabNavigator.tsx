@@ -12,14 +12,14 @@ import ProfileScreen from "../screens/ProfileScreen";
 
 const Tab = createBottomTabNavigator();
 
-const renderLeftArrow = () => {
+const BackButton: React.FC = () => {
   const navigation = useNavigation();
   return (
     <TouchableOpacity
       onPress={() => navigation.goBack()}
       style={{ marginLeft: 16, paddingRight: 8 }}
     >
-      <FontAwesome5 name="arrow-left" size={20} />
+      <FontAwesome5 name="arrow-left" size={20} color="#FFFFFF" />
     </TouchableOpacity>
   );
 };

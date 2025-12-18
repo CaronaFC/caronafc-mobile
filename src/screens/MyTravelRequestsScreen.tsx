@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useCallback, useState } from "react";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, RefreshControl, ActivityIndicator } from "react-native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -19,19 +19,64 @@ export default function MyTravelRequestsScreen() {
   const navigation = useNavigation<ProfileScreenNavigationProp>();
 
   const [solicitacoes, setSolicitacoes] = useState<Request[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async (isRefresh = false) => {
     try {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
       const res = await fetchSolicitationPassenger();
       setSolicitacoes(res);
     } catch (error) {
       // Silent fail - empty list will be shown
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
-  };
-
-  useEffect(() => {
-    fetchRequests();
   }, []);
+
+  // Refresh data when screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      fetchRequests();
+    }, [fetchRequests])
+  );
+
+  const onRefresh = useCallback(() => {
+    fetchRequests(true);
+  }, [fetchRequests]);
+
+  // Filter to show accepted rides with active status at the top
+  const sortedSolicitacoes = [...solicitacoes].sort((a, b) => {
+    // Rides in progress first
+    if (a.status === "aceita" && a.viagem?.status === "andamento") return -1;
+    if (b.status === "aceita" && b.viagem?.status === "andamento") return 1;
+    // Then accepted rides waiting
+    if (a.status === "aceita" && a.viagem?.status === "espera") return -1;
+    if (b.status === "aceita" && b.viagem?.status === "espera") return 1;
+    // Then pending
+    if (a.status === "pendente") return -1;
+    if (b.status === "pendente") return 1;
+    return 0;
+  });
+
+  if (loading) {
+    return (
+      <LinearGradient
+        colors={['#0D0D0D', '#1A1A1A', '#0D0D0D']}
+        style={styles.container}
+      >
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#00FF87" />
+          <Text style={styles.loadingText}>Carregando solicitações...</Text>
+        </View>
+      </LinearGradient>
+    );
+  }
 
   return (
     <LinearGradient
@@ -42,7 +87,7 @@ export default function MyTravelRequestsScreen() {
         <Text style={styles.title}>Minhas Solicitações</Text>
 
         <TouchableOpacity
-          onPress={fetchRequests}
+          onPress={() => fetchRequests()}
           style={styles.refreshButton}
           activeOpacity={0.8}
         >
@@ -50,7 +95,7 @@ export default function MyTravelRequestsScreen() {
           <Text style={styles.refreshButtonText}>Atualizar</Text>
         </TouchableOpacity>
 
-        {solicitacoes.length === 0 ? (
+        {sortedSolicitacoes.length === 0 ? (
           <View style={styles.emptyState}>
             <FontAwesome5 name="inbox" size={48} color="#2A2A2A" />
             <Text style={styles.emptyText}>
@@ -62,11 +107,19 @@ export default function MyTravelRequestsScreen() {
           </View>
         ) : (
           <FlatList
-            data={solicitacoes}
+            data={sortedSolicitacoes}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={RequestItem}
+            renderItem={({ item }) => <RequestItem item={item} />}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.listContent}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor="#00FF87"
+                colors={["#00FF87"]}
+              />
+            }
           />
         )}
       </View>
@@ -82,6 +135,16 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 60,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: '#FFFFFF',
+    marginTop: 12,
+    fontSize: 16,
   },
   title: {
     fontSize: 28,

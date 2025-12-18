@@ -20,7 +20,7 @@ import UpdateUserScreen from "../screens/UpdateUserScreen";
 import { useNavigation } from "@react-navigation/native";
 import HistoryTravelsScreen from "../screens/HistoryTravelsScreen";
 
-const renderLeftArrow = () => {
+const BackButton: React.FC = () => {
   const navigation = useNavigation();
   return (
     <TouchableOpacity
@@ -34,11 +34,11 @@ const renderLeftArrow = () => {
 
 export type RootStackParamList = {
   Login: undefined;
-  Home: undefined;
+  MainTabs: undefined;
   Register: undefined;
   CreateTravel: undefined;
   MyTravelRequests: undefined;
-  MyTravelsScreen: undefined;
+  MyTravels: undefined;
   Profile: undefined;
   VehicleCreation: undefined;
   Vehicle: undefined;
@@ -56,6 +56,7 @@ export type RootStackParamList = {
     };
   };
   History: undefined;
+  Home: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -93,7 +94,7 @@ export default function RootNavigator() {
               headerStyle: { backgroundColor: '#0D0D0D' },
               headerTintColor: '#FFFFFF',
               headerTitleStyle: { color: '#FFFFFF' },
-              headerLeft: renderLeftArrow,
+              headerLeft: () => <BackButton />,
             }}
           />
           <Stack.Screen
@@ -105,7 +106,7 @@ export default function RootNavigator() {
               headerStyle: { backgroundColor: '#0D0D0D' },
               headerTintColor: '#FFFFFF',
               headerTitleStyle: { color: '#FFFFFF' },
-              headerLeft: renderLeftArrow,
+              headerLeft: () => <BackButton />,
             }}
           />
           <Stack.Screen
@@ -117,14 +118,14 @@ export default function RootNavigator() {
               headerStyle: { backgroundColor: '#0D0D0D' },
               headerTintColor: '#FFFFFF',
               headerTitleStyle: { color: '#FFFFFF' },
-              headerLeft: renderLeftArrow,
+              headerLeft: () => <BackButton />,
             }}
           />
         </>
       ) : (
         <>
           <Stack.Screen
-            name="Home"
+            name="MainTabs"
             component={TabNavigator}
             options={{ headerShown: false }}
           />
@@ -134,7 +135,7 @@ export default function RootNavigator() {
             options={{
               title: "Cadastro de Veículo",
               headerShown: true,
-              headerLeft: renderLeftArrow,
+              headerLeft: () => <BackButton />,
             }}
           />
           <Stack.Screen
@@ -153,7 +154,7 @@ export default function RootNavigator() {
               headerStyle: { backgroundColor: '#0D0D0D' },
               headerTintColor: '#FFFFFF',
               headerTitleStyle: { color: '#FFFFFF' },
-              headerLeft: renderLeftArrow,
+              headerLeft: () => <BackButton />,
               headerRight: () => (
                 <TouchableOpacity
                   onPress={() => navigation.navigate("VehicleCreation")}
@@ -170,7 +171,7 @@ export default function RootNavigator() {
             component={TravelRequestsScreen}
             options={{
               title: "Solicitações de Viagem",
-              headerLeft: renderLeftArrow,
+              headerLeft: () => <BackButton />,
             }}
           />
           <Stack.Screen
@@ -191,7 +192,7 @@ export default function RootNavigator() {
               headerStyle: { backgroundColor: '#0D0D0D' },
               headerTintColor: '#FFFFFF',
               headerTitleStyle: { color: '#FFFFFF' },
-              headerLeft: renderLeftArrow,
+              headerLeft: () => <BackButton />,
             }}
           />
         </>

@@ -1,15 +1,39 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { FontAwesome5, FontAwesome } from "@expo/vector-icons";
 import { Request } from "../../types/request";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../navigation";
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, "MyTravelRequests">;
 
 export function RequestItem({ item }: { item: Request  }) {
-  const statusConfig: { [key: string]: { color: string; bgColor: string } } = {
-    pendente: { color: "#FFB800", bgColor: "rgba(255, 184, 0, 0.15)" },
-    aceita: { color: "#00FF87", bgColor: "rgba(0, 255, 135, 0.15)" },
-    recusada: { color: "#FF4444", bgColor: "rgba(255, 68, 68, 0.15)" },
+  const navigation = useNavigation<NavigationProp>();
+
+  const statusConfig: { [key: string]: { color: string; bgColor: string; label: string } } = {
+    pendente: { color: "#FFB800", bgColor: "rgba(255, 184, 0, 0.15)", label: "PENDENTE" },
+    aceita: { color: "#00FF87", bgColor: "rgba(0, 255, 135, 0.15)", label: "ACEITA" },
+    recusada: { color: "#FF4444", bgColor: "rgba(255, 68, 68, 0.15)", label: "RECUSADA" },
   };
 
-  const status = statusConfig[item.status] || { color: "#AAAAAA", bgColor: "rgba(170, 170, 170, 0.15)" };
+  const viagemStatusConfig: { [key: string]: { color: string; bgColor: string; label: string } } = {
+    espera: { color: "#FFB800", bgColor: "rgba(255, 184, 0, 0.15)", label: "Aguardando início" },
+    andamento: { color: "#00FF87", bgColor: "rgba(0, 255, 135, 0.15)", label: "Em andamento" },
+    finalizada: { color: "#3B82F6", bgColor: "rgba(59, 130, 246, 0.15)", label: "Finalizada" },
+  };
+
+  const status = statusConfig[item.status] || { color: "#AAAAAA", bgColor: "rgba(170, 170, 170, 0.15)", label: "N/D" };
+  const viagemStatus = viagemStatusConfig[item.viagem?.status] || null;
+
+  // Can track if request is accepted and travel is waiting or in progress
+  const canTrackRide = item.status === "aceita" &&
+    (item.viagem?.status === "espera" || item.viagem?.status === "andamento");
+
+  const isRideInProgress = item.viagem?.status === "andamento";
+
+  const handleTrackRide = () => {
+    navigation.navigate("TravelProgress", { id: item.viagem.id });
+  };
 
   return (
     <View style={styles.card}>
@@ -78,11 +102,51 @@ export function RequestItem({ item }: { item: Request  }) {
       </View>
 
       {/* Status Badge */}
-      <View style={[styles.statusBadge, { backgroundColor: status.bgColor }]}>
-        <Text style={[styles.statusText, { color: status.color }]}>
-          {item.status?.toUpperCase() ?? "N/D"}
-        </Text>
+      <View style={styles.statusRow}>
+        <View style={[styles.statusBadge, { backgroundColor: status.bgColor }]}>
+          <Text style={[styles.statusText, { color: status.color }]}>
+            {status.label}
+          </Text>
+        </View>
+
+        {item.status === "aceita" && viagemStatus && (
+          <View style={[styles.statusBadge, { backgroundColor: viagemStatus.bgColor }]}>
+            <FontAwesome5
+              name={isRideInProgress ? "car" : "hourglass-half"}
+              size={10}
+              color={viagemStatus.color}
+              style={{ marginRight: 6 }}
+            />
+            <Text style={[styles.statusText, { color: viagemStatus.color }]}>
+              {viagemStatus.label}
+            </Text>
+          </View>
+        )}
       </View>
+
+      {/* Track Ride Button */}
+      {canTrackRide && (
+        <TouchableOpacity
+          onPress={handleTrackRide}
+          style={[
+            styles.trackButton,
+            isRideInProgress && styles.trackButtonActive
+          ]}
+          activeOpacity={0.8}
+        >
+          <FontAwesome5
+            name={isRideInProgress ? "location-arrow" : "map-marked-alt"}
+            size={16}
+            color={isRideInProgress ? "#0D0D0D" : "#00FF87"}
+          />
+          <Text style={[
+            styles.trackButtonText,
+            isRideInProgress && styles.trackButtonTextActive
+          ]}>
+            {isRideInProgress ? "Acompanhar Viagem" : "Ver no Mapa"}
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -124,14 +188,45 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   statusBadge: {
-    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
-    marginTop: 8,
   },
   statusText: {
     fontSize: 12,
     fontWeight: '700',
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 8,
+    flexWrap: 'wrap',
+  },
+  trackButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    marginTop: 16,
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#00FF87',
+    backgroundColor: 'transparent',
+  },
+  trackButtonActive: {
+    backgroundColor: '#00FF87',
+    borderColor: '#00FF87',
+  },
+  trackButtonText: {
+    color: '#00FF87',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  trackButtonTextActive: {
+    color: '#0D0D0D',
   },
 });

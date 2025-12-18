@@ -9,7 +9,7 @@ type BottomTabBarProps = {
   state: any;
 };
 
-const createIcon = (name: string, isSelected: boolean) => () => (
+const TabIcon: React.FC<{ name: string; isSelected: boolean }> = ({ name, isSelected }) => (
   <FontAwesome5
     name={name}
     size={20}
@@ -17,7 +17,7 @@ const createIcon = (name: string, isSelected: boolean) => () => (
   />
 );
 
-const BottomTabBar = ({ navigation, state }: BottomTabBarProps) => {
+const BottomTabBar: React.FC<BottomTabBarProps> = ({ navigation, state }) => {
   const hiddenRoutes = ["Login", "Registro"];
   const currentRoute = state.routeNames[state.index];
   const tabRouteNames = ["Home", "CreateTravel", "MyTravelRequests", "MyTravels", "Profile"];
@@ -56,7 +56,7 @@ const BottomTabBar = ({ navigation, state }: BottomTabBarProps) => {
                 {tab.label}
               </Text>
             )}
-            icon={createIcon(tab.icon, selectedIndex === index)}
+            icon={() => <TabIcon name={tab.icon} isSelected={selectedIndex === index} />}
             style={styles.tab}
           />
         ))}

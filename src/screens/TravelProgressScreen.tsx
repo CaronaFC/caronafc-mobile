@@ -15,6 +15,7 @@ import { getTravelById, updateTravelStatus } from "../services/travelService";
 import { TravelAPIResponseType } from "../types/travel";
 
 import { useMotoristaLocation } from "../context/TravelContext";
+import { useAuth } from "../context/AuthContext";
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -30,6 +31,7 @@ export default function TravelProgress() {
   const navigation = useNavigation<ProfileScreenNavigationProp>();
   const { id } = route.params;
   const mapRef = useRef<MapView>(null);
+  const { userData } = useAuth();
 
   const [viagem, setViagem] = useState<TravelAPIResponseType | null>(null);
   const { location: motoristaLocalizacao, setLocation: setMotoristaLocalizacao } = useMotoristaLocation();
@@ -39,6 +41,9 @@ export default function TravelProgress() {
   const [routeInfo, setRouteInfo] = useState<{ distance: number; duration: number } | null>(null);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const locationSubscriptionRef = useRef<Location.LocationSubscription | null>(null);
+
+  // Check if current user is the driver
+  const isDriver = viagem?.motorista?.id === userData?.data?.id;
 
   useEffect(() => {
     const getUserLocation = async () => {
@@ -97,15 +102,40 @@ export default function TravelProgress() {
       }
     });
 
+    // Listen for ride start event (for passengers)
+    socket.on("viagem:iniciada", () => {
+      if (isMounted) {
+        setViagemIniciada(true);
+        Alert.alert(
+          "Viagem Iniciada! 🚗",
+          "O motorista iniciou a viagem. Você pode acompanhar o trajeto em tempo real."
+        );
+      }
+    });
+
+    // Listen for ride end event (for passengers)
+    socket.on("viagem:finalizada", () => {
+      if (isMounted) {
+        setViagemIniciada(false);
+        Alert.alert(
+          "Viagem Finalizada! 🏁",
+          "A viagem foi finalizada. Obrigado por usar o CaronaFC!",
+          [{ text: "OK", onPress: () => navigation.goBack() }]
+        );
+      }
+    });
+
     return () => {
       isMounted = false;
       socket.off("motorista:atualizacao");
+      socket.off("viagem:iniciada");
+      socket.off("viagem:finalizada");
       socket.disconnect();
       if (locationSubscriptionRef.current) {
         locationSubscriptionRef.current.remove();
       }
     };
-  }, [id, setMotoristaLocalizacao]);
+  }, [id, setMotoristaLocalizacao, navigation]);
 
   const iniciarViagem = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -118,6 +148,9 @@ export default function TravelProgress() {
       setLoadingStatus(true);
       await updateTravelStatus(id, "andamento");
       setViagemIniciada(true);
+
+      // Emit socket event to notify passengers
+      socket.emit("viagem:iniciar", { viagemId: id });
     } catch {
       Alert.alert("Erro ao iniciar viagem.");
       return;
@@ -141,6 +174,10 @@ export default function TravelProgress() {
       setLoadingStatus(true);
       await updateTravelStatus(id, "finalizada");
       setViagemIniciada(false);
+
+      // Emit socket event to notify passengers
+      socket.emit("viagem:finalizar", { viagemId: id });
+
       Alert.alert("Viagem finalizada com sucesso!");
       navigation.goBack()
     } catch {
@@ -338,48 +375,77 @@ export default function TravelProgress() {
             styles.statusBadge,
             viagemIniciada ? styles.statusActive : styles.statusWaiting
           ]}>
-            <Text style={styles.statusText}>
+            <Text style={[styles.statusText, { color: viagemIniciada ? '#00FF87' : '#F59E0B' }]}>
               {viagemIniciada ? "Em andamento" : "Aguardando início"}
             </Text>
           </View>
+          {!isDriver && (
+            <View style={styles.roleBadge}>
+              <FontAwesome5 name="user" size={10} color="#3B82F6" />
+              <Text style={styles.roleText}>Passageiro</Text>
+            </View>
+          )}
         </View>
       </View>
 
-      {!viagemIniciada ? (
-        <TouchableOpacity
-          onPress={iniciarViagem}
-          disabled={loadingStatus}
-          style={[styles.actionButton, styles.startButton, loadingStatus && styles.buttonDisabled]}
-          activeOpacity={0.8}
-        >
-          <FontAwesome5 name="play" size={18} color="#0D0D0D" />
-          <Text style={styles.startButtonText}>
-            {loadingStatus ? "Iniciando..." : "Iniciar Viagem"}
-          </Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity
-          onPress={finalizarViagem}
-          disabled={loadingStatus}
-          style={[styles.actionButton, styles.endButton, loadingStatus && styles.buttonDisabled]}
-          activeOpacity={0.8}
-        >
-          <FontAwesome5 name="flag-checkered" size={18} color="#FFFFFF" />
-          <Text style={styles.endButtonText}>
-            {loadingStatus ? "Finalizando..." : "Finalizar Viagem"}
-          </Text>
-        </TouchableOpacity>
+      {/* Driver Controls */}
+      {isDriver && (
+        <>
+          {!viagemIniciada ? (
+            <TouchableOpacity
+              onPress={iniciarViagem}
+              disabled={loadingStatus}
+              style={[styles.actionButton, styles.startButton, loadingStatus && styles.buttonDisabled]}
+              activeOpacity={0.8}
+            >
+              <FontAwesome5 name="play" size={18} color="#0D0D0D" />
+              <Text style={styles.startButtonText}>
+                {loadingStatus ? "Iniciando..." : "Iniciar Viagem"}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={finalizarViagem}
+              disabled={loadingStatus}
+              style={[styles.actionButton, styles.endButton, loadingStatus && styles.buttonDisabled]}
+              activeOpacity={0.8}
+            >
+              <FontAwesome5 name="flag-checkered" size={18} color="#FFFFFF" />
+              <Text style={styles.endButtonText}>
+                {loadingStatus ? "Finalizando..." : "Finalizar Viagem"}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </>
       )}
 
-      {motoristaLocalizacao && (
-        <TouchableOpacity
-          style={styles.centerButton}
-          onPress={fitMapToMarkers}
-          activeOpacity={0.8}
-        >
-          <FontAwesome5 name="crosshairs" size={20} color="#00FF87" />
-        </TouchableOpacity>
+      {/* Passenger Status Cards */}
+      {!isDriver && !viagemIniciada && (
+        <View style={styles.passengerWaitingCard}>
+          <FontAwesome5 name="hourglass-half" size={20} color="#F59E0B" />
+          <Text style={styles.passengerWaitingText}>
+            Aguardando o motorista iniciar a viagem...
+          </Text>
+        </View>
       )}
+
+      {!isDriver && viagemIniciada && (
+        <View style={styles.passengerTrackingCard}>
+          <FontAwesome5 name="satellite-dish" size={20} color="#00FF87" />
+          <Text style={styles.passengerTrackingText}>
+            Acompanhando viagem em tempo real
+          </Text>
+        </View>
+      )}
+
+      {/* Center Map Button */}
+      <TouchableOpacity
+        style={styles.centerButton}
+        onPress={fitMapToMarkers}
+        activeOpacity={0.8}
+      >
+        <FontAwesome5 name="crosshairs" size={20} color="#00FF87" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -484,6 +550,8 @@ const styles = StyleSheet.create({
   },
   statusRow: {
     flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   statusBadge: {
     paddingHorizontal: 12,
@@ -500,6 +568,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: '#00FF87',
+  },
+  roleBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    backgroundColor: '#3B82F620',
+  },
+  roleText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#3B82F6',
   },
   actionButton: {
     position: 'absolute',
@@ -544,5 +626,47 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#2A2A2A',
+  },
+  passengerWaitingCard: {
+    position: 'absolute',
+    bottom: 40,
+    left: 20,
+    right: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderRadius: 16,
+    backgroundColor: '#F59E0B20',
+    borderWidth: 1,
+    borderColor: '#F59E0B40',
+  },
+  passengerWaitingText: {
+    color: '#F59E0B',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  passengerTrackingCard: {
+    position: 'absolute',
+    bottom: 40,
+    left: 20,
+    right: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderRadius: 16,
+    backgroundColor: '#00FF8720',
+    borderWidth: 1,
+    borderColor: '#00FF8740',
+  },
+  passengerTrackingText: {
+    color: '#00FF87',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

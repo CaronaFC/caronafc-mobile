@@ -73,17 +73,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (userInfoRaw) {
         try {
           const userInfo = JSON.parse(userInfoRaw) as UserTypeAPI;
-          console.log("userInfo", userInfo);
           setUserToken(userToken ?? "");
           setUserData(userInfo);
         } catch (parseError) {
-          console.error("Erro ao parsear dados do usuário:", parseError);
           await AsyncStorage.removeItem("userInfo");
           await AsyncStorage.removeItem("userToken");
         }
       }
     } catch (error) {
-      console.error("IsLogged in error", error);
+      // Silent fail - user will be redirected to login
     } finally {
       setIsLoading(false);
     }

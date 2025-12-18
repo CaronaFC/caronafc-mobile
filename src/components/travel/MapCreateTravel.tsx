@@ -36,12 +36,10 @@ const MapCreateTravel = (props: Props) => {
             (async () => {
                 let { status } = await Location.requestForegroundPermissionsAsync();
                 if (status !== 'granted') {
-                    console.log('Permissão negada para acessar localização');
                     return;
                 }
 
                 let loc = await Location.getCurrentPositionAsync({});
-                console.log("Localização atual:", loc);
                 setLocation(loc.coords);
                 const address = await reverseGeocodeCoords(loc.coords);
                 setStarterPoint({ ...loc.coords, address });
@@ -88,21 +86,16 @@ const MapCreateTravel = (props: Props) => {
     const handleMapPress = async (event: any) => {
 
         const { latitude, longitude } = event.nativeEvent.coordinate;
-        console.log("Coordenadas selecionadas:", latitude, longitude);
         const address = await reverseGeocodeCoords({ latitude, longitude });
         setStarterPoint({ latitude, longitude, address });
     };
 
     const handleSearchLocation = async (address: string) => {
         if (!address) return;
-        console.log("Buscando localização para o endereço:", address);
         const coords = await geocodeAddress(address);
         if (coords) {
-            console.log("Localização geocodificada:", coords.latitude, coords.longitude);
             setLocation({ ...coords, accuracy: 0 } as Location.LocationObjectCoords);
             setStarterPoint({ ...coords, address });
-        } else {
-            console.log("Nenhuma localização encontrada para o endereço:", address);
         }
     };
 
@@ -140,9 +133,9 @@ const MapCreateTravel = (props: Props) => {
                 showsMyLocationButton
                 loadingEnabled={true}
                 showsBuildings={true}
-                showsPointsOfInterest={true}    
+                showsPointsOfInterest={true}
                 zoomControlEnabled={true}
-                zoomEnabled={true}            
+                zoomEnabled={true}
             >
 
                 {starterPoint && (

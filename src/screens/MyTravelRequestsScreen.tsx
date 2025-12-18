@@ -25,7 +25,7 @@ export default function MyTravelRequestsScreen() {
       const res = await fetchSolicitationPassenger();
       setSolicitacoes(res);
     } catch (error) {
-      console.error(error);
+      // Silent fail - empty list will be shown
     }
   };
 

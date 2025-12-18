@@ -6,7 +6,6 @@ export async function createTravel(travelData: CreateTravelType): Promise<any> {
     const response = await api.post("/viagem", travelData);
     return response.data;
   } catch (error) {
-    console.error(error);
     throw new Error("Erro inesperado ao criar viagem.");
   }
 }
@@ -20,7 +19,6 @@ export async function getTravels(filters?: {
     const response = await api.get("/viagem", { params });
     return response.data;
   } catch (error) {
-    console.error(error);
     throw new Error("Erro inesperado ao buscar viagens.");
   }
 }
@@ -30,12 +28,9 @@ export async function getTravelById(
 ): Promise<TravelAPIResponseType> {
   try {
     const response = await api.get(`/viagem/${id}`);
-    console.log("getTravelById response:", JSON.stringify(response.data, null, 2));
-    // Handle both direct data and wrapped { data: ... } responses
     const travelData = response.data?.data || response.data;
     return travelData;
   } catch (error) {
-    console.error("getTravelById error:", error);
     throw new Error("Erro inesperado ao buscar a viagem.");
   }
 }
@@ -48,7 +43,6 @@ export async function updateTravelStatus(
     const response = await api.patch(`/viagem/${id}/status`, { status });
     return response.data;
   } catch (error) {
-    console.error(error);
     throw new Error("Erro inesperado ao atualizar status da viagem.");
   }
 }
@@ -57,7 +51,6 @@ export async function deleteTravel(id: number): Promise<void> {
   try {
     await api.delete(`/viagem/${id}`);
   } catch (error) {
-    console.error(error);
     throw new Error("Erro inesperado ao deletar a viagem.");
   }
 }

@@ -68,8 +68,6 @@ function FipeSelect({
         }
       }
     } catch (error) {
-      console.error(`Erro ao carregar ${type}s FIPE:`, error);
-      // Set error option instead of empty array
       setOptions([{ label: `Erro ao carregar ${type === "brand" ? "marcas" : "modelos"}`, value: "" }]);
     } finally {
       setIsLoading(false);

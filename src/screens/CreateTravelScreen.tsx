@@ -76,7 +76,7 @@ export default function CreateTravelScreen() {
             );
           }
         } catch (err) {
-          console.error("Erro ao verificar veículos:", err);
+          // Silent fail - user can continue without vehicle check
         }
       };
 
@@ -85,13 +85,12 @@ export default function CreateTravelScreen() {
   );
 
   useEffect(() => {
-    console.log(userData?.data?.veiculos);
     async function fetchJogos() {
       try {
         const jogos = await fetchAllMatches();
         setMatches(jogos);
       } catch (error) {
-        console.error(error);
+        // Silent fail - empty matches list
       }
     }
     fetchJogos();
@@ -122,7 +121,7 @@ export default function CreateTravelScreen() {
             setTime(null);
           }
         } catch (error) {
-          console.error(error);
+          // Silent fail - match details not loaded
         }
       } else {
         setMatch(null);
@@ -213,7 +212,6 @@ export default function CreateTravelScreen() {
         veiculoId: Number(vehicle),
       };
 
-      console.log("DTO>", dto);
       await createTravel(dto);
       Alert.alert("Sucesso", "Viagem criada com sucesso!");
       resetForm();

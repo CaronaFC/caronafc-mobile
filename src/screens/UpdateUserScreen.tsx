@@ -128,7 +128,6 @@ export default function UpdateUserScreen() {
       }
 
       await updateUser(updateData);
-      console.log("Perfil atualizado com sucesso", usuario);
       refreshUserData();
 
       Alert.alert("Sucesso", "Perfil atualizado com sucesso.");

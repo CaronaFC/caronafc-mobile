@@ -9,7 +9,6 @@ export async function getUserById(userId: Number): Promise<any> {
     if (axios.isAxiosError(error)) {
       const status = error.response?.status;
       if (status == 401) {
-        console.log("Credenciais inválidas");
         throw new Error(`Credenciais inválidas`);
       }
       const message = error.response?.data?.message || "Erro na requisição";
@@ -28,7 +27,6 @@ export async function getUserVehicle(userId: number): Promise<any[]> {
     if (axios.isAxiosError(error)) {
       const status = error.response?.status;
       if (status === 401) {
-        console.log("Credenciais inválidas");
         throw new Error("Credenciais inválidas");
       }
       const message = error.response?.data?.message || "Erro na requisição";
@@ -47,7 +45,6 @@ export async function getUserProfile(): Promise<any> {
     if (axios.isAxiosError(error)) {
       const status = error.response?.status;
       if (status == 401) {
-        console.log("Sem autorização");
         throw new Error(`Sem autorização`);
       }
       const message = error.response?.data?.message || "Erro na requisição";

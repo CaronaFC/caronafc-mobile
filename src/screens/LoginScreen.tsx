@@ -44,7 +44,6 @@ export default function LoginScreen() {
       setIsLoading(true);
 
       if (!userNumberOrEmail || !userPassword) {
-        console.log("Campos mal preenchidos");
         setShowErros(true);
         return;
       }

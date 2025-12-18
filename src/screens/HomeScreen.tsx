@@ -82,15 +82,15 @@ export default function HomeScreen({}: Props) {
     if (newFilters.nearby) {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        console.log("Permissão negada para acessar localização");
+        Alert.alert("Permissão negada", "Não foi possível acessar sua localização.");
         closeFiltersModal();
+        return;
       }
       let loc = await Location.getCurrentPositionAsync({});
       setUserLocation(loc.coords);
     } else {
       setUserLocation(null);
     }
-    console.log("Filtros aplicados:", newFilters);
   };
 
   const filteredTravels = useMemo(() => {
@@ -105,7 +105,6 @@ export default function HomeScreen({}: Props) {
       time: "",
       nearby: false,
     });
-    console.log("Filtros limpos");
   };
 
   const openFiltersModal = (): void => {

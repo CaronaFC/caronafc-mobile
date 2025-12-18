@@ -63,7 +63,6 @@ export default function RegisterScreen({ }: Props) {
         return;
       }
 
-      console.log("response:", data);
       Alert.alert("Usuário cadastrado com sucesso");
       navigation.navigate("Login");
     } catch (error) {
@@ -105,7 +104,6 @@ export default function RegisterScreen({ }: Props) {
         }
       }
     } catch (error) {
-      console.error("Erro ao selecionar/comprimir imagem:", error);
       Alert.alert("Erro ao selecionar/comprimir imagem.");
     }
   };

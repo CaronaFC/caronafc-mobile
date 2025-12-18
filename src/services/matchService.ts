@@ -22,12 +22,6 @@ export async function fetchMatchById(id: string | number): Promise<any> {
 
         return response.data;
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error("Erro ao buscar jogo:", error.response?.data || error.message);
-        } else {
-            console.error("Erro inesperado:", error);
-        }
-
         throw new Error("Erro inesperado ao buscar jogo.");
     }
 }

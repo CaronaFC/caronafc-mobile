@@ -1,0 +1,27 @@
+import axios from "axios";
+import { api } from "../lib/api";
+import { footballApi } from "../lib/football-api";
+
+
+export async function fetchAllMatches(): Promise<any> {
+    try {
+        const response = await api.get('/jogo/listar');
+        return response.data;
+    } catch (error) {
+        throw new Error("Erro inesperado ao buscar jogos.");
+    }
+}
+
+
+export async function fetchMatchById(id: string | number): Promise<any> {
+    try {
+        const response = await footballApi.get(`/match/?match_id=${id}`);
+        if (!response.data || Object.keys(response.data).length === 0) {
+            throw new Error("Jogo não encontrado.");
+        }
+
+        return response.data;
+    } catch (error) {
+        throw new Error("Erro inesperado ao buscar jogo.");
+    }
+}

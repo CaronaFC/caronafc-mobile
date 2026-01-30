@@ -1,0 +1,7 @@
+.label-input {
+  @apply text-labelColor font-bold text-base;
+}
+
+.text-input {
+  @apply bg-inputColor h-8 text-primaryBlack text-sm;
+}
